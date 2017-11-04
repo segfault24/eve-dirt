@@ -1,0 +1,51 @@
+{% extends "base.phtml" %}
+{% block title %}Velocity of Isk{% endblock %}
+{% block extrahead %}
+{% include 'chart-libs.phtml' %}
+<script type="text/javascript" src="/js/velocity-of-isk.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header">Velocity of Isk</h3>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<div class="btn-group" data-toggle="buttons">
+			<label class="btn btn-primary" id="dates-all">
+				<input type="radio" autocomplete="off">All
+			</label>
+			<label class="btn btn-primary" id="dates-3y">
+				<input type="radio" autocomplete="off">3y
+			</label>
+			<label class="btn btn-primary" id="dates-1y">
+				<input type="radio" autocomplete="off">1y
+			</label>
+			<label class="btn btn-primary active" id="dates-6m">
+				<input type="radio" autocomplete="off" checked>6m
+			</label>
+			<label class="btn btn-primary" id="dates-3m">
+				<input type="radio" autocomplete="off">3m
+			</label>
+			<label class="btn btn-primary" id="dates-1m">
+				<input type="radio" autocomplete="off">1m
+			</label>
+		</div>
+	</div>
+</div>
+<div class="row margin-top">
+	<div class="col-sm-12">
+		<div class="well">
+			<canvas id="velocity-of-isk" width="100%" height="400px"></canvas>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<div class="well">
+			<p>The term "velocity of money" refers to how fast money passes from one holder to the next. It can refer to the income velocity of money, which is the frequency at which the average unit of currency is used to purchase newly produced goods and services within a given time period. In other words, it is the number of times one unit of money is spent to buy goods and services per unit of time. (<a href="https://en.wikipedia.org/wiki/Velocity_of_money">Wikipedia <i class="fa fa-external-link" aria-hidden="true"></i></a>)</p>
+		</div>
+	</div>
+</div>
+{% endblock %}

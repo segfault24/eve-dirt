@@ -1,0 +1,22 @@
+{% extends "base.phtml" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header" id="title">Settings</h3>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+{% if char %}
+		<form action="/sso-auth/unlink" method="post">
+			<button type="submit">Unlink this character from this account</button>
+		</form>
+{% else %}
+		<form action="/sso-auth/link" method="post">
+			<button type="submit">Link a character to this account (EVE SSO)</button>
+		</form>
+{% endif %}
+	</div>
+</div>
+{% endblock %}

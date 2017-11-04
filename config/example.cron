@@ -1,0 +1,51 @@
+# keep log files small...
+13 0 * * * /srv/dirt/bin/trimLogs.sh
+
+# 10000002 The Forge
+# 10000043 Domain
+# 10000032 Sinq Liasion
+# 10000030 Hiematar
+# 10000042 Metropolis
+
+# 10000039 Esoteria
+# 10000059 Paragon Soul
+# 10000014 Catch
+# 10000022 Stain
+# 10000031 Impass
+# 10000056 Feythabolis
+
+# public market orders - hisec hub regions (all orders every hour, staggered)
+00 * * * * /srv/dirt/bin/sMrktOrders.sh 10000002 >> /srv/dirt/log/scrape.log 2>&1
+06 * * * * /srv/dirt/bin/sMrktOrders.sh 10000043 >> /srv/dirt/log/scrape.log 2>&1
+12 * * * * /srv/dirt/bin/sMrktOrders.sh 10000032 >> /srv/dirt/log/scrape.log 2>&1
+18 * * * * /srv/dirt/bin/sMrktOrders.sh 10000030 >> /srv/dirt/log/scrape.log 2>&1
+24 * * * * /srv/dirt/bin/sMrktOrders.sh 10000042 >> /srv/dirt/log/scrape.log 2>&1
+# public market orders - test alliance regions (all orders every hour, staggered)
+30 * * * * /srv/dirt/bin/sMrktOrders.sh 10000039 >> /srv/dirt/log/scrape.log 2>&1
+36 * * * * /srv/dirt/bin/sMrktOrders.sh 10000059 >> /srv/dirt/log/scrape.log 2>&1
+42 * * * * /srv/dirt/bin/sMrktOrders.sh 10000014 >> /srv/dirt/log/scrape.log 2>&1
+48 * * * * /srv/dirt/bin/sMrktOrders.sh 10000031 >> /srv/dirt/log/scrape.log 2>&1
+
+# market history - hisec hub regions (top 1000 types daily at 2am, staggered)
+02 03 * * * /srv/dirt/bin/sMrktHist.sh 10000002 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+08 03 * * * /srv/dirt/bin/sMrktHist.sh 10000043 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+14 03 * * * /srv/dirt/bin/sMrktHist.sh 10000032 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+20 03 * * * /srv/dirt/bin/sMrktHist.sh 10000030 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+26 03 * * * /srv/dirt/bin/sMrktHist.sh 10000042 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+# market history - test alliance regions (top 1000 types daily at 2am, staggered)
+32 03 * * * /srv/dirt/bin/sMrktHist.sh 10000039 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+38 03 * * * /srv/dirt/bin/sMrktHist.sh 10000059 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+42 03 * * * /srv/dirt/bin/sMrktHist.sh 10000014 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+48 03 * * * /srv/dirt/bin/sMrktHist.sh 10000031 /srv/dirt/cfg/top1000types.txt >> /srv/dirt/log/scrape.log 2>&1
+
+# market history - hisec hub regions (all types weekly at 4am, staggered)
+00 04 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000002 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+15 04 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000043 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+30 04 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000032 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+45 04 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000030 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+00 05 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000042 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+# market history - test alliance regions (all types weekly at 4am, staggered)
+15 05 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000039 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+30 05 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000059 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+45 05 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000014 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1
+00 06 1,8,16,23 * * /srv/dirt/bin/sMrktHist.sh 10000031 /srv/dirt/cfg/alltypes.txt >> /srv/dirt/log/scrape.log 2>&1

@@ -1,0 +1,111 @@
+body   {
+	overflow-y:scroll;
+}
+
+footer {
+	background-color: #EEE;
+	color: #222;
+	padding: 10px;
+	font-size: 10px;
+}
+
+#page-wrapper {
+	padding: 0px 15px;
+}
+
+#title-img {
+	width: 42px;
+	height: 42px;
+}
+
+.navbar-default {
+	z-index: 30 !important;
+}
+
+.ui-autocomplete-input {
+	z-index: 0 !important;
+}
+
+/* Bootstrap Overrides */
+
+h1, h2, h3 {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.panel, .well, .form-group {
+	margin-bottom: 10px;
+}
+
+.well  {
+	padding: 10px
+}
+
+hr {
+	margin-top: 5px;
+	margin-bottom: 10px;
+}
+
+.page-header {
+	padding-bottom: 4px;
+	margin: 15px 0px 10px;
+}
+
+/* General Use */
+
+.no-margin {
+	margin: 0px;
+}
+
+.no-padding {
+	padding: 0px;
+}
+
+.no-border {
+	border: 0px;
+}
+
+.border {
+	border: 1px solid #ddd;
+}
+
+.tab-border {
+	border-top: 0px;
+	border-left: 1px;
+	border-bottom: 1px;
+	border-right: 1px;
+	border-style: solid;
+	border-color: #ddd;
+}
+
+.margin-top {
+	margin-top: 10px;
+}
+
+.margin-bottom {
+	margin-bottom: 10px;
+}
+
+/* Market Browser Menu */
+
+.browse-panel {
+	margin-bottom: 0px;
+	border-radius: 0px;
+}
+
+.browse-panel-heading {
+	padding: 1px 8px 1px 8px;
+}
+
+.browse-panel-title {
+	font-size: 14px;
+}
+
+.browse-panel-body {
+	padding: 0px 0px 0px 10px;
+}
+
+.browse-panel-item {
+	font-size: 13px;
+	padding: 1px 0px;
+}

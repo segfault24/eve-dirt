@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<title>{% block title %}{% endblock %}</title>
+		
+		<!-- JQuery CSS -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+		<!-- Bootstrap Core CSS -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<!-- MetisMenu CSS -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/1.1.3/metisMenu.min.css" rel="stylesheet">
+		<!-- Custom CSS -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/css/sb-admin-2.min.css" rel="stylesheet">
+		<!-- Custom Fonts -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+		<!-- DIRT Custom Style -->
+		<link href="/css/common.css" rel="stylesheet">
+		
+		<!-- jQuery -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<!-- Bootstrap Core JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<!-- Metis Menu Plugin JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/1.1.3/metisMenu.min.js"></script>
+		<!-- Custom Theme JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/js/sb-admin-2.min.js"></script>
+		<!-- DIRT Utility JavaScript -->
+		<script src="/js/common.js"></script>
+		
+{% block extrahead %}{% endblock %}
+	</head>
+	<body>
+		<div id="wrapper">
+			<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">DIRT</a>
+				</div>
+				<ul class="nav navbar-top-links navbar-right">
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<i class="fa fa-user fa-fw"></i>
+							&nbsp;{{name}}&nbsp;&nbsp;
+							<i class="fa fa-caret-down"></i>
+						</a>
+						<ul class="dropdown-menu">
+							<!--<li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a></li>-->
+							<li><a href="/user-settings"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
+							<li class="divider"></li>
+{% if admin %}
+							<li><a href="/admin"><i class="fa fa-lock fa-fw"></i> Admin Panel</a></li>
+							<li class="divider"></li>
+{% endif %}
+							<li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+						</ul>
+					</li>
+				</ul>
+				<div class="navbar-default sidebar" role="navigation">
+					<div class="sidebar-nav navbar-collapse">
+						<ul class="nav" id="side-menu">
+							<li class="sidebar-search">
+								<form role="form" action="/search" method="get">
+									<div class="input-group custom-search-form">
+										<input id="search" name="q" type="text" class="form-control ui-autocomplete-input" placeholder="Search...">
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="submit">
+												<i class="fa fa-search"></i>
+											</button>
+										</span>
+									</div>
+								</form>
+							</li>
+							<li>
+								<a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+							</li>
+							<li>
+								<a href="/my-lists"><i class="fa fa-list fa-fw"></i> My Lists</a>
+							</li>
+							<li>
+								<a href="/browse"><i class="fa fa-bar-chart-o fa-fw"></i> Market Browser</a>
+							</li>
+							<li>
+								<a href="/import"><i class="fa fa-truck fa-fw"></i> Import Analysis</a>
+							</li>
+							<li>
+								<a href="/station-trade"><i class="fa fa-exchange fa-fw"></i> Station Trading</a>
+							</li>
+							<li>
+								<a href="#"><i class="fa fa-line-chart fa-fw"></i> Economic Reports<span class="fa arrow"></span></a>
+								<ul class="nav nav-second-level">
+									<li>
+										<a href="#">Regional Statistics<span class="fa arrow"></span></a>
+										<ul class="nav nav-third-level">
+											<li>
+												<a href="/economic-reports/regional-by-region">By Region</a>
+											</li>
+											<li>
+												<a href="/economic-reports/regional-by-statistic">By Statistic</a>
+											</li>
+											<li>
+												<a href="/economic-reports/regional-by-month">By Month</a>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<a href="/economic-reports/mined-produced-destroyed">Mined, Produced, Destroyed</a>
+									</li>
+									<li>
+										<a href="/economic-reports/velocity-of-isk">Velocity of Isk</a>
+									</li>
+									<li>
+										<a href="/economic-reports/money-supply">Money Supply</a>
+									</li>
+									<li>
+										<a href="/economic-reports/isk-faucets-sinks">Isk Faucets &amp; Sinks</a>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a href="/kill-dump"><i class="fa fa-paper-plane-o fa-fw"></i> Kill Dump</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+			<div id="page-wrapper">
+{% block content %}{% endblock %}
+			</div>
+			<footer class="footer">
+				<p class="text-muted">EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. CCP hf. has granted permission to this website to use EVE Online and all associated logos and designs for promotional and information purposes on the website but does not endorse, and is not in any way affiliated with, this website. CCP is in no way responsible for the content on or functioning of this website, nor can it be liable for any damage arising from the use of this website.</p>
+			</footer>
+		</div>
+	</body>
+</html>

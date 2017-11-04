@@ -1,0 +1,16 @@
+{% extends "base.phtml" %}
+{% block title %}Market Browser{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header">Search Results: {{query}} ({{count}} found)</h3>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+{% for result in data %}
+		<p><a href="/browse?type={{result.typeID}}">{{result.typeName}}</a></p>
+{% endfor %}
+	</div>
+</div>
+{% endblock %}
