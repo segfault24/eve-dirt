@@ -1,14 +1,33 @@
 #!/bin/sh
 
-# clean old deploy
+cd `dirname "$0"`
+base=`pwd`
+
+# clean old builds
 rm -rf deploy
 
 # build EveTools
+cd $base/src/EveTools
+ant clean package
 
+# build frontend
+cd $base/src/Frontend
+composer install
 
-# build Frontend
+# setup deploy directory
+cd $base
+mkdir -p deploy
+mkdir -p deploy/bin
+mkdir -p deploy/config
+mkdir -p deploy/lib
+mkdir -p deploy/sql
+mkdir -p deploy/www
 
-
-# move www, config, scripts, MERs
-
+# copy everything in
+cp scripts/* deploy/bin/
+cp config/* deploy/config/
+cp sql/* deploy/sql/
+cp src/lib/* deploy/lib/
+cp src/EveTools/build/jar/*.jar deploy/lib/
+cp -R src/Frontend/* deploy/www/
 
