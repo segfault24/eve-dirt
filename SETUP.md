@@ -15,10 +15,14 @@ root shell
 	chown dirt:dirt /srv/dirt
 	chmod 775 /srv/dirt
 
-unpack tar into /srv/dirt
+move tar into /srv/dirt
+	cd /srv/dirt
+	tar xzvf eve-dirt.tar.gz
 
 
 ### MySQL
+mysql -u yourusername -p eve < invTypes.sql
+
 run bin/fetchLatestSde.sh
 CREATE DATABASE IF NOT EXISTS `eve`;
 USE `eve`;
@@ -31,7 +35,7 @@ process MER csv files
 ##
   setup SSO application
 
-## 
+##
   update db config file
 
 
