@@ -31,3 +31,6 @@ cp src/lib/* deploy/lib/
 cp src/EveTools/build/jar/*.jar deploy/lib/
 cp -R src/Frontend/* deploy/www/
 
+# tar it up
+cd deploy
+tar czvf eve-dirt.tar.gz *
