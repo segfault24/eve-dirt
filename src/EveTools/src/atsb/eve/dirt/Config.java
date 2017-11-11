@@ -13,11 +13,11 @@ public class Config {
 	private static Logger logger = Logger.getLogger(Config.class.toString());
 
 	private String dbDriver = "mysql";
-	private String dbHost = "127.0.0.1";
+	private String dbHost = "localhost";
 	private String dbPort = "3306";
 	private String dbName = "eve";
-	private String dbUser = "admin";
-	private String dbPass = "";
+	private String dbUser = "dirt.scraper";
+	private String dbPass = "password";
 	private String adminEmail = "root@localhost";
 	private int scraperAuthKeyId = -1;
 	private String ssoClientId = "";
@@ -34,7 +34,7 @@ public class Config {
 			FileInputStream fis = new FileInputStream(new File(configFilePath));
 			props.load(fis);
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "Failure when reading config properties, using defaults..", e);
+			logger.log(Level.WARNING, "Failure when reading config properties: " + e.getLocalizedMessage());
 		}
 
 		if (props.getProperty("dbdriver") != null)

@@ -2,12 +2,10 @@ package atsb.eve.dirt;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import is.ccp.tech.ApiClient;
 import is.ccp.tech.ApiException;
 import is.ccp.tech.esi.UniverseApi;
 import is.ccp.tech.esi.models.GetUniverseStructuresStructureIdOk;
@@ -17,9 +15,9 @@ import is.ccp.tech.esi.models.GetUniverseStructuresStructureIdOk;
  *
  * @author austin
  */
-public class PublicStructureScraper {
+public class PublicStructuresTask {
 
-	private static Logger logger = Logger.getLogger(PublicStructureScraper.class.toString());
+	private static Logger logger = Logger.getLogger(PublicStructuresTask.class.toString());
 
 	private static final String DELETE_SQL = "";
 	private static final String INSERT_SQL = "";
@@ -29,7 +27,7 @@ public class PublicStructureScraper {
 	private OAuthUser auth;
 	private UniverseApi uapi;
 
-	public PublicStructureScraper() throws Exception {
+	public PublicStructuresTask() throws Exception {
 		cfg = Config.getInstance();
 		uapi = new UniverseApi();
 		auth = OAuthUser.getApiAuth(Config.getInstance().getScraperAuthKeyId());
@@ -77,9 +75,9 @@ public class PublicStructureScraper {
 			logger.log(Level.WARNING, "This program needs no arguments, why did you supply " + args.length + "?");
 		}
 
-		PublicStructureScraper o;
+		PublicStructuresTask o;
 		try {
-			o = new PublicStructureScraper();
+			o = new PublicStructuresTask();
 			o.scrape();
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "Failed to initialize scraper", e);
