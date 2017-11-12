@@ -30,18 +30,19 @@ public class MarketHistoryTask implements Runnable {
 	private static final String INSERT_SQL = "INSERT INTO marketHistory (`typeId`,`regionId`,`date`,`highest`,`average`,`lowest`,`volume`,`orderCount`) VALUES (?,?,?,?,?,?,?,?)";
 
 	private int region;
+	private Config config;
 	private Connection con;
 
-	public MarketHistoryTask(int region) {
+	public MarketHistoryTask(Config cfg, int region) {
+		this.config = cfg;
 		this.region = region;
 	}
 
 	@Override
 	public void run() {
-		Config cfg = Config.getInstance();
 		try {
-			con = DriverManager.getConnection(cfg.getDbConnectionString(),
-					cfg.getDbUser(), cfg.getDbPass());
+			con = DriverManager.getConnection(config.getDbConnectionString(),
+					config.getDbUser(), config.getDbPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
@@ -107,11 +108,7 @@ public class MarketHistoryTask implements Runnable {
 			}
 		}
 
-		try {
-			con.close();
-		} catch (SQLException e) {
-			// do nothing
-		}
+		Utils.closeQuietly(con);
 	}
 
 	private List<Integer> getMarketableTypes() {
@@ -122,8 +119,8 @@ public class MarketHistoryTask implements Runnable {
 			while (rs.next()) {
 				typeIds.add(rs.getInt("typeId"));
 			}
-			rs.close();
-			stmt.close();
+			Utils.closeQuietly(rs);
+			Utils.closeQuietly(stmt);
 		} catch (SQLException e) {
 			logger.log(Level.WARNING,
 					"Failed to retrieve list of marketable types");
@@ -139,7 +136,7 @@ public class MarketHistoryTask implements Runnable {
 		while (true) {
 			try {
 				history = mapi.getMarketsRegionIdHistory(region, type,
-						"tranquility", Config.getInstance().getUserAgent(),
+						"tranquility", config.getUserAgent(),
 						null);
 				break;
 			} catch (ApiException e) {

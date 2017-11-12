@@ -280,6 +280,7 @@ GRANT SELECT ON eve.mapSolarSystems TO 'dirt.scraper'@'localhost';
 GRANT SELECT ON eve.staStations TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketOrder TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketHistory TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt.scraper'@'localhost';

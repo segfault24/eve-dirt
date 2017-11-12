@@ -3,88 +3,88 @@ package atsb.eve.dirt;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Config {
 
-	private static Config me = null;
 	private static Logger logger = Logger.getLogger(Config.class.toString());
 
-	private String dbDriver = "mysql";
-	private String dbHost = "localhost";
-	private String dbPort = "3306";
-	private String dbName = "eve";
-	private String dbUser = "dirt.scraper";
-	private String dbPass = "password";
-	private String adminEmail = "root@localhost";
-	private int scraperAuthKeyId = -1;
-	private String ssoClientId = "";
-	private String ssoSecretKey = "";
+	private String dbDriver;
+	private String dbHost;
+	private int dbPort;
 
-	private Config() {
+	private String dbName;
+	private String dbUser;
+	private String dbPass;
+
+	private String adminEmail;
+	private int scraperAuthKeyId;
+	private String ssoClientId;
+	private String ssoSecretKey;
+
+	private List<Integer> marketOrdersRegions;
+	private int marketOrdersPeriod;
+	private List<Integer> marketHistoryRegions;
+	private int marketHistoryPeriod;
+	private int publicStructuresPeriod;
+	private boolean publicStructuresPurge;
+
+	public Config() {
 		String configFilePath = System.getProperties().getProperty("config");
 		if (configFilePath == null) {
-			configFilePath = "../cfg/db.config";
+			configFilePath = "/srv/dirt/cfg/db.config";
 		}
 
 		Properties props = new Properties();
+		FileInputStream fis = null;
 		try {
-			FileInputStream fis = new FileInputStream(new File(configFilePath));
+			fis = new FileInputStream(new File(configFilePath));
 			props.load(fis);
 		} catch (IOException e) {
-			logger.log(Level.WARNING, "Failure when reading config properties: " + e.getLocalizedMessage());
+			logger.log(
+					Level.WARNING,
+					"Failure when reading config properties: "
+							+ e.getLocalizedMessage());
 		}
+		Utils.closeQuietly(fis);
 
-		if (props.getProperty("dbdriver") != null)
-			dbDriver = props.getProperty("dbdriver");
+		dbDriver = parseStrProp(props, "dbdriver", "mysql");
+		dbHost = parseStrProp(props, "dbhost", "localhost");
+		dbPort = parseIntProp(props, "dbport", 3306);
 
-		if (props.getProperty("dbhost") != null)
-			dbHost = props.getProperty("dbhost");
+		dbName = parseStrProp(props, "dbname", "eve");
+		dbUser = parseStrProp(props, "dbuser", "dirt.scraper");
+		dbPass = parseStrProp(props, "dbpass", "password");
 
-		if (props.getProperty("dbport") != null)
-			dbPort = props.getProperty("dbport");
+		adminEmail = parseStrProp(props, "adminemail", "root@localhost");
+		scraperAuthKeyId = parseIntProp(props, "scraperkeyid", 0);
+		ssoClientId = parseStrProp(props, "ssoclientid", "");
+		ssoSecretKey = parseStrProp(props, "ssosecretkey", "");
 
-		if (props.getProperty("dbname") != null)
-			dbName = props.getProperty("dbname");
-
-		if (props.getProperty("dbuser") != null)
-			dbUser = props.getProperty("dbuser");
-
-		if (props.getProperty("dbpass") != null)
-			dbPass = props.getProperty("dbpass");
-
-		if (props.getProperty("adminemail") != null)
-			adminEmail = props.getProperty("adminemail");
-
-		if (props.getProperty("scraperkeyid") != null)
-			scraperAuthKeyId = Integer.parseInt(props.getProperty("scraperkeyid"));
-
-		if (props.getProperty("ssoclientid") != null)
-			ssoClientId = props.getProperty("ssoclientid");
-
-		if (props.getProperty("ssosecretkey") != null)
-			ssoSecretKey = props.getProperty("ssosecretkey");
-	}
-
-	public static Config getInstance() {
-		if (me == null) {
-			return new Config();
-		} else {
-			return me;
-		}
+		marketOrdersRegions = parseIntListProp(props, "marketorders.regions");
+		marketOrdersPeriod = parseIntProp(props, "marketorders.period", 60);
+		marketHistoryRegions = parseIntListProp(props, "markethistory.regions");
+		marketHistoryPeriod = parseIntProp(props, "markethistory.period", 1440);
+		publicStructuresPeriod = parseIntProp(props, "publicstructures.period",
+				240);
+		publicStructuresPurge = parseBoolProp(props, "publicstructures.purge",
+				true);
 	}
 
 	public String getDbConnectionString() {
-		return "jdbc:" + dbDriver + "://" + dbHost + ":" + dbPort + "/" + dbName + "?useSSL=false";
+		return "jdbc:" + dbDriver + "://" + dbHost + ":" + dbPort + "/"
+				+ dbName + "?useSSL=false";
 	}
 
 	public String getDbHost() {
 		return dbHost;
 	}
 
-	public String getDbPort() {
+	public int getDbPort() {
 		return dbPort;
 	}
 
@@ -120,4 +120,94 @@ public class Config {
 		return ssoSecretKey;
 	}
 
+	public List<Integer> getMarketOrdersRegions() {
+		return marketOrdersRegions;
+	}
+
+	public int getMarketOrdersPeriod() {
+		return marketOrdersPeriod;
+	}
+
+	public List<Integer> getMarketHistoryRegions() {
+		return marketHistoryRegions;
+	}
+
+	public int getMarketHistoryPeriod() {
+		return marketHistoryPeriod;
+	}
+
+	public int getPublicStructuresPeriod() {
+		return publicStructuresPeriod;
+	}
+
+	public boolean getPublicStructuresPurge() {
+		return publicStructuresPurge;
+	}
+
+	// private helper functions
+
+	private static String parseStrProp(Properties props, String propName,
+			String _default) {
+		String tmp = props.getProperty(propName).trim();
+		if (tmp == null) {
+			logger.log(Level.CONFIG, "Using default " + propName + ": "
+					+ _default);
+			return _default;
+		}
+		return tmp;
+	}
+
+	private static int parseIntProp(Properties props, String propName,
+			int _default) {
+		String tmp = props.getProperty(propName);
+		if (tmp == null) {
+			logger.log(Level.CONFIG, "Using default " + propName + ": "
+					+ _default);
+			return _default;
+		}
+		try {
+			return Integer.parseInt(tmp.trim());
+		} catch (NumberFormatException e) {
+			logger.log(Level.WARNING, propName + " '" + tmp
+					+ "' is not a valid integer");
+			return _default;
+		}
+	}
+
+	private static List<Integer> parseIntListProp(Properties props,
+			String propName) {
+		String tmp = props.getProperty(propName);
+		List<Integer> values = new ArrayList<Integer>();
+		if (tmp == null) {
+			logger.log(Level.CONFIG, "No list for " + propName);
+			return values; // return an empty list
+		}
+		String[] tmps = tmp.split(",");
+		if (tmps.length == 1 && tmps[0] == "") {
+			// the property name is there, but no value is set
+			// have to catch this or it would generate a warning below
+		} else {
+			for (String s : tmps) {
+				try {
+					values.add(Integer.parseInt(s.trim()));
+				} catch (NumberFormatException e) {
+					logger.log(Level.WARNING, propName + " '" + s
+							+ "' is not a valid integer");
+				}
+			}
+		}
+		return values;
+	}
+
+	private static boolean parseBoolProp(Properties props, String propName,
+			boolean _default) {
+		String tmp = props.getProperty(propName);
+		if (tmp == null) {
+			logger.log(Level.CONFIG, "Using default " + propName + ": "
+					+ _default);
+			return _default;
+		} else {
+			return Boolean.parseBoolean(tmp.trim());
+		}
+	}
 }

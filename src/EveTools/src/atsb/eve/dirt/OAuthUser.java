@@ -18,23 +18,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
+ * 
+ * 
  * @author austin
  */
 public class OAuthUser {
 
 	private static final int EXPIRES_WITHIN = 5000; // milliseconds
 
+	private Config config;
+
 	private int keyId = -1;
 
 	private String authToken;
+	private String tokenType;
 	private Timestamp tokenExpires;
 	private String refreshToken;
 
-	private OAuthUser() {
+	private OAuthUser(Config cfg) {
+		this.config = cfg;
 	}
 
-	public static OAuthUser getApiAuth(int keyId) throws Exception {
-		OAuthUser oau = new OAuthUser();
+	public static OAuthUser getApiAuth(Config cfg, int keyId) throws Exception {
+		OAuthUser oau = new OAuthUser(cfg);
 		oau.loadFromSql(keyId);
 		return oau;
 	}
@@ -50,46 +56,49 @@ public class OAuthUser {
 	private void loadFromSql(int keyId) throws Exception {
 		String SELECT_SQL = "SELECT `token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
 
-		Config cfg = Config.getInstance();
-		Connection con = DriverManager.getConnection(cfg.getDbConnectionString(), cfg.getDbUser(), cfg.getDbPass());
+		Connection con = DriverManager.getConnection(
+				config.getDbConnectionString(), config.getDbUser(),
+				config.getDbPass());
 		PreparedStatement stmt = con.prepareStatement(SELECT_SQL);
 		stmt.setInt(1, keyId);
 		ResultSet rs = stmt.executeQuery();
 
 		if (rs.next()) {
-			authToken = rs.getString("token");
-			tokenExpires = rs.getTimestamp("expires");
-			refreshToken = rs.getString("refresh");
 			this.keyId = keyId;
+			this.authToken = rs.getString("token");
+			this.tokenExpires = rs.getTimestamp("expires");
+			this.refreshToken = rs.getString("refresh");
 		} else {
-			rs.close();
-			stmt.close();
-			con.close();
-			throw new Exception("key not found");
+			this.keyId = -1;
 		}
 
-		rs.close();
-		stmt.close();
-		con.close();
+		Utils.closeQuietly(rs);
+		Utils.closeQuietly(stmt);
+		Utils.closeQuietly(con);
+
+		if (this.keyId == -1) {
+			throw new Exception("key not found");
+		}
 	}
 
 	private boolean checkExpired() {
-		return tokenExpires.before(new Timestamp(System.currentTimeMillis() + EXPIRES_WITHIN));
+		return tokenExpires.before(new Timestamp(System.currentTimeMillis()
+				+ EXPIRES_WITHIN));
 	}
 
 	private void doRefresh() throws Exception {
 
-		Config cfg = Config.getInstance();
-
 		URL url = new URL("https://login.eveonline.com/oauth/token");
-		String creds = cfg.getSSOClientId() + ":" + cfg.getSSOSecretKey();
-		String auth = "Basic " + new String(Base64.getEncoder().encode(creds.getBytes()));
+		String creds = config.getSSOClientId() + ":" + config.getSSOSecretKey();
+		String auth = "Basic "
+				+ new String(Base64.getEncoder().encode(creds.getBytes()));
 		String data = "grant_type=refresh_token&refresh_token=" + refreshToken;
 
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setRequestMethod("POST");
 		con.setRequestProperty("Authorization", auth);
-		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		con.setRequestProperty("Content-Type",
+				"application/x-www-form-urlencoded");
 		con.setRequestProperty("Content-Length", String.valueOf(data.length()));
 		con.setRequestProperty("Host", "login.eveonline.com");
 		con.setDoOutput(true);
@@ -102,8 +111,9 @@ public class OAuthUser {
 		if (con.getResponseCode() == 200) {
 			is = con.getInputStream();
 		} else {
-			throw new Exception(
-					"Failed to do refresh (" + con.getResponseCode() + " " + con.getResponseMessage() + ")");
+			throw new Exception("Failed to do refresh ("
+					+ con.getResponseCode() + " " + con.getResponseMessage()
+					+ ")");
 		}
 
 		DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
@@ -117,15 +127,18 @@ public class OAuthUser {
 		RefreshData rd = gson.fromJson(rsp, RefreshData.class);
 
 		this.authToken = rd.access_token;
+		this.tokenType = rd.token_type;
 		this.refreshToken = rd.refresh_token;
-		this.tokenExpires = new Timestamp(System.currentTimeMillis() + Long.valueOf(rd.expires_in)*1000);
+		this.tokenExpires = new Timestamp(System.currentTimeMillis()
+				+ Long.valueOf(rd.expires_in) * 1000);
 	}
 
 	private void updateSql() throws SQLException {
 		String UPDATE_SQL = "UPDATE dirtApiAuth SET `token`=?, `expires`=?, `refresh`=? WHERE `keyId`=?;";
 
-		Config cfg = Config.getInstance();
-		Connection con = DriverManager.getConnection(cfg.getDbConnectionString(), cfg.getDbUser(), cfg.getDbPass());
+		Connection con = DriverManager.getConnection(
+				config.getDbConnectionString(), config.getDbUser(),
+				config.getDbPass());
 		PreparedStatement stmt = con.prepareStatement(UPDATE_SQL);
 		stmt.setString(1, authToken);
 		stmt.setTimestamp(2, tokenExpires);
@@ -133,8 +146,8 @@ public class OAuthUser {
 		stmt.setInt(4, keyId);
 		stmt.execute();
 
-		stmt.close();
-		con.close();
+		Utils.closeQuietly(stmt);
+		Utils.closeQuietly(con);
 	}
 
 	private class RefreshData {
@@ -142,21 +155,6 @@ public class OAuthUser {
 		public String token_type;
 		public String expires_in;
 		public String refresh_token;
-	}
-
-	public static void main(String[] args) {
-		try {
-			OAuthUser o = OAuthUser.getApiAuth(1);
-			System.out.println(o.authToken);
-			System.out.println(o.refreshToken);
-			System.out.println(o.tokenExpires);
-			o.getAuthToken();
-			System.out.println(o.authToken);
-			System.out.println(o.refreshToken);
-			System.out.println(o.tokenExpires);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 }

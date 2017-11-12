@@ -33,19 +33,20 @@ public class PublicMarketOrdersTask implements Runnable {
 			+ ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 	private int region;
+	private Config config;
 	private Connection con;
 
-	public PublicMarketOrdersTask(int region) {
+	public PublicMarketOrdersTask(Config cfg, int region) {
+		this.config = cfg;
 		this.region = region;
 	}
 
 	@Override
 	public void run() {
 
-		Config cfg = Config.getInstance();
 		try {
-			con = DriverManager.getConnection(cfg.getDbConnectionString(),
-					cfg.getDbUser(), cfg.getDbPass());
+			con = DriverManager.getConnection(config.getDbConnectionString(),
+					config.getDbUser(), config.getDbPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
@@ -64,7 +65,7 @@ public class PublicMarketOrdersTask implements Runnable {
 			PreparedStatement stmt = con.prepareStatement(DELETE_SQL);
 			stmt.setInt(1, region);
 			stmt.execute();
-			stmt.close();
+			Utils.closeQuietly(stmt);
 
 			stmt = con.prepareStatement(INSERT_SQL);
 			int count = 0;
@@ -106,24 +107,13 @@ public class PublicMarketOrdersTask implements Runnable {
 					"Unexpected failure while processing region " + region);
 		}
 
-		try {
-			con.close();
-		} catch (SQLException e) {
-			// do nothing
-		}
+		Utils.closeQuietly(con);
 	}
 
 	private List<GetMarketsRegionIdOrders200Ok> getPublicOrders(int region) {
-		MarketApi mapi;
+		MarketApi mapi = new MarketApi(new ApiClient());
 		boolean done = false;
 		List<GetMarketsRegionIdOrders200Ok> allOrders = new ArrayList<GetMarketsRegionIdOrders200Ok>();
-
-		try {
-			mapi = new MarketApi(new ApiClient());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return allOrders;
-		}
 
 		int page = 1;
 		int retry = 0;
@@ -131,8 +121,7 @@ public class PublicMarketOrdersTask implements Runnable {
 			List<GetMarketsRegionIdOrders200Ok> orders;
 			try {
 				orders = mapi.getMarketsRegionIdOrders("all", region,
-						"tranquility", page, null, Config.getInstance()
-								.getUserAgent(), null);
+						"tranquility", page, null, config.getUserAgent(), null);
 				if (orders.isEmpty()) {
 					break;
 				}

@@ -14,17 +14,28 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 	}
 
 	public static void main(String[] args) {
-		DirtTaskDaemon daemon = new DirtTaskDaemon(4);
+		DirtTaskDaemon daemon = new DirtTaskDaemon(8);
+		Config cfg = new Config();
 
-		int[] regionIds = { 10000002, 10000043, 10000032, 10000030, 10000042,
-				10000039, 10000059, 10000014, 10000022, 10000031, 10000056 };
-		for (int regionId : regionIds) {
-			daemon.addTask(new PublicMarketOrdersTask(regionId), 60);
-			daemon.addTask(new MarketHistoryTask(regionId), 60*24);
+		for (int regionId : cfg.getMarketOrdersRegions()) {
+			daemon.addTask(new PublicMarketOrdersTask(cfg, regionId),
+					cfg.getMarketOrdersPeriod());
 		}
 
-		// daemon.addTask(new CharacterOrdersTask(characterId), 60);
-		// daemon.addTask(new CharacterContractsTask(characterId), 5);
-	}
+		for (int regionId : cfg.getMarketHistoryRegions()) {
+			daemon.addTask(new MarketHistoryTask(cfg, regionId),
+					cfg.getMarketHistoryPeriod());
+		}
 
+		daemon.addTask(new PublicStructuresTask(cfg, cfg.getScraperAuthKeyId(),
+				cfg.getPublicStructuresPurge()), cfg
+				.getPublicStructuresPeriod());
+		
+		//new PublicStructuresTask(cfg, cfg.getScraperAuthKeyId(),
+		//		cfg.getPublicStructuresPurge()).run();
+
+		// daemon.addTask(new CharacterOrdersTask(cfg, characterId), 60);
+		// daemon.addTask(new CharacterContractsTask(cfg, characterId), 5);
+		
+	}
 }

@@ -9,7 +9,7 @@ Prerequisites: *openjdk*, *ant*, *ivy*, and *composer*
 ## Installing
 1. Install Apache, MySQL, and PHP. There are a million different guides out there for all different operating systems and distributions. This guide only covers *nix systems, specifically Debian and FreeBSD.
     ```bash
-    apt-get install apache2 mysql-server mysql-client php php-mysql php-pear
+    apt-get install apache2 mysql-server mysql-client php php-mysql php-curl php-pear
     a2enmod rewrite deflate
     mysql_secure_installation
     ```
@@ -20,15 +20,12 @@ Prerequisites: *openjdk*, *ant*, *ivy*, and *composer*
     passwd dirt
     usermod -G dirt www-data # add the apache user to the dirt group (mine was running as www-data)
     ```
-    ```bash
-    mkdir -p /srv/dirt
-    chown -R dirt:dirt /srv/dirt
-    chmod 775 /srv/dirt
-    ```
 
 3. Unpack archive into directory
     ```bash
+    mkdir -p -m 775 /srv/dirt
     tar xzf eve-dirt.tar.gz -C /srv/dirt
+    mkdir -p -m 775 /srv/dirt/www/logs
     chown -R dirt:dirt /srv/dirt
     ```
 
@@ -77,7 +74,7 @@ Prerequisites: *openjdk*, *ant*, *ivy*, and *composer*
         ```
     6. Enter the call back URL (ex. https://localhost/sso-auth/callback)
     7. **Create Application**
-    8. Copy the Client ID and Secret Key into *cfg/db.config* and *www/src/Site.php*
+    8. Copy the Client ID and Secret Key into *cfg/db.config* and *www/classes/Site.php*
 
 8. Configure cron (sudo crontab -u dirt -e)
     * See *cfg/example.cron* for reference
