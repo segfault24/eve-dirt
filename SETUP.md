@@ -49,15 +49,16 @@ Prerequisites: *openjdk*, *ant*, *ivy*, and *composer*
 5. Setup database and admin account from a privileged SQL prompt
     ```sql
     CREATE DATABASE eve;
-    CREATE USER 'dirt.admin' @ 'localhost' IDENTIFIED BY 'pickapassword';
-    GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin' @ 'localhost' WITH GRANT OPTION;
+    CREATE USER 'dirt.admin'@'localhost' IDENTIFIED BY 'pickapassword';
+    GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin'@'localhost' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
     ```
 
 6. Load the tables
     ```bash
-    mysql -u 'dirt.admin' -p eve < invTypes.sql
+    mysql -u root -p eve < invTypes.sql
     ....
-    mysql -u 'dirt.admin' -p eve < dirt.sql
+    mysql -u root -p eve < dirt.sql
     ```
 
 7. Setup SSO application

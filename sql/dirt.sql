@@ -10,7 +10,6 @@
 -- additionally, indices will typically be defined in px, fx, ux, ix order
 -- -----------------------------------------------------------------------------
 
-CREATE DATABASE IF NOT EXISTS `eve`;
 USE `eve`;
 
 -- -----------------------------------------------------------------------------
@@ -20,6 +19,11 @@ ALTER TABLE `invTypes`
 	ADD KEY `ix_invTypes_marketGroupID` (`marketGroupID`);
 
 -- -----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `alliance`;
+DROP TABLE IF EXISTS `corporation`;
+DROP TABLE IF EXISTS `character`;
+DROP TABLE IF EXISTS `structure`;
 
 CREATE TABLE `alliance` (
 	`allianceId` INT,
@@ -68,6 +72,11 @@ CREATE TABLE `structure` (
 
 -- -----------------------------------------------------------------------------
 
+DROP TABLE IF EXISTS `dirtListItem`;
+DROP TABLE IF EXISTS `dirtList`;
+DROP TABLE IF EXISTS `dirtApiAuth`;
+DROP TABLE IF EXISTS `dirtUser`;
+
 CREATE TABLE `dirtUser` (
 	`userId` INT AUTO_INCREMENT,
 	`username` VARCHAR(64) NOT NULL,
@@ -110,7 +119,7 @@ CREATE TABLE `dirtApiAuth` (
 	`keyId` INT AUTO_INCREMENT,
 	`userId` INT NOT NULL,
 	`charId` INT NOT NULL,
-    `charName` VARCHAR(255),
+	`charName` VARCHAR(255),
 	`charHash` VARCHAR(255),
 	`token` VARCHAR(255),
 	`expires` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -122,6 +131,9 @@ CREATE TABLE `dirtApiAuth` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `marketHistory`;
+DROP TABLE IF EXISTS `marketOrder`;
 
 CREATE TABLE `marketHistory` (
 	`histEntryId` BIGINT AUTO_INCREMENT,
@@ -161,6 +173,12 @@ CREATE TABLE `marketOrder` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `merIskVolume`;
+DROP TABLE IF EXISTS `merMoneySupply`;
+DROP TABLE IF EXISTS `merProdDestMine`;
+DROP TABLE IF EXISTS `merRegStat`;
+DROP TABLE IF EXISTS `merSinkFaucet`;
 
 CREATE TABLE `merIskVolume` (
 	`date` DATE NOT NULL,
@@ -218,10 +236,17 @@ CREATE TABLE `merSinkFaucet` (
 
 -- -----------------------------------------------------------------------------
 
+DROP VIEW IF EXISTS `vJitaBestSell`;
+DROP VIEW IF EXISTS `vAmarrBestSell`;
+
 CREATE VIEW vJitaBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=60003760 AND isBuyOrder=0 GROUP BY typeId, locationId;
 CREATE VIEW vAmarrBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=60008494 AND isBuyOrder=0 GROUP BY typeId, locationId;
 
 -- -----------------------------------------------------------------------------
+
+DROP USER IF EXISTS 'dirt.web'@'localhost';
+DROP USER IF EXISTS 'dirt.scraper'@'localhost';
+DROP USER IF EXISTS 'dirt.merloader'@'localhost';
 
 -- web server
 CREATE USER 'dirt.web'@'localhost' IDENTIFIED BY 'password';
