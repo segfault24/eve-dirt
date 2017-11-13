@@ -5,37 +5,42 @@ import java.util.concurrent.TimeUnit;
 
 public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
-	public DirtTaskDaemon(int poolSize) {
-		super(poolSize);
-	}
+	private Config cfg;
 
-	public void addTask(Runnable r, long period) {
-		scheduleAtFixedRate(r, 0, period, TimeUnit.MINUTES);
-	}
-
-	public static void main(String[] args) {
-		DirtTaskDaemon daemon = new DirtTaskDaemon(8);
-		Config cfg = new Config();
+	public DirtTaskDaemon() {
+		super(1);
+		cfg = new Config();
+		setCorePoolSize(cfg.getNumThreads());
 
 		for (int regionId : cfg.getMarketOrdersRegions()) {
-			daemon.addTask(new PublicMarketOrdersTask(cfg, regionId),
+			addPeriodicTask(new PublicMarketOrdersTask(cfg, regionId),
 					cfg.getMarketOrdersPeriod());
 		}
 
 		for (int regionId : cfg.getMarketHistoryRegions()) {
-			daemon.addTask(new MarketHistoryTask(cfg, regionId),
+			addPeriodicTask(new MarketHistoryTask(cfg, regionId),
 					cfg.getMarketHistoryPeriod());
 		}
 
-		daemon.addTask(new PublicStructuresTask(cfg, cfg.getScraperAuthKeyId(),
-				cfg.getPublicStructuresPurge()), cfg
-				.getPublicStructuresPeriod());
-		
-		//new PublicStructuresTask(cfg, cfg.getScraperAuthKeyId(),
-		//		cfg.getPublicStructuresPurge()).run();
+		addPeriodicTask(new PublicStructuresTask(cfg),
+				cfg.getPublicStructuresPeriod());
 
-		// daemon.addTask(new CharacterOrdersTask(cfg, characterId), 60);
-		// daemon.addTask(new CharacterContractsTask(cfg, characterId), 5);
-		
+		addPeriodicTask(new InsurancePricesTask(cfg),
+				cfg.getInsurancePricesPeriod());
+
+		/*addPeriodicTask(new MetaCharacterTask(this, cfg),
+				cfg.getCharacterDataPeriod());*/
+	}
+
+	protected void addSingleTask(Runnable r) {
+		this.schedule(r, 0, TimeUnit.MINUTES);
+	}
+
+	protected void addPeriodicTask(Runnable r, long period) {
+		scheduleWithFixedDelay(r, 0, period, TimeUnit.MINUTES);
+	}
+
+	public static void main(String[] args) {
+		new DirtTaskDaemon();
 	}
 }

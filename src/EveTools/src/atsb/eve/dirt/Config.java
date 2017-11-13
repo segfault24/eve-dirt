@@ -13,6 +13,8 @@ public class Config {
 
 	private static Logger logger = Logger.getLogger(Config.class.toString());
 
+	private int numThreads;
+
 	private String dbDriver;
 	private String dbHost;
 	private int dbPort;
@@ -30,8 +32,11 @@ public class Config {
 	private int marketOrdersPeriod;
 	private List<Integer> marketHistoryRegions;
 	private int marketHistoryPeriod;
+
 	private int publicStructuresPeriod;
-	private boolean publicStructuresPurge;
+	private int insurancePricesPeriod;
+	private int characterDataPeriod;
+	private int characterDataExpires;
 
 	public Config() {
 		String configFilePath = System.getProperties().getProperty("config");
@@ -52,6 +57,8 @@ public class Config {
 		}
 		Utils.closeQuietly(fis);
 
+		numThreads = parseIntProp(props, "threads", 1);
+
 		dbDriver = parseStrProp(props, "dbdriver", "mysql");
 		dbHost = parseStrProp(props, "dbhost", "localhost");
 		dbPort = parseIntProp(props, "dbport", 3306);
@@ -69,10 +76,17 @@ public class Config {
 		marketOrdersPeriod = parseIntProp(props, "marketorders.period", 60);
 		marketHistoryRegions = parseIntListProp(props, "markethistory.regions");
 		marketHistoryPeriod = parseIntProp(props, "markethistory.period", 1440);
+
 		publicStructuresPeriod = parseIntProp(props, "publicstructures.period",
+				1440);
+		insurancePricesPeriod = parseIntProp(props, "insuranceprices.period",
 				240);
-		publicStructuresPurge = parseBoolProp(props, "publicstructures.purge",
-				true);
+		characterDataPeriod = parseIntProp(props, "characterdata.period", 15);
+		characterDataExpires = parseIntProp(props, "characterdata.expires", 60);
+	}
+
+	public int getNumThreads() {
+		return numThreads;
 	}
 
 	public String getDbConnectionString() {
@@ -140,8 +154,16 @@ public class Config {
 		return publicStructuresPeriod;
 	}
 
-	public boolean getPublicStructuresPurge() {
-		return publicStructuresPurge;
+	public int getInsurancePricesPeriod() {
+		return insurancePricesPeriod;
+	}
+
+	public int getCharacterDataPeriod() {
+		return characterDataPeriod;
+	}
+
+	public int getCharacterDataExpires() {
+		return characterDataExpires;
 	}
 
 	// private helper functions

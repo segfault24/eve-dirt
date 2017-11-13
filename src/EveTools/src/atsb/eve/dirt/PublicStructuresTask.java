@@ -1,8 +1,10 @@
 package atsb.eve.dirt;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,21 +24,23 @@ public class PublicStructuresTask implements Runnable {
 	private static Logger logger = Logger.getLogger(PublicStructuresTask.class
 			.toString());
 
-	private static final String DELETE_SQL = "";
-	private static final String INSERT_SQL = "";
+	private static final String INSERT_SQL = "INSERT INTO structure ("
+			+ "`structId`,`structName`,`systemId`,`typeId`"
+			+ ") VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE "
+			+ "`structName`=VALUES(`structName`),"
+			+ "`systemId`=VALUES(`systemId`),"
+			+ "`typeId`=VALUES(`typeId`)";
 
 	private Config config;
 	private int keyId;
-	private boolean purge;
 
 	private Connection con;
 	private UniverseApi uapi;
 	private OAuthUser auth;
 
-	public PublicStructuresTask(Config cfg, int keyId, boolean purge) {
+	public PublicStructuresTask(Config cfg) {
 		this.config = cfg;
-		this.keyId = keyId;
-		this.purge = purge;
+		this.keyId = cfg.getScraperAuthKeyId();
 	}
 
 	@Override
@@ -67,21 +71,32 @@ public class PublicStructuresTask implements Runnable {
 		logger.log(Level.INFO, "Retrieved " + structIds.size()
 				+ " public structute ids");
 
-		for (Long structId : structIds) {
-			try {
-				GetUniverseStructuresStructureIdOk struct = getPublicStructure(structId);
-				logger.log(Level.INFO, structId + " : " + struct.getName());
-			} catch (ApiException e) {
-				if (e.getCode() != 401) {
+		int count = 0;
+		try {
+			PreparedStatement stmt = con.prepareStatement(INSERT_SQL);
+			for (Long structId : structIds) {
+				try {
+					GetUniverseStructuresStructureIdOk info = getPublicStructure(structId);
+					
+					stmt.setLong(1, structId);
+					stmt.setString(2, info.getName());
+					stmt.setInt(3, info.getSolarSystemId());
+					stmt.setInt(4, info.getTypeId());
+					stmt.execute();
+					
+					count++;
+				} catch (Exception e) {
 					logger.log(
 							Level.WARNING,
-							"Failed to retrieve info for structure " + structId,
-							e);
+							"Failed to retrieve info for structure " + structId + ": " + e.getLocalizedMessage());
 				}
-			} catch (Exception e) {
-				logger.log(Level.WARNING, "", e);
 			}
+		} catch (SQLException e) {
+			logger.log(Level.WARNING,
+					"Unexpected failure while processing public structures", e);
 		}
+
+		logger.log(Level.INFO, "Inserted " + count + " public structure records");
 
 		Utils.closeQuietly(con);
 	}
@@ -99,8 +114,9 @@ public class PublicStructuresTask implements Runnable {
 	}
 
 	private GetUniverseStructuresStructureIdOk getPublicStructure(Long structId)
-			throws Exception {
+			throws ApiException, DirtAuthException, SQLException, IOException {
 		return uapi.getUniverseStructuresStructureId(structId, "tranquility",
 				auth.getAuthToken(), config.getUserAgent(), null);
 	}
+
 }

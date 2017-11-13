@@ -2,9 +2,11 @@ package atsb.eve.dirt;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,7 +47,7 @@ public class OAuthUser {
 		return oau;
 	}
 
-	public String getAuthToken() throws Exception {
+	public String getAuthToken() throws SQLException, DirtAuthException, IOException {
 		if (checkExpired()) {
 			doRefresh();
 			updateSql();
@@ -53,7 +55,7 @@ public class OAuthUser {
 		return authToken;
 	}
 
-	private void loadFromSql(int keyId) throws Exception {
+	private void loadFromSql(int keyId) throws SQLException, DirtAuthException {
 		String SELECT_SQL = "SELECT `token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
 
 		Connection con = DriverManager.getConnection(
@@ -77,7 +79,7 @@ public class OAuthUser {
 		Utils.closeQuietly(con);
 
 		if (this.keyId == -1) {
-			throw new Exception("key not found");
+			throw new DirtAuthException("key not found");
 		}
 	}
 
@@ -86,7 +88,7 @@ public class OAuthUser {
 				+ EXPIRES_WITHIN));
 	}
 
-	private void doRefresh() throws Exception {
+	private void doRefresh() throws DirtAuthException, IOException {
 
 		URL url = new URL("https://login.eveonline.com/oauth/token");
 		String creds = config.getSSOClientId() + ":" + config.getSSOSecretKey();
@@ -111,7 +113,7 @@ public class OAuthUser {
 		if (con.getResponseCode() == 200) {
 			is = con.getInputStream();
 		} else {
-			throw new Exception("Failed to do refresh ("
+			throw new DirtAuthException("Failed to do refresh ("
 					+ con.getResponseCode() + " " + con.getResponseMessage()
 					+ ")");
 		}

@@ -11,15 +11,17 @@ import java.util.logging.Logger;
  * 
  * @author austin
  */
-public class CharacterContractsTask implements Runnable {
+public class MetaCharacterTask implements Runnable {
 
 	private static Logger logger = Logger
-			.getLogger(CharacterContractsTask.class.toString());
+			.getLogger(MetaCharacterTask.class.toString());
 
+	private DirtTaskDaemon daemon;
 	private Config config;
 	private Connection con;
 
-	public CharacterContractsTask(Config cfg) {
+	public MetaCharacterTask(DirtTaskDaemon daemon, Config cfg) {
+		this.daemon = daemon;
 		this.config = cfg;
 	}
 
@@ -34,7 +36,9 @@ public class CharacterContractsTask implements Runnable {
 			return;
 		}
 
-		// do work here
+		// get all characters that need refresh
+		// generate new task for each char that need refresh
+		//daemon.addSingleTask(new CharacterTask(config));
 
 		Utils.closeQuietly(con);
 	}

@@ -61,12 +61,11 @@ CREATE TABLE `character` (
 CREATE TABLE `structure` (
 	`structId` BIGINT,
 	`structName` VARCHAR(64),
-	`corpId` INT NOT NULL,
+	`corpId` INT,
 	`systemId` INT NOT NULL,
-	`regionId` INT NOT NULL,
 	`typeId` INT NOT NULL,
 	PRIMARY KEY (`structId`),
-	KEY `ix_structure_regionId` (`regionId`),
+	KEY `ix_structure_systemId` (`systemId`),
 	KEY `ix_structure_corpId` (`corpId`)
 ) ENGINE=InnoDb DEFAULT CHARSET=utf8;
 
@@ -134,6 +133,7 @@ CREATE TABLE `dirtApiAuth` (
 
 DROP TABLE IF EXISTS `marketHistory`;
 DROP TABLE IF EXISTS `marketOrder`;
+DROP TABLE IF EXISTS `insurancePrice`;
 
 CREATE TABLE `marketHistory` (
 	`histEntryId` BIGINT AUTO_INCREMENT,
@@ -170,6 +170,18 @@ CREATE TABLE `marketOrder` (
 	UNIQUE KEY `ux_marketOrder_orderId_retrieved` (`orderId`, `retrieved`),
 	KEY `ix_marketOrder_typeId_regionId` (`typeId`, `regionId`),
 	KEY `ix_marketOrder_locationId` (`locationId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `insurancePrice` (
+	`insuranceEntryId` BIGINT AUTO_INCREMENT,
+	`typeId` INT NOT NULL,
+	`name` VARCHAR(255) NOT NULL,
+	`cost` DECIMAL(19, 4),
+	`payout` DECIMAL(19, 4),
+	PRIMARY KEY (`insuranceEntryId`),
+	UNIQUE KEY (`typeId`, `name`),
+	FOREIGN KEY (`typeId`)
+		REFERENCES `invTypes` (`typeID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------
@@ -257,6 +269,7 @@ GRANT SELECT ON eve.mapSolarSystems TO 'dirt.web'@'localhost';
 GRANT SELECT ON eve.staStations TO 'dirt.web'@'localhost';
 GRANT SELECT ON eve.marketOrder TO 'dirt.web'@'localhost';
 GRANT SELECT ON eve.marketHistory TO 'dirt.web'@'localhost';
+GRANT SELECT ON eve.insurancePrice TO 'dirt.web'@'localhost';
 GRANT SELECT ON eve.merSinkFaucet TO 'dirt.web'@'localhost';
 GRANT SELECT ON eve.merMoneySupply TO 'dirt.web'@'localhost';
 GRANT SELECT ON eve.merIskVolume TO 'dirt.web'@'localhost';
@@ -280,6 +293,7 @@ GRANT SELECT ON eve.mapSolarSystems TO 'dirt.scraper'@'localhost';
 GRANT SELECT ON eve.staStations TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketOrder TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketHistory TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE,DROP ON eve.insurancePrice TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.scraper'@'localhost';
