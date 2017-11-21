@@ -299,14 +299,13 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt.scraper'@'localhost';
 GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merSinkFaucet TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merMoneySupply TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merIskVolume TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merRegStat TO 'dirt.scraper'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merProdDestMine TO 'dirt.scraper'@'localhost';
 
--- mer loader
-CREATE USER 'dirt.merloader'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merSinkFaucet TO 'dirt.merloader'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merMoneySupply TO 'dirt.merloader'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merIskVolume TO 'dirt.merloader'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merRegStat TO 'dirt.merloader'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merProdDestMine TO 'dirt.merloader'@'localhost';
+FLUSH PRIVILEGES;
 
 -- -----------------------------------------------------------------------------
 
