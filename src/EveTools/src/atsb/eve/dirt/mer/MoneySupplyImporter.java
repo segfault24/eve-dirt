@@ -13,16 +13,16 @@ import java.util.logging.Logger;
 import atsb.eve.dirt.Config;
 import atsb.eve.dirt.Utils;
 
-public class IskVolumeImporter {
+public class MoneySupplyImporter {
 
-	private static Logger logger = Logger.getLogger(IskVolumeImporter.class
+	private static Logger logger = Logger.getLogger(MoneySupplyImporter.class
 			.toString());
 
-	private static final String INSERT_SQL = "INSERT INTO merIskVolume (`date`,`iskVolume`) VALUES (?,?) ON DUPLICATE KEY UPDATE `iskVolume`=VALUES(`iskVolume`)";
+	private static final String INSERT_SQL = "INSERT INTO merMoneySupply (`date`,`character`,`corporation`,`total`) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE `date`=`date`";
 
 	private Config config;
 
-	public IskVolumeImporter() {
+	public MoneySupplyImporter() {
 		this.config = new Config();
 	}
 
@@ -49,6 +49,8 @@ public class IskVolumeImporter {
 					stmt.setTimestamp(1, new Timestamp(csv.getDate(0)
 							.getMillis()));
 					stmt.setLong(2, csv.getDouble(1).longValue());
+					stmt.setLong(3, csv.getDouble(2).longValue());
+					stmt.setLong(4, csv.getDouble(3).longValue());
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE,
 							"bad number spec:" + e.getLocalizedMessage());
@@ -62,10 +64,10 @@ public class IskVolumeImporter {
 
 			con.commit();
 			con.setAutoCommit(true);
-			logger.log(Level.INFO, "Inserted " + count + " isk volume records");
+			logger.log(Level.INFO, "Inserted " + count + " money supply records");
 		} catch (SQLException e) {
 			logger.log(Level.WARNING,
-					"Unexpected failure while processing isk volume records", e);
+					"Unexpected failure while processing money supply records", e);
 		}
 
 		Utils.closeQuietly(con);
@@ -78,9 +80,9 @@ public class IskVolumeImporter {
 			return;
 		}
 
-		IskVolumeImporter ivi = new IskVolumeImporter();
+		MoneySupplyImporter msi = new MoneySupplyImporter();
 		try {
-			ivi.doImport(args[0]);
+			msi.doImport(args[0]);
 		} catch (FileNotFoundException e) {
 			logger.log(Level.SEVERE, e.getLocalizedMessage());
 		}
