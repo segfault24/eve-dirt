@@ -41,7 +41,7 @@ public class Config {
 	public Config() {
 		String configFilePath = System.getProperties().getProperty("config");
 		if (configFilePath == null) {
-			configFilePath = "/srv/dirt/cfg/db.config";
+			configFilePath = "cfg/daemon.properties";
 		}
 
 		Properties props = new Properties();
