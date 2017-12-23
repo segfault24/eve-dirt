@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,30 +17,38 @@ class CSVParser {
 
 	private static Logger logger = Logger.getLogger(CSVParser.class.toString());
 
-	protected BufferedReader br;
-
+	private BufferedReader br;
 	private String[] line;
-	private String[] titles;
+	private HashMap<String, Integer> headers;
 
-	public CSVParser(File f) throws FileNotFoundException {
+	public CSVParser(File f, boolean hasHeaders) throws FileNotFoundException, CSVException {
 		br = new BufferedReader(new FileReader(f));
-		next();
-		titles = line.clone();
-	}
-
-	public boolean next() {
-		boolean retval = false;
-		if (br != null) {
-			String tmp;
+		if (hasHeaders) {
+			headers = new HashMap<String, Integer>();
 			try {
-				tmp = br.readLine();
-				if (tmp != null) {
-					line = tmp.split(",");
-					retval = true;
+				if (next()) {
+					for (int i = 0; i < line.length; i++) {
+						String colHeader = line[i].trim().toLowerCase();
+						headers.put(colHeader, i);
+						logger.log(Level.FINE, "Identified column '" + colHeader
+								+ "' at index " + i);
+					}
+				} else {
+					throw new CSVException("Failed to parse CSV column headers");
 				}
 			} catch (IOException e) {
-				logger.log(Level.SEVERE,
-						"Error while reading file: " + e.getLocalizedMessage());
+				throw new CSVException("Failure when reading file");
+			}
+		}
+	}
+
+	public boolean next() throws IOException {
+		boolean retval = false;
+		if (br != null) {
+			String tmp = br.readLine();
+			if (tmp != null) {
+				line = tmp.replace("\"", "").trim().split(",");
+				retval = true;
 			}
 		}
 
@@ -53,36 +62,80 @@ class CSVParser {
 		return retval;
 	}
 
-	public String getColumnTitle(int index) {
-		return titles[index];
+	private String idx(int i) throws CSVException {
+		if (i < 0 || i >= line.length) {
+			throw new CSVException("Bad column index '" + i
+					+ "'; there are only " + line.length
+					+ " columns in this row");
+		}
+		return line[i];
 	}
 
-	public DateTime getDate(int index) {
-		return DateTime.parse(line[index]);
+	public int getColumnIndex(String colTitle) throws CSVException {
+		Integer idx = headers.get(colTitle.toLowerCase());
+		if (idx == null) {
+			throw new CSVException("Could not find column '" + colTitle + "'");
+		}
+		return idx.intValue();
 	}
 
-	public Short getShort(int index) {
-		return Short.parseShort(line[index]);
+	public int getNumCols() {
+		return headers.size();
 	}
 
-	public Integer getInt(int index) {
-		return Integer.parseInt(line[index]);
+	public DateTime getDate(int i) throws CSVException {
+		return DateTime.parse(idx(i));
 	}
 
-	public Long getLong(int index) {
-		return Long.parseLong(line[index]);
+	public DateTime getDate(String colTitle) throws CSVException {
+		return getDate(getColumnIndex(colTitle));
 	}
 
-	public Float getFloat(int index) {
-		return Float.parseFloat(line[index]);
+	public short getShort(int i) throws CSVException {
+		return Short.parseShort(idx(i));
 	}
 
-	public Double getDouble(int index) {
-		return Double.parseDouble(line[index]);
+	public short getShort(String colTitle) throws CSVException {
+		return getShort(getColumnIndex(colTitle));
 	}
 
-	public Boolean getBoolean(int index) {
-		return Boolean.parseBoolean(line[index]);
+	public int getInt(int i) throws CSVException {
+		return Integer.parseInt(idx(i));
 	}
 
+	public int getInt(String colTitle) throws CSVException {
+		return getInt(getColumnIndex(colTitle));
+	}
+
+	public long getLong(int i) throws CSVException {
+		return Long.parseLong(idx(i));
+	}
+
+	public long getLong(String colTitle) throws CSVException {
+		return getLong(getColumnIndex(colTitle));
+	}
+
+	public float getFloat(int i) throws CSVException {
+		return Float.parseFloat(idx(i));
+	}
+
+	public float getFloat(String colTitle) throws CSVException {
+		return getFloat(getColumnIndex(colTitle));
+	}
+
+	public double getDouble(int i) throws CSVException {
+		return Double.parseDouble(idx(i));
+	}
+
+	public double getDouble(String colTitle) throws CSVException {
+		return getDouble(getColumnIndex(colTitle));
+	}
+
+	public boolean getBool(int i) throws CSVException {
+		return Boolean.parseBoolean(idx(i));
+	}
+
+	public boolean getBool(String colTitle) throws CSVException {
+		return getBool(getColumnIndex(colTitle));
+	}
 }

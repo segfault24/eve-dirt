@@ -1,17 +1,14 @@
 package atsb.eve.dirt;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Config {
 
-	private static Logger logger = Logger.getLogger(Config.class.toString());
+	private static final String BOT = "DIRTbot";
+	private static final String VER = "0.1";
 
 	private int numThreads;
 
@@ -39,50 +36,45 @@ public class Config {
 	private int characterDataExpires;
 
 	public Config() {
-		String configFilePath = System.getProperties().getProperty("config");
-		if (configFilePath == null) {
-			configFilePath = "cfg/daemon.properties";
-		}
-
-		Properties props = new Properties();
-		FileInputStream fis = null;
+		Properties props;
 		try {
-			fis = new FileInputStream(new File(configFilePath));
-			props.load(fis);
-		} catch (IOException e) {
-			logger.log(
-					Level.WARNING,
-					"Failure when reading config properties: "
-							+ e.getLocalizedMessage());
+			props = Utils.readProperties();
+		} catch(IOException e) {
+			props = new Properties();
 		}
-		Utils.closeQuietly(fis);
 
-		numThreads = parseIntProp(props, "threads", 1);
+		numThreads = Utils.parseIntProp(props, "threads", 1);
 
-		dbDriver = parseStrProp(props, "dbdriver", "mysql");
-		dbHost = parseStrProp(props, "dbhost", "localhost");
-		dbPort = parseIntProp(props, "dbport", 3306);
+		dbDriver = Utils.parseStrProp(props, "dbdriver", "mysql");
+		dbHost = Utils.parseStrProp(props, "dbhost", "localhost");
+		dbPort = Utils.parseIntProp(props, "dbport", 3306);
 
-		dbName = parseStrProp(props, "dbname", "eve");
-		dbUser = parseStrProp(props, "dbuser", "dirt.scraper");
-		dbPass = parseStrProp(props, "dbpass", "password");
+		dbName = Utils.parseStrProp(props, "dbname", "eve");
+		dbUser = Utils.parseStrProp(props, "dbuser", "dirt.scraper");
+		dbPass = Utils.parseStrProp(props, "dbpass", "password");
 
-		adminEmail = parseStrProp(props, "adminemail", "root@localhost");
-		scraperAuthKeyId = parseIntProp(props, "scraperkeyid", 0);
-		ssoClientId = parseStrProp(props, "ssoclientid", "");
-		ssoSecretKey = parseStrProp(props, "ssosecretkey", "");
+		adminEmail = Utils.parseStrProp(props, "adminemail", "root@localhost");
+		scraperAuthKeyId = Utils.parseIntProp(props, "scraperkeyid", 0);
+		ssoClientId = Utils.parseStrProp(props, "ssoclientid", "");
+		ssoSecretKey = Utils.parseStrProp(props, "ssosecretkey", "");
 
-		marketOrdersRegions = parseIntListProp(props, "marketorders.regions");
-		marketOrdersPeriod = parseIntProp(props, "marketorders.period", 60);
-		marketHistoryRegions = parseIntListProp(props, "markethistory.regions");
-		marketHistoryPeriod = parseIntProp(props, "markethistory.period", 1440);
-
-		publicStructuresPeriod = parseIntProp(props, "publicstructures.period",
+		marketOrdersRegions = Utils.parseIntListProp(props,
+				"marketorders.regions");
+		marketOrdersPeriod = Utils.parseIntProp(props, "marketorders.period",
+				60);
+		marketHistoryRegions = Utils.parseIntListProp(props,
+				"markethistory.regions");
+		marketHistoryPeriod = Utils.parseIntProp(props, "markethistory.period",
 				1440);
-		insurancePricesPeriod = parseIntProp(props, "insuranceprices.period",
-				240);
-		characterDataPeriod = parseIntProp(props, "characterdata.period", 15);
-		characterDataExpires = parseIntProp(props, "characterdata.expires", 60);
+
+		publicStructuresPeriod = Utils.parseIntProp(props,
+				"publicstructures.period", 1440);
+		insurancePricesPeriod = Utils.parseIntProp(props,
+				"insuranceprices.period", 240);
+		characterDataPeriod = Utils.parseIntProp(props, "characterdata.period",
+				15);
+		characterDataExpires = Utils.parseIntProp(props,
+				"characterdata.expires", 60);
 	}
 
 	public int getNumThreads() {
@@ -119,7 +111,7 @@ public class Config {
 	}
 
 	public String getUserAgent() {
-		return "DIRTbot/0.1 (" + adminEmail + ")";
+		return BOT + "/" + VER + " (" + adminEmail + ")";
 	}
 
 	public int getScraperAuthKeyId() {
@@ -166,70 +158,4 @@ public class Config {
 		return characterDataExpires;
 	}
 
-	// private helper functions
-
-	private static String parseStrProp(Properties props, String propName,
-			String _default) {
-		String tmp = props.getProperty(propName).trim();
-		if (tmp == null) {
-			logger.log(Level.CONFIG, "Using default " + propName + ": "
-					+ _default);
-			return _default;
-		}
-		return tmp;
-	}
-
-	private static int parseIntProp(Properties props, String propName,
-			int _default) {
-		String tmp = props.getProperty(propName);
-		if (tmp == null) {
-			logger.log(Level.CONFIG, "Using default " + propName + ": "
-					+ _default);
-			return _default;
-		}
-		try {
-			return Integer.parseInt(tmp.trim());
-		} catch (NumberFormatException e) {
-			logger.log(Level.WARNING, propName + " '" + tmp
-					+ "' is not a valid integer");
-			return _default;
-		}
-	}
-
-	private static List<Integer> parseIntListProp(Properties props,
-			String propName) {
-		String tmp = props.getProperty(propName);
-		List<Integer> values = new ArrayList<Integer>();
-		if (tmp == null) {
-			logger.log(Level.CONFIG, "No list for " + propName);
-			return values; // return an empty list
-		}
-		String[] tmps = tmp.split(",");
-		if (tmps.length == 1 && tmps[0] == "") {
-			// the property name is there, but no value is set
-			// have to catch this or it would generate a warning below
-		} else {
-			for (String s : tmps) {
-				try {
-					values.add(Integer.parseInt(s.trim()));
-				} catch (NumberFormatException e) {
-					logger.log(Level.WARNING, propName + " '" + s
-							+ "' is not a valid integer");
-				}
-			}
-		}
-		return values;
-	}
-
-	private static boolean parseBoolProp(Properties props, String propName,
-			boolean _default) {
-		String tmp = props.getProperty(propName);
-		if (tmp == null) {
-			logger.log(Level.CONFIG, "Using default " + propName + ": "
-					+ _default);
-			return _default;
-		} else {
-			return Boolean.parseBoolean(tmp.trim());
-		}
-	}
 }
