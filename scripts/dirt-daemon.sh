@@ -1,10 +1,10 @@
 #!/bin/sh
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
-
 cd $(dirname "$0")/..
+base=`pwd`
 
-CP="lib/*"
-CFG="cfg/daemon.properties"
-LOG="log/scrape.log"
+classpath="$base/lib/*"
+props="$base/cfg/daemon.properties"
+logfile="$base/log/scrape.log"
 
-java -cp "$CP" -Dconfig="$CFG" atsb.eve.dirt.DirtTaskDaemon $@ >> "$LOG" 2>&1
+java -cp "$classpath" -Dconfig="$props" atsb.eve.dirt.DirtTaskDaemon $@ >> "$logfile" 2>&1

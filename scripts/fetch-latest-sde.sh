@@ -1,7 +1,8 @@
 #!/bin/sh
+cd $(dirname "$0")/..
+base=`pwd`
 
-cd ../sql
-
+cd sql/
 rm mapRegions.sql*
 rm mapSolarSystems.sql*
 rm staStations.sql*
