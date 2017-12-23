@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.Utils;
+
 /**
  * 
  * 
@@ -17,10 +19,10 @@ public class MetaCharacterTask implements Runnable {
 			.getLogger(MetaCharacterTask.class.toString());
 
 	private DirtTaskDaemon daemon;
-	private Config config;
+	private DaemonProperties config;
 	private Connection con;
 
-	public MetaCharacterTask(DirtTaskDaemon daemon, Config cfg) {
+	public MetaCharacterTask(DirtTaskDaemon daemon, DaemonProperties cfg) {
 		this.daemon = daemon;
 		this.config = cfg;
 	}

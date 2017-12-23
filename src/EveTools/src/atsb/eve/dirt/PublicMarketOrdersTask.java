@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.Utils;
+
 import is.ccp.tech.ApiClient;
 import is.ccp.tech.ApiException;
 import is.ccp.tech.esi.MarketApi;
@@ -33,10 +35,10 @@ public class PublicMarketOrdersTask implements Runnable {
 			+ ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 	private int region;
-	private Config config;
+	private DaemonProperties config;
 	private Connection con;
 
-	public PublicMarketOrdersTask(Config cfg, int region) {
+	public PublicMarketOrdersTask(DaemonProperties cfg, int region) {
 		this.config = cfg;
 		this.region = region;
 	}

@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.Utils;
+
 /**
  * 
  * 
@@ -16,10 +18,10 @@ public class CharacterTask implements Runnable {
 	private static Logger logger = Logger
 			.getLogger(CharacterTask.class.toString());
 
-	private Config config;
+	private DaemonProperties config;
 	private Connection con;
 
-	public CharacterTask(Config cfg) {
+	public CharacterTask(DaemonProperties cfg) {
 		this.config = cfg;
 	}
 

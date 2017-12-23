@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import atsb.eve.dirt.util.Utils;
 
-public class Config {
+
+public class DaemonProperties {
 
 	private static final String BOT = "DIRTbot";
 	private static final String VER = "0.1";
@@ -35,7 +37,7 @@ public class Config {
 	private int characterDataPeriod;
 	private int characterDataExpires;
 
-	public Config() {
+	public DaemonProperties() {
 		Properties props;
 		try {
 			props = Utils.readProperties();

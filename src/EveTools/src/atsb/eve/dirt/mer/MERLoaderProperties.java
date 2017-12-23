@@ -3,7 +3,7 @@ package atsb.eve.dirt.mer;
 import java.io.IOException;
 import java.util.Properties;
 
-import atsb.eve.dirt.Utils;
+import atsb.eve.dirt.util.Utils;
 
 public class MERLoaderProperties {
 

@@ -5,11 +5,11 @@ import java.util.concurrent.TimeUnit;
 
 public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
-	private Config cfg;
+	private DaemonProperties cfg;
 
 	public DirtTaskDaemon() {
 		super(1);
-		cfg = new Config();
+		cfg = new DaemonProperties();
 		setCorePoolSize(cfg.getNumThreads());
 
 		for (int regionId : cfg.getMarketOrdersRegions()) {

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
-import atsb.eve.dirt.Utils;
+import atsb.eve.dirt.util.Utils;
 
 class CSVParser {
 

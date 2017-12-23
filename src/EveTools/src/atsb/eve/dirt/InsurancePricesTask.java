@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.Utils;
+
 /**
  * Task to pull all ship insurance prices and payouts.
  * 
@@ -26,10 +28,10 @@ public class InsurancePricesTask implements Runnable {
 	private static String DELETE_SQL = "TRUNCATE TABLE `insurancePrice`";
 	private static String INSERT_SQL = "INSERT INTO insurancePrice (`typeId`,`name`,`cost`,`payout`) VALUES (?,?,?,?)";
 
-	private Config config;
+	private DaemonProperties config;
 	private Connection con;
 
-	public InsurancePricesTask(Config cfg) {
+	public InsurancePricesTask(DaemonProperties cfg) {
 		this.config = cfg;
 	}
 

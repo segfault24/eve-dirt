@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Base64;
 
+import atsb.eve.dirt.util.Utils;
+
 import com.google.gson.Gson;
 
 import java.sql.PreparedStatement;
@@ -28,7 +30,7 @@ public class OAuthUser {
 
 	private static final int EXPIRES_WITHIN = 5000; // milliseconds
 
-	private Config config;
+	private DaemonProperties config;
 
 	private int keyId = -1;
 
@@ -37,11 +39,11 @@ public class OAuthUser {
 	private Timestamp tokenExpires;
 	private String refreshToken;
 
-	private OAuthUser(Config cfg) {
+	private OAuthUser(DaemonProperties cfg) {
 		this.config = cfg;
 	}
 
-	public static OAuthUser getApiAuth(Config cfg, int keyId) throws Exception {
+	public static OAuthUser getApiAuth(DaemonProperties cfg, int keyId) throws Exception {
 		OAuthUser oau = new OAuthUser(cfg);
 		oau.loadFromSql(keyId);
 		return oau;

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.Utils;
+
 import is.ccp.tech.ApiException;
 import is.ccp.tech.esi.MarketApi;
 import is.ccp.tech.esi.models.GetMarketsRegionIdHistory200Ok;
@@ -30,10 +32,10 @@ public class MarketHistoryTask implements Runnable {
 	private static final String INSERT_SQL = "INSERT INTO marketHistory (`typeId`,`regionId`,`date`,`highest`,`average`,`lowest`,`volume`,`orderCount`) VALUES (?,?,?,?,?,?,?,?)";
 
 	private int region;
-	private Config config;
+	private DaemonProperties config;
 	private Connection con;
 
-	public MarketHistoryTask(Config cfg, int region) {
+	public MarketHistoryTask(DaemonProperties cfg, int region) {
 		this.config = cfg;
 		this.region = region;
 	}
