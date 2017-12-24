@@ -28,7 +28,7 @@ mkdir -p deploy/www
 cp scripts/* deploy/bin/
 cp cfg/* deploy/cfg/
 cp sql/* deploy/sql/
-cp src/lib/* deploy/lib/
+cp src/EveTools/lib/* deploy/lib/
 cp src/EveTools/build/jar/*.jar deploy/lib/
 cp -R src/Frontend/* deploy/www/
 
