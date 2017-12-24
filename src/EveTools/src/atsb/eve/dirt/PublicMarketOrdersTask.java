@@ -82,7 +82,7 @@ public class PublicMarketOrdersTask implements Runnable {
 				stmt.setInt(8, o.getTypeId());
 				stmt.setInt(9, o.getVolumeTotal());
 				stmt.setLong(10, o.getLocationId());
-				stmt.setFloat(11, o.getPrice());
+				stmt.setDouble(11, o.getPrice());
 				stmt.setInt(12, region);
 				stmt.setTimestamp(13, now);
 

@@ -79,9 +79,9 @@ public class MarketHistoryTask implements Runnable {
 							stmt.setInt(2, region);
 							stmt.setDate(3,
 									Date.valueOf(e.getDate().toString()));
-							stmt.setFloat(4, e.getHighest());
-							stmt.setFloat(5, e.getAverage());
-							stmt.setFloat(6, e.getLowest());
+							stmt.setDouble(4, e.getHighest());
+							stmt.setDouble(5, e.getAverage());
+							stmt.setDouble(6, e.getLowest());
 							stmt.setLong(7, e.getVolume());
 							stmt.setLong(8, e.getOrderCount());
 
