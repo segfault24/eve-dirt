@@ -73,7 +73,7 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
 	$header = "Authorization: Bearer ".($u->getAuthToken());
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, "https://esi.tech.ccp.is/latest/ui/openwindow/marketdetails/?type_id=".$args['type']);
-	curl_setopt($ch, CURLOPT_USERAGENT, DIRT\SSO::USERAGENT);
+	curl_setopt($ch, CURLOPT_USERAGENT, Dirt\Tools::SSO_USERAGENT);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array($header));
 	curl_setopt($ch, CURLOPT_POST, true);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, "");

@@ -74,25 +74,15 @@ class User {
 					$stmt->execute();
 
 					// get the user's character information
-					$sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtApiAuth WHERE `userId`=:userid LIMIT 1';
-					$stmt = $db->prepare($sql);
-					$stmt->bindParam(':userid', $row['userid']);
-					$stmt->execute();
-					$row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-					if($row) {
-						$_SESSION['charid'] = $row['charId'];
-						$_SESSION['charname'] = $row['charName'];
-						$_SESSION['auth_token'] = $row['token'];
-						$_SESSION['token_expires'] = $row['expires'];
-						$_SESSION['refresh_token'] = $row['refresh'];
-					}
+					$this->setActiveCharAny();
 
 					$retval = true;
 				}
 			} else {
-				// failure
+				// bad password
 			}
+		} else {
+			// bad username
 		}
 
 		return $retval;
@@ -104,19 +94,24 @@ class User {
 	}
 
 	public function linkCharacter($charid, $charhash, $charname, $token, $expires, $refresh) {
-		// don't link if a character already exists
-		if($this->hasCharacters()) {
-			return false;
-		}
-
 		// store the tokens, charid, charname, charhash in db
 		$db = Database::getDb();
+		$userid = $this->getUserId();
 
+		// check if this char is already linked
+		$sql = 'SELECT `charId` FROM dirtApiAuth WHERE `userId`=:userid AND `charId`=:charid';
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':userid', $userid);
+		$stmt->bindParam(':charid', $charid);
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if($row) {
+		    return true; // already linked, pretend we were successful
+		}
+		
 		$sql = 'INSERT INTO dirtApiAuth (`userId`, `charId`, `charName`, `charHash`, `token`, `expires`, `refresh`)
 				VALUES (:userid, :charid, :charname, :charhash, :token, NOW(), :refresh);'; // TODO: don't expire immediately...
-
 		$stmt = $db->prepare($sql);
-		$userid = $this->getUserId();
 		$stmt->bindParam(':userid', $userid);
 		$stmt->bindParam(':charid', $charid);
 		$stmt->bindParam(':charname', $charname);
@@ -127,12 +122,12 @@ class User {
 		$ret = $stmt->execute();
 
 		if($ret) {
-			// sql query successful, add the info to the session vars
-			$_SESSION['charid'] = $charid;
-			$_SESSION['charname'] = $charname;
-			$_SESSION['auth_token'] = $token;
-			$_SESSION['token_expires'] = $expires;
-			$_SESSION['refresh_token'] = $refresh;
+			// sql query successful
+		    if(!$this->hasActiveChar()) {
+		        // make this the active char if none set yet
+		        // add the info to the session vars
+		        $this->setActiveChar($charid);
+		    }
 			return true;
 		} else {
 			// query failed, don't link
@@ -142,11 +137,13 @@ class User {
 
 	public function unlinkCharacter($charid) {
 		// can't unlink what's not there
-		if(!$this->hasCharacters()) {
+		if(!$this->hasActiveChar()) {
 			return false;
 		}
 
 		// delete the user's character from the db
+		// we match the userid here as well as the charid
+		// to prevent mitigate on the form hidden input
 		$db = Database::getDb();
 		$sql = 'DELETE FROM dirtApiAuth WHERE userId=:userid AND charId=:charid;';
 		$stmt = $db->prepare($sql);
@@ -156,12 +153,12 @@ class User {
 		$ret = $stmt->execute();
 
 		if($ret) {
-			// clear the session variables
-			unset($_SESSION['charid']);
-			unset($_SESSION['charname']);
-			unset($_SESSION['auth_token']);
-			unset($_SESSION['token_expires']);
-			unset($_SESSION['refresh_token']);
+		    if($charid==$this->getActiveCharId()) {
+    			// clear the active char if it was the one we just unlinked
+                $this->clearActiveChar();
+                // activate another linked char (if there is one)
+                $this->setActiveCharAny();
+		    }
 			return true;
 		} else {
 			return false;
@@ -188,12 +185,12 @@ class User {
 		return $_SESSION['username'];
 	}
 
-	public function hasCharacters() {
+	public function hasActiveChar() {
 		return $this->isLoggedIn() && isset($_SESSION['charid']);
 	}
 
 	public function getActiveCharId() {
-		if($this->hasCharacters()) {
+		if($this->hasActiveChar()) {
 			return $_SESSION['charid'];
 		} else {
 			return -1;
@@ -201,7 +198,7 @@ class User {
 	}
 
 	public function getActiveCharName() {
-		if($this->hasCharacters()) {
+		if($this->hasActiveChar()) {
 			return $_SESSION['charname'];
 		} else {
 			return '';
@@ -216,6 +213,10 @@ class User {
 		return $_SESSION['auth_token'];
 	}
 
+	public function getRefreshToken() {
+	    return $_SESSION['refresh_token'];
+	}
+
 	public function setTemplateVars(&$args) {
 		$args['name'] = $this->getUserName();
 
@@ -223,10 +224,70 @@ class User {
 			$args['admin'] = 1;
 		}
 
-		if($this->hasCharacters()) {
+		if($this->hasActiveChar()) {
 			$args['char'] = 1;
+			$args['charid'] = $this->getActiveCharId();
 			$args['name'] = $this->getActiveCharName();
 		}
 	}
 
+	/**
+	 * Sets the user's active character as one of their linked chars.
+	 * @return boolean
+	 */
+	private function setActiveCharAny() {
+	    $db = Database::getDb();
+	    $sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtApiAuth WHERE `userId`=:userid LIMIT 1';
+	    $stmt = $db->prepare($sql);
+	    $userid = $this->getUserId();
+	    $stmt->bindParam(':userid', $userid);
+	    $stmt->execute();
+	    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+	    
+	    if($row) {
+	        $_SESSION['charid'] = $row['charId'];
+	        $_SESSION['charname'] = $row['charName'];
+	        $_SESSION['auth_token'] = $row['token'];
+	        $_SESSION['token_expires'] = $row['expires'];
+	        $_SESSION['refresh_token'] = $row['refresh'];
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+	
+	/**
+	 * Sets the given character (by charid) as the user's active character.
+	 * @param unknown $charid
+	 * @return boolean
+	 */
+	public function setActiveChar($charid) {
+	    $db = Database::getDb();
+	    $sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtApiAuth WHERE `userId`=:userid AND `charId`=:charid';
+	    $stmt = $db->prepare($sql);
+	    $userid = $this->getUserId();
+	    $stmt->bindParam(':userid', $userid);
+	    $stmt->bindParam(':charid', $charid);
+	    $stmt->execute();
+	    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+	    
+	    if($row) {
+	        $_SESSION['charid'] = $row['charId'];
+	        $_SESSION['charname'] = $row['charName'];
+	        $_SESSION['auth_token'] = $row['token'];
+	        $_SESSION['token_expires'] = $row['expires'];
+	        $_SESSION['refresh_token'] = $row['refresh'];
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+
+	private function clearActiveChar() {
+	    unset($_SESSION['charid']);
+	    unset($_SESSION['charname']);
+	    unset($_SESSION['auth_token']);
+	    unset($_SESSION['token_expires']);
+	    unset($_SESSION['refresh_token']);
+	}
 }

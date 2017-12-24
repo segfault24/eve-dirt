@@ -1,4 +1,6 @@
 <?php
+use Dirt\Tools;
+
 // Routes
 
 $app->get('/', function ($request, $response, $args) {
@@ -26,7 +28,7 @@ $app->post('/login', function ($request, $response, $args) {
 		return $response->withStatus(302)->withHeader('Location', '/dashboard');
 	} else {
 		$args['error'] = 'Incorrect username or password.';
-		$this->logger->warning('/login unsuccessful login attempt for username: '.$request->getParsedBody()['username']);
+		$this->logger->error('/login unsuccessful login attempt for username:'.$request->getParsedBody()['username']);
 		return $this->renderer->render($response, 'login.phtml', $args);
 	}
 });
@@ -44,7 +46,31 @@ $app->get('/user-settings', function ($request, $response, $args) {
 	}
 	$u->setTemplateVars($args);
 
+	$uid = $u->getUserId();
+	$db = Dirt\Database::getDb();
+	$sql = 'SELECT `charId`, `charName`
+			FROM dirtApiAuth
+			WHERE `userId`=:uid
+			ORDER BY `charName`';
+	$stmt = $db->prepare($sql);
+	$stmt->bindParam(':uid', $uid);
+	$stmt->execute();
+	
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+	$args['charlist'] = $rows;
+	
 	return $this->renderer->render($response, 'user-settings.phtml', $args);
+});
+
+$app->post('/user-settings', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if(!$u->isLoggedIn()) {
+        return $response->withStatus(302)->withHeader('Location', '/login');
+    }
+    
+    $u->setActiveChar($request->getParsedBody()['charId']);
+    return $response->withStatus(302)->withHeader('Location', '/user-settings');
 });
 
 $app->post('/sso-auth/link', function ($request, $response, $args) {
@@ -57,18 +83,11 @@ $app->post('/sso-auth/link', function ($request, $response, $args) {
 	$state = uniqid();
 	$_SESSION['sso_auth_state'] = $state;
 
-	$sso_scope  = 'esi-assets.read_assets.v1';
-	$sso_scope .= ' esi-wallet.read_character_wallet.v1';
-	$sso_scope .= ' esi-markets.read_character_orders.v1';
-	$sso_scope .= ' esi-markets.structure_markets.v1';
-	$sso_scope .= ' esi-ui.open_window.v1';
-	$sso_scope .= ' esi-universe.read_structures.v1';
-
-	$auth_url = 'https://login.eveonline.com/oauth/authorize'
+	$auth_url = Dirt\Tools::SSO_AUTH_URL
 			.'?response_type=code'
-			.'&redirect_uri='.urlencode('https://'.Dirt\Site::DOMAIN.'/sso-auth/callback')
+			.'&redirect_uri='.urlencode(Dirt\Tools::SSO_CALLBACK_URI)
 			.'&client_id='.Dirt\Site::SSO_CLIENT_ID
-			.'&scope='.$sso_scope
+			.'&scope='.Dirt\Tools::SSO_SCOPE
 			.'&state='.$state;
 
 	return $response->withStatus(302)->withHeader('Location', $auth_url);
@@ -90,23 +109,11 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
 	unset($_SESSION['sso_auth_state']);
 
 	// get the access & refresh tokens
-	$header = 'Authorization: Basic '.base64_encode(Dirt\Site::SSO_CLIENT_ID.':'.Dirt\Site::SSO_SECRET_KEY);
-	$fields = 'grant_type=authorization_code&code='.$request->getQueryParam('code');
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'https://login.eveonline.com/oauth/token');
-	curl_setopt($ch, CURLOPT_USERAGENT, 'DIRT/0.1 ('.Dirt\Site::WEBMASTER.')');
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array($header));
-	curl_setopt($ch, CURLOPT_POST, 2);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-	$result = curl_exec($ch);
+	$result = Tools::oauthToken($request->getQueryParam('code'));
 	if($result == false) {
 		$this->logger->error('/sso-auth/callback failed to retrieve oauth token');
 		return $response->withStatus(302)->withHeader('Location', '/user-settings');
 	}
-	curl_close($ch);
 	$rsp = json_decode($result);
 	if(!isset($rsp->access_token)) {
 		$this->logger->error('/sso-auth/callback failed to parse oauth token');
@@ -117,20 +124,11 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
 	$refresh_token = $rsp->refresh_token;
 
 	// get the character details
-	$header = 'Authorization: Bearer '.$access_token;
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'https://login.eveonline.com/oauth/verify');
-	curl_setopt($ch, CURLOPT_USERAGENT, 'DIRT/0.1 ('.Dirt\Site::WEBMASTER.')');
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array($header));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-	$result = curl_exec($ch);
+	$result = Tools::oauthVerify($access_token);
 	if($result == false) {
 		$this->logger->error('/sso-auth/callback failed to retrieve character details');
 		return $response->withStatus(302)->withHeader('Location', '/user-settings');
 	}
-	curl_close($ch);
 	$rsp = json_decode($result);
 	if(!isset($rsp->CharacterID)) {
 		$this->logger->error('/sso-auth/callback failed to parse character details');
@@ -162,7 +160,17 @@ $app->post('/sso-auth/unlink', function ($request, $response, $args) {
 		return $response->withStatus(302)->withHeader('Location', '/login');
 	}
 
-	$u->unlinkCharacter($u->getActiveCharId());
+	// grab this before unlinking
+	$refresh_token = $u->getRefreshToken();
+
+	// do unlinking in database
+	$ret = $u->unlinkCharacter($request->getParsedBody()['charId']);
+
+	// send revoke to CCP
+	if($ret) {
+    	Tools::oauthRevoke($refresh_token); // don't really care if it works, that's CCP's problem
+	}
+
 	return $response->withStatus(302)->withHeader('Location', '/user-settings');
 });
 

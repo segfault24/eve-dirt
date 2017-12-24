@@ -3,6 +3,7 @@
 namespace Dirt;
 
 use \PDO;
+use PDOException;
 
 class Database {
 	

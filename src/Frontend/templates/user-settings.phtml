@@ -8,15 +8,32 @@
 </div>
 <div class="row">
 	<div class="col-sm-12">
-{% if char %}
-		<form action="/sso-auth/unlink" method="post">
-			<button type="submit">Unlink this character from this account</button>
-		</form>
-{% else %}
+	
+	<div class="table-responsive">
+		<table class="table responsive table-striped table-condensed">
+{% for result in charlist %}
+				<tr>
+					<td><img src="https://imageserver.eveonline.com/Character/{{result.charId}}_64.jpg"></td>
+					<td>{{result.charName}}</td>
+					<td>
+						<form action="/user-settings" method="post">
+    						<input type="hidden" id="charId" name="charId" value="{{result.charId}}">
+    						<button type="submit">Set Active</button>
+    					</form>
+					</td>
+					<td>
+    					<form action="/sso-auth/unlink" method="post">
+    						<input type="hidden" id="charId" name="charId" value="{{result.charId}}">
+    						<button type="submit">Unlink</button>
+    					</form>
+					</td>
+				</tr>
+{% endfor %}
+			</table>
+		</div>
 		<form action="/sso-auth/link" method="post">
 			<button type="submit">Link a character to this account (EVE SSO)</button>
 		</form>
-{% endif %}
 	</div>
 </div>
 {% endblock %}
