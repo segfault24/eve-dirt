@@ -66,8 +66,22 @@ class Tools {
 	    return $result;
 	}
 
-	public static function oauthRefresh() {
-	    
+	public static function oauthRefresh($refresh_token) {
+	    $header = 'Authorization: Basic '.base64_encode(Site::SSO_CLIENT_ID.':'.Site::SSO_SECRET_KEY);
+	    $fields = 'grant_type=refresh_token&refresh_token='.$refresh_token;
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, Tools::SSO_TOKEN_URL);
+	    curl_setopt($ch, CURLOPT_USERAGENT, Tools::SSO_USERAGENT);
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, array($header));
+	    curl_setopt($ch, CURLOPT_POST, 2);
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+	    $result = curl_exec($ch);
+	    curl_close($ch);
+
+	    return $result;
 	}
 
 	public static function oauthRevoke($refresh_token) {

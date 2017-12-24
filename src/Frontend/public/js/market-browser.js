@@ -90,7 +90,7 @@ $(document).ready(function(){
 		url: '/api/types/' + type,
 		success: function(result) {
 			name = result.typeName;
-			$('#title').html('<img id="title-img"> ' + name);
+			$('#title').html(name);
 			$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
 		}
 	});
@@ -131,6 +131,8 @@ $(document).ready(function(){
 		region = $('#regionselect').val();
 		reloadData();
 	});
+
+	$('#oig').click(function() { ajaxOpenInGame(type); });
 
 	// setup the tab click handlers, so that the data and charts
 	// that are needed for that tab are loaded on demand
@@ -174,7 +176,7 @@ function reloadData() {
 	historyData = null;
 
 	// clear title, tables, and charts
-	$('#title').html('<img id="title-img"> Market Browser');
+	$('#title').html('Market Browser');
 	sellTable.clear().draw();
 	buyTable.clear().draw();
 	orderTablesLoaded = false;
@@ -193,7 +195,7 @@ function reloadData() {
 	}
 
 	// update page title
-	$('#title').html('<img id="title-img"> ' + name);
+	$('#title').html(name);
 	$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
 	// expand menu to current item
 	menu.expandTo(type);
@@ -589,5 +591,12 @@ function ajaxHistoryData(callback) {
 				callback();
 			}
 		}
+	});
+}
+
+function ajaxOpenInGame(type) {
+	$.ajax({
+		url: '/api/market/open-in-game/' + type,
+		async: true
 	});
 }

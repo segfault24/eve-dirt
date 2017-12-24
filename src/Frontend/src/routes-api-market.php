@@ -65,7 +65,7 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
 
 $app->get('/api/market/open-in-game/{type}', function ($request, $response, $args) {
 	$u = Dirt\User::getUser();
-	if(!$u->hasCharacters()) {
+	if(!$u->hasActiveChar()) {
 		return $response->withJson(array('error'=>'no character linked to this account'));
 	}
 

@@ -4,6 +4,19 @@ namespace Dirt;
 
 use \PDO;
 
+/*
+ * $_SESSION[]
+ *    userid
+ *    username
+ *    admin         set if the user is an administrator
+ *    
+ *    charid        set if the user has a linked character
+ *    charname
+ *    auth_token
+ *    token_expires
+ *    refresh_token
+ */
+
 class User {
 
 	private static $instance = NULL;
@@ -108,16 +121,18 @@ class User {
 		if($row) {
 		    return true; // already linked, pretend we were successful
 		}
-		
+
+		$expires_timestamp = date('Y-m-d H:i:s', strtotime('now +'.$expires.' seconds'));
+
 		$sql = 'INSERT INTO dirtApiAuth (`userId`, `charId`, `charName`, `charHash`, `token`, `expires`, `refresh`)
-				VALUES (:userid, :charid, :charname, :charhash, :token, NOW(), :refresh);'; // TODO: don't expire immediately...
+				VALUES (:userid, :charid, :charname, :charhash, :token, :expires, :refresh);';
 		$stmt = $db->prepare($sql);
 		$stmt->bindParam(':userid', $userid);
 		$stmt->bindParam(':charid', $charid);
 		$stmt->bindParam(':charname', $charname);
 		$stmt->bindParam(':charhash', $charhash);
 		$stmt->bindParam(':token', $token);
-		//$stmt->bindParam(':expires', $expires);
+		$stmt->bindParam(':expires', $expires_timestamp);
 		$stmt->bindParam(':refresh', $refresh);
 		$ret = $stmt->execute();
 
@@ -206,11 +221,17 @@ class User {
 	}
 
 	public function getAuthToken() {
-		// if expired
-			// do refresh
-
-		// return token
-		return $_SESSION['auth_token'];
+	    if (!$this->hasActiveChar()) {
+	        return null;
+	    }
+	    
+	    $exp = strtotime($_SESSION['token_expires']);
+	    $now = time();
+	    if ($now > $exp) {
+	        $this->doTokenRefresh();
+	    }
+	    
+	    return $_SESSION['auth_token'];
 	}
 
 	public function getRefreshToken() {
@@ -289,5 +310,47 @@ class User {
 	    unset($_SESSION['auth_token']);
 	    unset($_SESSION['token_expires']);
 	    unset($_SESSION['refresh_token']);
+	}
+
+	private function doTokenRefresh() {
+        // grab the old stuff
+	    $old_token = $_SESSION['auth_token'];
+	    $old_expires_timestamp = $_SESSION['token_expires'];
+	    $old_refresh_token = $_SESSION['refresh_token'];
+        
+	    // do the refresh
+	    $result = Tools::oauthRefresh($old_refresh_token);;
+	    if($result == false) {
+	        return;
+	    }
+	    $rsp = json_decode($result);
+	    if(!isset($rsp->access_token)) {
+	        return;
+	    }
+        
+	    // get the new values
+	    $new_token = $rsp->access_token;
+	    $new_expires = $rsp->expires_in;
+	    $new_expires_timestamp = date('Y-m-d H:i:s', strtotime('now +'.$new_expires.' seconds'));
+	    $new_refresh_token = $rsp->refresh_token;
+	    $userid = $_SESSION['userid'];
+	    $charid = $_SESSION['charid'];
+	    
+	    // update the session
+	    $_SESSION['auth_token'] = $new_token;
+	    $_SESSION['token_expires'] = $new_expires_timestamp;
+	    $_SESSION['refresh_token'] = $new_refresh_token;
+	    
+	    // update the database
+	    $db = Database::getDb();
+	    $sql  = 'UPDATE dirtApiAuth SET `token`=:token, `expires`=:expires, `refresh`=:refresh';
+	    $sql .= ' WHERE `userId`=:userid AND `charId`=:charid;';
+	    $stmt = $db->prepare($sql);
+	    $stmt->bindParam(':token', $new_token);
+	    $stmt->bindParam(':expires', $new_expires_timestamp);
+	    $stmt->bindParam(':refresh', $new_refresh_token);
+	    $stmt->bindParam(':userid', $userid);
+	    $stmt->bindParam(':charid', $charid);
+	    $ret = $stmt->execute();
 	}
 }
