@@ -138,8 +138,7 @@ public class MarketHistoryTask implements Runnable {
 		while (true) {
 			try {
 				history = mapi.getMarketsRegionIdHistory(region, type,
-						"tranquility", config.getUserAgent(),
-						null);
+						"tranquility", null);
 				break;
 			} catch (ApiException e) {
 				if (retry == 3) {

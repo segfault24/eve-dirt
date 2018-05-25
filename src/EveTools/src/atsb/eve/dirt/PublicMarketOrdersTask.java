@@ -123,7 +123,7 @@ public class PublicMarketOrdersTask implements Runnable {
 			List<GetMarketsRegionIdOrders200Ok> orders;
 			try {
 				orders = mapi.getMarketsRegionIdOrders("all", region,
-						"tranquility", page, null, config.getUserAgent(), null);
+						"tranquility", null, page, null);
 				if (orders.isEmpty()) {
 					break;
 				}

@@ -106,8 +106,7 @@ public class PublicStructuresTask implements Runnable {
 	private List<Long> getPublicStructIds() {
 		List<Long> structIds = new ArrayList<Long>();
 		try {
-			structIds = uapi.getUniverseStructures("tranquility",
-					config.getUserAgent(), null);
+			structIds = uapi.getUniverseStructures("tranquility", null);
 		} catch (ApiException e) {
 			logger.log(Level.WARNING,
 					"Failed to retrieve list of public structure ids", e);
@@ -117,8 +116,7 @@ public class PublicStructuresTask implements Runnable {
 
 	private GetUniverseStructuresStructureIdOk getPublicStructure(Long structId)
 			throws ApiException, DirtAuthException, SQLException, IOException {
-		return uapi.getUniverseStructuresStructureId(structId, "tranquility",
-				auth.getAuthToken(), config.getUserAgent(), null);
+		return uapi.getUniverseStructuresStructureId(structId, "tranquility", null, null);
 	}
 
 }

@@ -85,8 +85,7 @@ public class InsurancePricesTask implements Runnable {
 		InsuranceApi iapi = new InsuranceApi();
 		List<GetInsurancePrices200Ok> items = new ArrayList<GetInsurancePrices200Ok>();
 		try {
-			items = iapi.getInsurancePrices("tranquility", "en-us",
-					config.getUserAgent(), null);
+			items = iapi.getInsurancePrices(null, "tranquility", null, null);
 		} catch (ApiException e) {
 			logger.log(Level.WARNING,
 					"Failed to retrieve list of insurance prices", e);
