@@ -31,6 +31,7 @@ cp sql/* deploy/sql/
 cp src/EveTools/lib/* deploy/lib/
 cp src/EveTools/build/jar/*.jar deploy/lib/
 cp -R src/Frontend/* deploy/www/
+cp install_debian.sh deploy/
 
 # tar it up
 cd deploy
