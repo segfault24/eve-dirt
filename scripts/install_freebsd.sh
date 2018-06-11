@@ -17,7 +17,7 @@ DB_ADMIN_PASSWORD=$(openssl rand -base64 16)
 
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
-    adduser ${RUN_USER} -q -d ${INSTALL_DIR} -D -s /usr/sbin/nologin
+    pw useradd -q -n ${RUN_USER} -d ${INSTALL_DIR} -s /usr/sbin/nologin -w random
 fi
 
 # add the web server user to the group
@@ -29,12 +29,12 @@ chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
 chmod -R o-rwx ${INSTALL_DIR}
 
 # generate self signed cert
-APACHE=/etc/apache2
+APACHE=/usr/local/etc/apache24
 SUBJ="/C=US/ST=New\ York/L=New\ York/O=The\ Ether/CN=${FQDN}"
 KEYOUT=${APACHE}/ssl/${FQDN}.key
 CRTOUT=${APACHE}/ssl/${FQDN}.crt
 mkdir -m 700 ${APACHE}/ssl
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEYOUT} -out ${CRTOUT} -subj ${SUBJ}
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "${KEYOUT}" -out "${CRTOUT}" -subj "${SUBJ}"
 chmod 400 ${KEYOUT} ${CRTOUT}
 
 # add to apache
@@ -59,7 +59,7 @@ mv cfg/site.conf.tmp ${APACHE}/sites-enabled/dirt-${FQDN}.conf
 #mysql -u root -p eve < sql/dirt.sql
 
 # cron job for daemon
-cp cfg/exmaple.cron cfg/cron.tmp
+cp cfg/example.cron cfg/cron.tmp
 TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
 sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/cron.tmp
 crontab -u ${RUN_USER} cfg/cron.tmp
