@@ -2,26 +2,31 @@
 FQDN=dirt.lan
 INSTALL_DIR=/srv/dirt
 RUN_USER=dirt
-WWW_GROUP=www-data
+WWW_USER=www-data
 
 if ! [ $(id -u) = 0 ]; then
-	echo "This script must be run with root privileges"
-	exit 1
+    echo "This script must be run with root privileges"
+    exit 1
 fi
+
+# work from the root of the install directory
+cd ${INSTALL_DIR}
 
 DB_ROOT_PASSWORD=$(openssl rand -base64 16)
 DB_ADMIN_PASSWORD=$(openssl rand -base64 16)
 
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
-	adduser ${RUN_USER} -q -d ${INSTALL_DIR} -D -G ${WWW_GROUP} -s /usr/sbin/nologin
+    adduser ${RUN_USER} -q -d ${INSTALL_DIR} -D -s /usr/sbin/nologin
 fi
 
+# add the web server user to the group
+usermod -a -G ${RUN_USER} ${WWW_USER}
+
 # setup data directory
-mkdir -p -m 700 ${INSTALL_DIR}
-tar xzf eve-dirt.tar.gz -C ${INSTALL_DIR}
-mkdir -p -m 700 ${INSTALL_DIR}/www/logs
+mkdir -p www/logs
 chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
+chmod -R o-rwx ${INSTALL_DIR}
 
 # generate self signed cert
 APACHE=/etc/apache2
@@ -33,28 +38,28 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEYOUT} -out ${CRT
 chmod 400 ${KEYOUT} ${CRTOUT}
 
 # add to apache
-cp ${INSTALL_DIR}/cfg/site.conf /tmp/temp.conf
-sed -i '' "s/example.com/${FQDN}/g" /tmp/temp.conf
+cp cfg/site.conf cfg/site.conf.tmp
+sed -i '' "s/example.com/${FQDN}/g" cfg/site.conf.tmp
 TEMP=$(echo ${APACHE} | sed "s/\//\\\\\//g")
-sed -i '' "s/APACHEDIR/${TEMP}/g" /tmp/temp.conf
+sed -i '' "s/APACHEDIR/${TEMP}/g" cfg/site.conf.tmp
 TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
-sed -i '' "s/INSTALLDIR/${TEMP}/g" /tmp/temp.conf
-mv /tmp/temp.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf
+sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/site.conf.tmp
+mv cfg/site.conf.tmp ${APACHE}/sites-enabled/dirt-${FQDN}.conf
 
 # initialize db
-mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('${DB_ROOT_PASSWORD}') WHERE User='root';"
-mysql -u root -e "CREATE DATABASE eve;"
-mysql -u root -e "CREATE USER 'dirt.admin'@'localhost' IDENTIFIED BY '${DB_ADMIN_PASSWORD}';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin'@'localhost' WITH GRANT OPTION;"
+#mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('${DB_ROOT_PASSWORD}') WHERE User='root';"
+#mysql -u root -e "CREATE DATABASE eve;"
+#mysql -u root -e "CREATE USER 'dirt.admin'@'localhost' IDENTIFIED BY '${DB_ADMIN_PASSWORD}';"
+#mysql -u root -e "GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin'@'localhost' WITH GRANT OPTION;"
 #mysql -u root -p eve < ${INSTALL_DIR}/sql/invTypes.sql
 #mysql -u root -p eve < ${INSTALL_DIR}/sql/dirt.sql
 
 # cron job for daemon
-cp ${INSTALL_DIR}/cfg/exmaple.cron /tmp/temp.cron
+cp cfg/exmaple.cron cfg/cron.tmp
 TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
-sed -i '' "s/INSTALLDIR/${TEMP}/g" /tmp/temp.cron
-crontab -u ${RUN_USER} /tmp/temp.cron
-rm /tmp/temp.cron
+sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/cron.tmp
+crontab -u ${RUN_USER} cfg/cron.tmp
+rm cfg/cron.tmp
 
 # restart apache
 systemctl restart apache2
