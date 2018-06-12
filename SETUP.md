@@ -1,14 +1,18 @@
 ## Building
 Prerequisites: *git*, *openjdk8*, *apache-ant*, and *php-composer*
 ```bash
+# debian
+# TODO
+```
+```bash
 # freebsd
 pkg install git openjdk8 apache-ant
 portsnap fetch extract
 cd /usr/ports/devel/php-composer
 make install clean
 ```
-
 ```bash
+# common
 git clone https://github.com/segfault24/eve-dirt.git
 cd eve-dirt
 ./build.sh
@@ -32,54 +36,15 @@ php72-xmlwriter php72-zlib
 mysql_secure_installation
 ```
 
-2. Setup user and groups (as root, or with sudo)
+2. Unpack archive into directory and run install script
 ```bash
-useradd dirt
-passwd dirt
-usermod -G dirt www-data # add the apache user to the dirt group (mine was running as www-data)
+mkdir -p <install_dir>
+tar xzf eve-dirt.tar.gz -C <install_dir>
+cd <install_dir>/scripts
+sudo ./install_freebsd.sh
 ```
 
-3. Unpack archive into directory
-```bash
-mkdir -p -m 775 /srv/dirt
-tar xzf eve-dirt.tar.gz -C /srv/dirt
-mkdir -p -m 775 /srv/dirt/www/logs
-chown -R dirt:dirt /srv/dirt
-```
-
-4. Configure Apache
-    1. In the main configuration file:
-    ```apacheconf
-    <Directory "/srv/dirt/">
-        Options FollowSymLinks
-        AllowOverride All
-        Require all granted
-    </Directory>
-    ```
-    2. Create a vhost with:
-    ```apacheconf
-    DocumentRoot /srv/dirt/www/public/
-    ```
-
-5. Setup database and admin account from a privileged SQL prompt
-```sql
-CREATE DATABASE eve;
-CREATE USER 'dirt.admin'@'localhost' IDENTIFIED BY 'pickapassword';
-GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin'@'localhost' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-```
-
-6. Load the tables
-```bash
-mysql -u root -p eve < sql/invTypes.sql
-mysql -u root -p eve < sql/invMarketGroups.sql
-mysql -u root -p eve < mapRegions.sql
-mysql -u root -p eve < mapSolarSystems.sql
-mysql -u root -p eve < staStations.sql
-mysql -u root -p eve < sql/dirt.sql
-```
-
-7. Setup SSO application
+3. Setup SSO application
     1. Go to https://developers.eveonline.com/applications
     2. **Create New Application**
     3. Give it a name and description
@@ -96,9 +61,6 @@ mysql -u root -p eve < sql/dirt.sql
     6. Enter the call back URL (ex. https://localhost/sso-auth/callback)
     7. **Create Application**
     8. Copy the Client ID and Secret Key into *cfg/db.config* and *www/classes/Site.php*
-
-8. Configure cron (sudo crontab -u dirt -e)
-    * See *cfg/example.cron* for reference
 
 ## Maintenance Tasks
 ### Updating static data
