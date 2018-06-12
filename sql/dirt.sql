@@ -256,54 +256,30 @@ CREATE VIEW vAmarrBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder
 
 -- -----------------------------------------------------------------------------
 
-DROP USER IF EXISTS 'dirt.web'@'localhost';
-DROP USER IF EXISTS 'dirt.scraper'@'localhost';
-DROP USER IF EXISTS 'dirt.merloader'@'localhost';
+DROP USER IF EXISTS 'dirt'@'localhost';
 
--- web server
-CREATE USER 'dirt.web'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT ON eve.invTypes TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.invMarketGroups TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.mapRegions TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.mapSolarSystems TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.staStations TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.marketOrder TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.marketHistory TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.insurancePrice TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merSinkFaucet TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merMoneySupply TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merIskVolume TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merRegStat TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merProdDestMine TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtUser TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtList TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtListItem TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt.web'@'localhost';
-
--- backend scraper
-CREATE USER 'dirt.scraper'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT ON eve.invTypes TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.invMarketGroups TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.mapRegions TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.mapSolarSystems TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.staStations TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketOrder TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketHistory TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE,DROP ON eve.insurancePrice TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merSinkFaucet TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merMoneySupply TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merIskVolume TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merRegStat TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merProdDestMine TO 'dirt.scraper'@'localhost';
+CREATE USER 'dirt'@'localhost' IDENTIFIED BY 'DIRTDBPW';
+GRANT SELECT ON eve.invTypes TO 'dirt'@'localhost';
+GRANT SELECT ON eve.invMarketGroups TO 'dirt'@'localhost';
+GRANT SELECT ON eve.mapRegions TO 'dirt'@'localhost';
+GRANT SELECT ON eve.mapSolarSystems TO 'dirt'@'localhost';
+GRANT SELECT ON eve.staStations TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketOrder TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketHistory TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE,DROP ON eve.insurancePrice TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merSinkFaucet TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merMoneySupply TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merIskVolume TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merRegStat TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merProdDestMine TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtUser TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtList TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtListItem TO 'dirt'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt'@'localhost';
 
 FLUSH PRIVILEGES;
 

@@ -50,6 +50,11 @@ mysql -u root eve < sql/invMarketGroups.sql
 mysql -u root eve < sql/mapRegions.sql
 mysql -u root eve < sql/mapSolarSystems.sql
 mysql -u root eve < sql/staStations.sql
+DIRT_DB_PW=$(openssl rand -base64 16)
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/daemon.properties
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/merloader.properties
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" www/classes/Site.php
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" sql/dirt.sql
 mysql -u root eve < sql/dirt.sql
 
 # cron job for daemon

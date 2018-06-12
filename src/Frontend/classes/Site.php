@@ -20,8 +20,8 @@ class Site {
 	const DB_ADDR = 'localhost';
 	const DB_PORT = 3306;
 	const DB_NAME = 'eve';
-	const DB_USER = 'dirt.web';
-	const DB_PASS = 'password';
+	const DB_USER = 'dirt';
+	const DB_PASS = 'DIRTDBPW';
 
 	//========================================
 	// Eve SSO OAuth2
