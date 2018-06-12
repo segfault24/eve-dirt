@@ -12,9 +12,6 @@ fi
 # work from the root of the install directory
 cd ${INSTALL_DIR}
 
-DB_ROOT_PASSWORD=$(openssl rand -base64 16)
-DB_ADMIN_PASSWORD=$(openssl rand -base64 16)
-
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
     pw useradd -q -n ${RUN_USER} -d ${INSTALL_DIR} -s /usr/sbin/nologin -w random
@@ -47,16 +44,13 @@ sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/site.conf.tmp
 mv cfg/site.conf.tmp ${APACHE}/sites-enabled/dirt-${FQDN}.conf
 
 # initialize db
-#mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('${DB_ROOT_PASSWORD}') WHERE User='root';"
-#mysql -u root -e "CREATE DATABASE eve;"
-#mysql -u root -e "CREATE USER 'dirt.admin'@'localhost' IDENTIFIED BY '${DB_ADMIN_PASSWORD}';"
-#mysql -u root -e "GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin'@'localhost' WITH GRANT OPTION;"
-#mysql -u root -p eve < sql/invTypes.sql
-#mysql -u root -p eve < sql/invMarketGroups.sql
-#mysql -u root -p eve < sql/mapRegions.sql
-#mysql -u root -p eve < sql/mapSolarSystems.sql
-#mysql -u root -p eve < sql/staStations.sql
-#mysql -u root -p eve < sql/dirt.sql
+mysql -u root -e "CREATE DATABASE eve;"
+mysql -u root eve < sql/invTypes.sql
+mysql -u root eve < sql/invMarketGroups.sql
+mysql -u root eve < sql/mapRegions.sql
+mysql -u root eve < sql/mapSolarSystems.sql
+mysql -u root eve < sql/staStations.sql
+mysql -u root eve < sql/dirt.sql
 
 # cron job for daemon
 cp cfg/example.cron cfg/cron.tmp
@@ -67,11 +61,6 @@ rm cfg/cron.tmp
 
 # restart apache
 service apache24 restart
-
-# save the db password(s)
-echo ${DB_ROOT_PASSWORD} > /root/db_passwords.txt
-echo ${DB_ADMIN_PASSWORD} >> /root/db_passwords.txt
-echo See /root/db_passwords.txt for DB credentials
 
 # sso instructions
 echo Setup SSO integration:

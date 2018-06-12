@@ -14,8 +14,7 @@ make install clean
 ```bash
 # common
 git clone https://github.com/segfault24/eve-dirt.git
-cd eve-dirt
-./build.sh
+cd eve-dirt && ./build.sh
 ```
 
 ## Installing
@@ -40,7 +39,10 @@ mysql_secure_installation
 ```bash
 mkdir -p <install_dir>
 tar xzf eve-dirt.tar.gz -C <install_dir>
-cd <install_dir>/scripts
+cd <install_dir>/bin
+
+# edit the values in the install script, then run it
+vim install_freebsd.sh
 sudo ./install_freebsd.sh
 ```
 
