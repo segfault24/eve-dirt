@@ -7,8 +7,8 @@ class Site {
 	//========================================
 	// Site Settings
 	//========================================
-	const DOMAIN = 'dirt.local';
-	const WEBMASTER = 'root@localhost';
+	const DOMAIN = 'DOMAINNAME';
+	const WEBMASTER = 'webmaster@DOMAINNAME';
 
 	const MARKET_PUBLIC = false;
 	const MAINTENANCE_MODE = false;

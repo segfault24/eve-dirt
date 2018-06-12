@@ -34,14 +34,22 @@ mkdir -m 700 ${APACHE}/ssl
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "${KEYOUT}" -out "${CRTOUT}" -subj "${SUBJ}"
 chmod 400 ${KEYOUT} ${CRTOUT}
 
+# customize configuration files
+DIRT_DB_PW=$(openssl rand -base64 16)
+INSTALL_DIR_ESC=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
+APACHE_DIR_ESC=$(echo ${APACHE} | sed "s/\//\\\\\//g")
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/daemon.properties
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/merloader.properties
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" www/classes/Site.php
+sed -i '' "s/DOMAINNAME/${FQDN}/g" cfg/daemon.properties
+sed -i '' "s/DOMAINNAME/${FQDN}/g" cfg/site.conf
+sed -i '' "s/DOMAINNAME/${FQDN}/g" www/classes/Site.php
+sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/jobs.cron
+sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/site.conf
+sed -i '' "s/APACHEDIR/${APACHE_DIR_ESC}/g" cfg/site.conf
+
 # add to apache
-cp cfg/site.conf cfg/site.conf.tmp
-sed -i '' "s/example.com/${FQDN}/g" cfg/site.conf.tmp
-TEMP=$(echo ${APACHE} | sed "s/\//\\\\\//g")
-sed -i '' "s/APACHEDIR/${TEMP}/g" cfg/site.conf.tmp
-TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
-sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/site.conf.tmp
-mv cfg/site.conf.tmp ${APACHE}/sites-enabled/dirt-${FQDN}.conf
+cp cfg/site.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf
 
 # initialize db
 mysql -u root -e "CREATE DATABASE eve;"
@@ -50,19 +58,10 @@ mysql -u root eve < sql/invMarketGroups.sql
 mysql -u root eve < sql/mapRegions.sql
 mysql -u root eve < sql/mapSolarSystems.sql
 mysql -u root eve < sql/staStations.sql
-DIRT_DB_PW=$(openssl rand -base64 16)
-sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/daemon.properties
-sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/merloader.properties
-sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" www/classes/Site.php
-sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" sql/dirt.sql
 mysql -u root eve < sql/dirt.sql
 
-# cron job for daemon
-cp cfg/example.cron cfg/cron.tmp
-TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
-sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/cron.tmp
-crontab -u ${RUN_USER} cfg/cron.tmp
-rm cfg/cron.tmp
+# install cron job for daemon
+crontab -u ${RUN_USER} cfg/jobs.cron
 
 # restart apache
 service apache24 restart

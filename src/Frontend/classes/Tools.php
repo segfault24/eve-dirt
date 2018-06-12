@@ -11,7 +11,7 @@ class Tools {
 
 	// sso application information
 	const SSO_USERAGENT = 'DIRT/0.1 ('.Site::WEBMASTER.')';
-	const SSO_CALLBACK_URI = 'http://'.Site::DOMAIN.'/sso-auth/callback';
+	const SSO_CALLBACK_URI = 'https://'.Site::DOMAIN.'/sso-auth/callback';
 	const SSO_SCOPE =
 	  'esi-wallet.read_character_wallet.v1'
     .' esi-universe.read_structures.v1'
