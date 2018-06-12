@@ -31,7 +31,7 @@ pkg install apache24 mod_php72 mysql57-server php72\
 php72-ctype php72-curl php72-dom php72-filter php72-hash\
 php72-iconv php72-json php72-mbstring php72-mysqli php72-openssl\
 php72-pdo php72-pdo_mysql php72-phar php72-session php72-tokenizer\
-php72-xmlwriter php72-zlib
+php72-xmlwriter php72-zlib flock openjdk8-jre
 mysql_secure_installation
 ```
 
@@ -62,7 +62,7 @@ sudo ./install_freebsd.sh
     ```
     6. Enter the call back URL (ex. https://localhost/sso-auth/callback)
     7. **Create Application**
-    8. Copy the Client ID and Secret Key into *cfg/db.config* and *www/classes/Site.php*
+    8. Copy the Client ID and Secret Key into *cfg/daemon.properties* and *www/classes/Site.php*
 
 ## Maintenance Tasks
 ### Updating static data
