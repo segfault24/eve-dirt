@@ -26,7 +26,7 @@ class Site {
 	//========================================
 	// Eve SSO OAuth2
 	//========================================
-	const SSO_CLIENT_ID = '';
-	const SSO_SECRET_KEY = '';
+	const SSO_CLIENT_ID = 'APPCLIENTID';
+	const SSO_SECRET_KEY = 'APPSECRETKEY';
 
 }

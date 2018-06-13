@@ -1,8 +1,36 @@
 #!/bin/sh
-FQDN=dirt.lan
-INSTALL_DIR=/srv/dirt
+FQDN=
 RUN_USER=dirt
 WWW_USER=www
+SSO_CLIENT_ID=
+SSO_SECRET_KEY=
+
+if [ -z ${FQDN} ]; then
+    echo The Fully Qualified Domain Name \(FQDN\) of the website must be filled
+    echo in at the top of this script \(ex.  dirt.mywebsite.com\)
+    exit 1
+fi
+
+if [ -z ${SSO_CLIENT_ID} ] || [ -z ${SSO_SECRET_KEY} ]; then
+    echo You need to setup the application with CCP and then
+    echo add the client id and secret to the top of this script
+    echo
+    echo 1\) Go to https://developers.eveonline.com/applications
+    echo 2\) Create New Application
+    echo 3\) Give it a name and description
+    echo 4\) Select Authentication \& API Access
+    echo 5\) Select the following permissions:
+    echo --a\) esi-wallet.read_character_wallet.v1
+    echo --b\) esi-markets.read_character_orders.v1
+    echo --c\) esi-assets.read_assets.v1
+    echo --d\) esi-universe.read_structures.v1
+    echo --e\) esi-markets.structure_markets.v1
+    echo --f\) esi-ui.open_window.v1
+    echo 6\) Enter the call back URL \(https://${FQDN}/sso-auth/callback\)
+    echo 7\) Create Application
+    echo 8\) Copy the client id and secret key into this script
+    exit 1
+fi
 
 if ! [ $(id -u) = 0 ]; then
     echo "This script must be run with root privileges"
@@ -10,7 +38,8 @@ if ! [ $(id -u) = 0 ]; then
 fi
 
 # work from the root of the install directory
-cd ${INSTALL_DIR}
+cd $(dirname "$0")/..
+INSTALL_DIR=$(pwd)
 
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
@@ -48,6 +77,10 @@ sed -i '' "s/DOMAINNAME/${FQDN}/g" www/classes/Site.php
 sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/jobs.cron
 sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/site.conf
 sed -i '' "s/APACHEDIR/${APACHE_DIR_ESC}/g" cfg/site.conf
+sed -i '' "s/APPCLIENTID/${SSO_CLIENT_ID}/g" cfg/daemon.properties
+sed -i '' "s/APPCLIENTID/${SSO_CLIENT_ID}/g" www/classes/Site.php
+sed -i '' "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" cfg/daemon.properties
+sed -i '' "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" www/classes/Site.php
 
 # add to apache
 cp cfg/site.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf
@@ -67,21 +100,3 @@ crontab -u ${RUN_USER} cfg/jobs.cron
 # restart apache
 service apache24 restart
 
-# sso instructions
-echo Setup SSO integration:
-echo 1\) Go to https://developers.eveonline.com/applications
-echo 2\) Create New Application
-echo 3\) Give it a name and description
-echo 4\) Select Authentication \& API Access
-echo 5\) Select the following permissions:
-echo --a\) esi-wallet.read_character_wallet.v1
-echo --b\) esi-markets.read_character_orders.v1
-echo --c\) esi-assets.read_assets.v1
-echo --d\) esi-universe.read_structures.v1
-echo --e\) esi-markets.structure_markets.v1
-echo --f\) esi-ui.open_window.v1
-echo 6\) Enter the call back URL \(https://${FQDN}/sso-auth/callback\)
-echo 7\) Create Application
-echo 8\) Copy the Client ID and Secret Key into:
-echo --a\) ${INSTALL_DIR}/cfg/daemon.properties
-echo --b\) ${INSTALL_DIR}/www/classes/Site.php
