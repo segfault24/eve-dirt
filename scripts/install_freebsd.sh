@@ -71,6 +71,7 @@ sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" sql/dirt.sql
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/daemon.properties
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/merloader.properties
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" www/classes/Site.php
+sed -i '' "s/DOMAINNAME/${FQDN}/g" sql/dirt.sql
 sed -i '' "s/DOMAINNAME/${FQDN}/g" cfg/daemon.properties
 sed -i '' "s/DOMAINNAME/${FQDN}/g" cfg/site.conf
 sed -i '' "s/DOMAINNAME/${FQDN}/g" www/classes/Site.php
@@ -86,6 +87,7 @@ sed -i '' "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" www/classes/Site.php
 cp cfg/site.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf
 
 # initialize db
+mysql -u root -e "DROP DATABASE IF EXISTS eve;"
 mysql -u root -e "CREATE DATABASE eve;"
 mysql -u root eve < sql/invTypes.sql
 mysql -u root eve < sql/invMarketGroups.sql

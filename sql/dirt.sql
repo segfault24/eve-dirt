@@ -257,30 +257,10 @@ CREATE VIEW vAmarrBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder
 -- -----------------------------------------------------------------------------
 
 DROP USER IF EXISTS 'dirt'@'localhost';
-
+DROP USER IF EXISTS 'dirt'@'DOMAINNAME';
 CREATE USER 'dirt'@'localhost' IDENTIFIED BY 'DIRTDBPW';
-GRANT SELECT ON eve.invTypes TO 'dirt'@'localhost';
-GRANT SELECT ON eve.invMarketGroups TO 'dirt'@'localhost';
-GRANT SELECT ON eve.mapRegions TO 'dirt'@'localhost';
-GRANT SELECT ON eve.mapSolarSystems TO 'dirt'@'localhost';
-GRANT SELECT ON eve.staStations TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketOrder TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketHistory TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE,DROP ON eve.insurancePrice TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merSinkFaucet TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merMoneySupply TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merIskVolume TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merRegStat TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merProdDestMine TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtUser TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtList TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtListItem TO 'dirt'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt'@'localhost';
-
+CREATE USER 'dirt'@'DOMAINNAME' IDENTIFIED BY 'DIRTDBPW';
+GRANT ALL ON eve.* TO 'dirt'@'localhost','dirt'@'DOMAINNAME';
 FLUSH PRIVILEGES;
 
 -- -----------------------------------------------------------------------------
