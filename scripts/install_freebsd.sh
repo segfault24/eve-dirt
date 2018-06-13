@@ -35,9 +35,10 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "${KEYOUT}" -out "${
 chmod 400 ${KEYOUT} ${CRTOUT}
 
 # customize configuration files
-DIRT_DB_PW=$(openssl rand -base64 16)
+DIRT_DB_PW=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1)
 INSTALL_DIR_ESC=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
 APACHE_DIR_ESC=$(echo ${APACHE} | sed "s/\//\\\\\//g")
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" sql/dirt.sql
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/daemon.properties
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/merloader.properties
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" www/classes/Site.php
@@ -79,8 +80,8 @@ echo --c\) esi-assets.read_assets.v1
 echo --d\) esi-universe.read_structures.v1
 echo --e\) esi-markets.structure_markets.v1
 echo --f\) esi-ui.open_window.v1
-echo 6\) Enter the call back URL \(htps://${FQDN}/sso-auth/callback\)
+echo 6\) Enter the call back URL \(https://${FQDN}/sso-auth/callback\)
 echo 7\) Create Application
 echo 8\) Copy the Client ID and Secret Key into:
-echo --a\) ${INSTALL_DIR}/cfg/db.config
+echo --a\) ${INSTALL_DIR}/cfg/daemon.properties
 echo --b\) ${INSTALL_DIR}/www/classes/Site.php
