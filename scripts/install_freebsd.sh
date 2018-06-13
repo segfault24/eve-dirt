@@ -21,7 +21,7 @@ fi
 pw usermod ${WWW_USER} -G ${RUN_USER}
 
 # setup data directory
-mkdir -p www/logs
+mkdir -p -m 770 www/logs
 chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
 chmod -R o-rwx ${INSTALL_DIR}
 
