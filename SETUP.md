@@ -14,7 +14,7 @@ make install clean
 ```bash
 # common
 git clone https://github.com/segfault24/eve-dirt.git
-cd eve-dirt && ./build.sh
+cd eve-dirt && ant
 ```
 
 ## Installing
