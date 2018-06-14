@@ -35,15 +35,10 @@ php72-xmlwriter php72-zlib flock openjdk8-jre
 mysql_secure_installation
 ```
 
-2. Unpack archive into directory and run install script
+2. Unpack archive into target directory
 ```bash
 mkdir -p <install_dir>
 tar xzf eve-dirt.tar.gz -C <install_dir>
-cd <install_dir>/bin
-
-# edit the values in the install script, then run it
-vim install_freebsd.sh
-sudo ./install_freebsd.sh
 ```
 
 3. Setup SSO application
@@ -62,7 +57,14 @@ sudo ./install_freebsd.sh
     ```
     6. Enter the call back URL (ex. https://localhost/sso-auth/callback)
     7. **Create Application**
-    8. Copy the Client ID and Secret Key into *cfg/daemon.properties* and *www/classes/Site.php*
+    8. Copy the Client ID and Secret Key into the install script in bin/
+
+4. Edit the values in the install script, then run it
+```bash
+cd <install_dir>/bin
+vim install_freebsd.sh
+sudo ./install_freebsd.sh
+```
 
 ## Maintenance Tasks
 ### Updating static data

@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
+import atsb.eve.dirt.util.DirtProperties;
 import atsb.eve.dirt.util.Utils;
 
 /**
@@ -26,7 +27,7 @@ public class MERLoader {
 
 	private static Logger logger = Logger.getLogger(MERLoader.class.toString());
 
-	private MERLoaderProperties props;
+	private DirtProperties props;
 
 	private Timestamp monthYear;
 	private String db;
@@ -35,7 +36,7 @@ public class MERLoader {
 
 	public MERLoader(String yrmo, String configFile) throws Exception,
 			IOException {
-		props = new MERLoaderProperties();
+		props = new DirtProperties();
 		parseYearMonth(yrmo);
 		loadConfig(configFile);
 		genSqlStatement();

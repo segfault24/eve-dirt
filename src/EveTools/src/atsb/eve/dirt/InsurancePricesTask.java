@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.DirtProperties;
 import atsb.eve.dirt.util.Utils;
 
 /**
@@ -28,10 +29,10 @@ public class InsurancePricesTask implements Runnable {
 	private static String DELETE_SQL = "TRUNCATE TABLE `insurancePrice`";
 	private static String INSERT_SQL = "INSERT INTO insurancePrice (`typeId`,`name`,`cost`,`payout`) VALUES (?,?,?,?)";
 
-	private DaemonProperties config;
+	private DirtProperties config;
 	private Connection con;
 
-	public InsurancePricesTask(DaemonProperties cfg) {
+	public InsurancePricesTask(DirtProperties cfg) {
 		this.config = cfg;
 	}
 

@@ -3,13 +3,15 @@ package atsb.eve.dirt;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import atsb.eve.dirt.util.DirtProperties;
+
 public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
-	private DaemonProperties cfg;
+	private DirtProperties cfg;
 
 	public DirtTaskDaemon() {
 		super(1);
-		cfg = new DaemonProperties();
+		cfg = new DirtProperties();
 		setCorePoolSize(cfg.getNumThreads());
 
 		for (int regionId : cfg.getMarketOrdersRegions()) {

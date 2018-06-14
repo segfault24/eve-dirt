@@ -4,7 +4,7 @@ cd $(dirname "$0")/..
 base=`pwd`
 
 classpath="$base/lib/*"
-props="$base/cfg/daemon.properties"
+props="$base/cfg/dirt.properties"
 logfile="$base/log/scrape.log"
 
 java -cp "$classpath" -Dconfig="$props" atsb.eve.dirt.DirtTaskDaemon $@ >> "$logfile" 2>&1

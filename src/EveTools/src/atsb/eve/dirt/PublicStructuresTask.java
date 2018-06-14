@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.DirtProperties;
 import atsb.eve.dirt.util.Utils;
 
 import is.ccp.tech.ApiException;
@@ -33,14 +34,14 @@ public class PublicStructuresTask implements Runnable {
 			+ "`systemId`=VALUES(`systemId`),"
 			+ "`typeId`=VALUES(`typeId`)";
 
-	private DaemonProperties config;
+	private DirtProperties config;
 	private int keyId;
 
 	private Connection con;
 	private UniverseApi uapi;
 	private OAuthUser auth;
 
-	public PublicStructuresTask(DaemonProperties cfg) {
+	public PublicStructuresTask(DirtProperties cfg) {
 		this.config = cfg;
 		this.keyId = cfg.getScraperAuthKeyId();
 	}

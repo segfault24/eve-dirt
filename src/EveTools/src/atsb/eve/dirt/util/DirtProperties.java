@@ -1,13 +1,11 @@
-package atsb.eve.dirt;
+package atsb.eve.dirt.util;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import atsb.eve.dirt.util.Utils;
 
-
-public class DaemonProperties {
+public class DirtProperties {
 
 	private static final String BOT = "DIRTbot";
 	private static final String VER = "0.1";
@@ -37,7 +35,7 @@ public class DaemonProperties {
 	private int characterDataPeriod;
 	private int characterDataExpires;
 
-	public DaemonProperties() {
+	public DirtProperties() {
 		Properties props;
 		try {
 			props = Utils.readProperties();
