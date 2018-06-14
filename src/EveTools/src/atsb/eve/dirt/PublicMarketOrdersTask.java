@@ -119,6 +119,7 @@ public class PublicMarketOrdersTask implements Runnable {
 
 		int page = 1;
 		int retry = 0;
+		boolean failure = false;
 		while (!done) {
 			List<GetMarketsRegionIdOrders200Ok> orders;
 			try {
@@ -130,12 +131,19 @@ public class PublicMarketOrdersTask implements Runnable {
 				allOrders.addAll(orders);
 				page++;
 				retry = 0;
+				failure = false;
 			} catch (ApiException e) {
 				if (retry == 3) {
 					retry = 0;
 					logger.log(Level.WARNING, "Failed to retrieve page " + page
 							+ " of orders for region " + region);
 					page++;
+					if (failure) {
+						// stop pulling pages when we hit two bad pages in a row
+						break;
+					} else {
+						failure = true;
+					}
 				} else {
 					retry++;
 					continue;

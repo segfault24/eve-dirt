@@ -179,9 +179,7 @@ CREATE TABLE `insurancePrice` (
 	`cost` DECIMAL(19, 4),
 	`payout` DECIMAL(19, 4),
 	PRIMARY KEY (`insuranceEntryId`),
-	UNIQUE KEY (`typeId`, `name`),
-	FOREIGN KEY (`typeId`)
-		REFERENCES `invTypes` (`typeID`)
+	UNIQUE KEY (`typeId`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------
