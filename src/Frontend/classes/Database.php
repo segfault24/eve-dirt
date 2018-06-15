@@ -12,11 +12,14 @@ class Database {
 	private $db;
 	
 	private function __construct() {
+	    
+	    $db_ini = parse_ini_file(__DIR__ . "../../cfg/db.ini");
+	    
 		try {
 			$this->db = new PDO(
-				Site::DB_DRVR.':host='.Site::DB_ADDR.';port='.SITE::DB_PORT.';dbname='.SITE::DB_NAME.';charset=utf8',
-				Site::DB_USER,
-				Site::DB_PASS);
+			    $db_ini['dbdriver'].':host='.$db_ini['dbhost'].';port='.$db_ini['dbport'].';dbname='.$db_ini['dbname'].';charset=utf8',
+			    $db_ini['dbuser'],
+			    $db_ini['dbpass']);
 			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 		} catch(PDOException $e) {
 			$this->db = NULL;

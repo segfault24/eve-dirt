@@ -68,19 +68,14 @@ DIRT_DB_PW=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1)
 INSTALL_DIR_ESC=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
 APACHE_DIR_ESC=$(echo ${APACHE} | sed "s/\//\\\\\//g")
 sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" sql/dirt.sql
-sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/dirt.properties
-sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" www/classes/Site.php
+sed -i '' "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/db.ini
 sed -i '' "s/DOMAINNAME/${FQDN}/g" sql/dirt.sql
-sed -i '' "s/DOMAINNAME/${FQDN}/g" cfg/dirt.properties
 sed -i '' "s/DOMAINNAME/${FQDN}/g" cfg/site.conf
-sed -i '' "s/DOMAINNAME/${FQDN}/g" www/classes/Site.php
 sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/jobs.cron
 sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/site.conf
 sed -i '' "s/APACHEDIR/${APACHE_DIR_ESC}/g" cfg/site.conf
-sed -i '' "s/APPCLIENTID/${SSO_CLIENT_ID}/g" cfg/dirt.properties
-sed -i '' "s/APPCLIENTID/${SSO_CLIENT_ID}/g" www/classes/Site.php
-sed -i '' "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" cfg/dirt.properties
-sed -i '' "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" www/classes/Site.php
+sed -i '' "s/APPCLIENTID/${SSO_CLIENT_ID}/g" sql/dirt.sql
+sed -i '' "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" sql/dirt.sql
 
 # add to apache
 cp cfg/site.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf

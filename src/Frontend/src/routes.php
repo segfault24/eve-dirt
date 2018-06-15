@@ -90,7 +90,10 @@ $app->post('/sso-auth/link', function ($request, $response, $args) {
     $state = uniqid();
     $_SESSION['sso_auth_state'] = $state;
     
-    $auth_url = Dirt\Tools::SSO_AUTH_URL . '?response_type=code' . '&redirect_uri=' . urlencode(Dirt\Tools::SSO_CALLBACK_URI) . '&client_id=' . Dirt\Site::SSO_CLIENT_ID . '&scope=' . Dirt\Tools::SSO_SCOPE . '&state=' . $state;
+    $sso_callback_uri = 'https://'.Tools::getProperty('domain').'/sso-auth/callback';
+    $sso_client_id = Dirt\Tools::getProperty('ssoclientid');
+    $sso_scope = Dirt\Tools::getProperty('ssoscope');
+    $auth_url = Dirt\Tools::SSO_AUTH_URL . '?response_type=code&redirect_uri=' . urlencode(sso_callback_uri) . '&client_id=' . $sso_client_id . '&scope=' . $sso_scope . '&state=' . $state;
     
     return $response->withStatus(302)
         ->withHeader('Location', $auth_url);

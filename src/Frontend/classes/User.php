@@ -70,7 +70,8 @@ class User {
 			if(password_verify($pass, $row['hash']) && $row['disabled'] == 0) {
 				// successfully verified password
 				// ensure login is allowed if maintenance mode is active
-				if((!Site::MAINTENANCE_MODE) || (Site::MAINTENANCE_MODE && $row['admin'] == 1)) {
+			    $mm = filter_var(Tools::getProperty('maintenancemode'), FILTER_VALIDATE_BOOLEAN);
+				if(!mm || (mm && $row['admin'] == 1)) {
 
 					// get the user's information
 					$_SESSION['userid'] = $row['userId'];

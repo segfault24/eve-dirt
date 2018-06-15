@@ -71,10 +71,19 @@ CREATE TABLE `structure` (
 
 -- -----------------------------------------------------------------------------
 
+DROP TABLE IF EXISTS `property`;
 DROP TABLE IF EXISTS `dirtListItem`;
 DROP TABLE IF EXISTS `dirtList`;
 DROP TABLE IF EXISTS `dirtApiAuth`;
 DROP TABLE IF EXISTS `dirtUser`;
+
+CREATE TABLE `property` (
+	`id` INT AUTO_INCREMENT,
+	`propertyName` VARCHAR(64) NULL,
+	`propertyValue` VARCHAR(256) NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `ux_property_propertyName` (`propertyName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dirtUser` (
 	`userId` INT AUTO_INCREMENT,
@@ -277,3 +286,22 @@ INSERT INTO `dirtUser` (
 	TRUE,
 	FALSE
 );
+
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("domain","DOMAINNAME");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("adminemail","webmaster@DOMAINNAME");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("scraperkeyid","1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoclientid","APPCLIENTID");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssosecretkey","APPSECRETKEY");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("threads","1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.regions","10000002,10000043,10000032,10000030,10000042");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.period","60");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.regions","10000002,10000043,10000032,10000030,10000042");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.period","1440");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructures.period","1440");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("insuranceprices.period","240");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.period","15");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.expires","60");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketpublic","false");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("maintenancemode","false");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("useragent","DIRT/0.1 (webmaster@DOMAINNAME)");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope","esi-wallet.read_character_wallet.v1 esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-ui.open_window.v1 esi-markets.structure_markets.v1 esi-markets.read_character_orders.v1");
