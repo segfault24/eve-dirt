@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import atsb.eve.dirt.util.DirtProperties;
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 /**
@@ -19,18 +19,18 @@ public class CharacterTask implements Runnable {
 	private static Logger logger = Logger
 			.getLogger(CharacterTask.class.toString());
 
-	private DirtProperties config;
-	private Connection con;
+	private DbInfo dbInfo;
+	private Connection db;
 
-	public CharacterTask(DirtProperties cfg) {
-		this.config = cfg;
+	public CharacterTask(DbInfo dbInfo) {
+		this.dbInfo = dbInfo;
 	}
 
 	@Override
 	public void run() {
 		try {
-			con = DriverManager.getConnection(config.getDbConnectionString(),
-					config.getDbUser(), config.getDbPass());
+			db = DriverManager.getConnection(dbInfo.getDbConnectionString(),
+					dbInfo.getUser(), dbInfo.getPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
@@ -46,7 +46,7 @@ public class CharacterTask implements Runnable {
 		// assets
 		// industry?
 
-		Utils.closeQuietly(con);
+		Utils.closeQuietly(db);
 	}
 
 }

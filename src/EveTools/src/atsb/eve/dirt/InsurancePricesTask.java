@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import atsb.eve.dirt.util.DirtProperties;
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 /**
@@ -29,18 +29,18 @@ public class InsurancePricesTask implements Runnable {
 	private static String DELETE_SQL = "TRUNCATE TABLE `insurancePrice`";
 	private static String INSERT_SQL = "INSERT INTO insurancePrice (`typeId`,`name`,`cost`,`payout`) VALUES (?,?,?,?)";
 
-	private DirtProperties config;
-	private Connection con;
+	private DbInfo dbInfo;
+	private Connection db;
 
-	public InsurancePricesTask(DirtProperties cfg) {
-		this.config = cfg;
+	public InsurancePricesTask(DbInfo dbInfo) {
+		this.dbInfo = dbInfo;
 	}
 
 	@Override
 	public void run() {
 		try {
-			con = DriverManager.getConnection(config.getDbConnectionString(),
-					config.getDbUser(), config.getDbPass());
+			db = DriverManager.getConnection(dbInfo.getDbConnectionString(),
+					dbInfo.getUser(), dbInfo.getPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
@@ -52,13 +52,13 @@ public class InsurancePricesTask implements Runnable {
 				+ " insurance price records");
 
 		try {
-			con.setAutoCommit(false);
+			db.setAutoCommit(false);
 
-			PreparedStatement stmt = con.prepareStatement(DELETE_SQL);
+			PreparedStatement stmt = db.prepareStatement(DELETE_SQL);
 			stmt.execute();
 			Utils.closeQuietly(stmt);
 
-			stmt = con.prepareStatement(INSERT_SQL);
+			stmt = db.prepareStatement(INSERT_SQL);
 			for (GetInsurancePrices200Ok item : prices) {
 				for (GetInsurancePricesLevel level : item.getLevels()) {
 					stmt.setInt(1, item.getTypeId());
@@ -70,8 +70,8 @@ public class InsurancePricesTask implements Runnable {
 			}
 			stmt.executeBatch();
 
-			con.commit();
-			con.setAutoCommit(true);
+			db.commit();
+			db.setAutoCommit(true);
 			logger.log(Level.INFO, "Inserted " + prices.size()
 					+ " insurance price records");
 		} catch (SQLException e) {
@@ -79,7 +79,7 @@ public class InsurancePricesTask implements Runnable {
 					"Unexpected failure while processing insurance pricing", e);
 		}
 
-		Utils.closeQuietly(con);
+		Utils.closeQuietly(db);
 	}
 
 	private List<GetInsurancePrices200Ok> getInsurancePrices() {

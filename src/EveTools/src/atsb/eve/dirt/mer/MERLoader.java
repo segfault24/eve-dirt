@@ -1,6 +1,7 @@
 package atsb.eve.dirt.mer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
-import atsb.eve.dirt.util.DirtProperties;
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 /**
@@ -27,16 +28,15 @@ public class MERLoader {
 
 	private static Logger logger = Logger.getLogger(MERLoader.class.toString());
 
-	private DirtProperties props;
+	private DbInfo dbInfo;
 
 	private Timestamp monthYear;
 	private String db;
 	private ArrayList<FieldMapping> cols;
 	private String SQL_STATEMENT;
 
-	public MERLoader(String yrmo, String configFile) throws Exception,
-			IOException {
-		props = new DirtProperties();
+	public MERLoader(String yrmo, String configFile) throws Exception, IOException {
+		dbInfo = new DbInfo();
 		parseYearMonth(yrmo);
 		loadConfig(configFile);
 		genSqlStatement();
@@ -50,7 +50,18 @@ public class MERLoader {
 	}
 
 	private void loadConfig(String configFile) throws Exception, IOException {
-		Properties cfg = Utils.readProperties(configFile);
+
+		Properties cfg = new Properties();
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(new File(configFile));
+			cfg.load(fis);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not read config file");
+		} finally {
+			Utils.closeQuietly(fis);
+		}
+
 		db = cfg.getProperty("db");
 		if (db == null || db.isEmpty()) {
 			throw new Exception("Property 'db' is required, but was not found.");
@@ -76,8 +87,8 @@ public class MERLoader {
 			MappingType type = MappingType.translate(v[1]);
 
 			cols.add(new FieldMapping(sqlColumn, csvColumn, type));
-			logger.log(Level.FINE, "sqlColumn: " + sqlColumn + ", csvColumn: "
-					+ csvColumn + ", type: " + type.toString());
+			logger.log(Level.FINE,
+					"sqlColumn: " + sqlColumn + ", csvColumn: " + csvColumn + ", type: " + type.toString());
 		}
 	}
 
@@ -100,15 +111,12 @@ public class MERLoader {
 		SQL_STATEMENT = cmd + "` (" + keys + ") VALUES (" + values + ")";
 	}
 
-	public void doImport(String csvFilePath) throws FileNotFoundException,
-			IOException, CSVException {
+	public void doImport(String csvFilePath) throws FileNotFoundException, IOException, CSVException {
 		Connection con;
 		try {
-			con = DriverManager.getConnection(props.getDbConnectionString(),
-					props.getDbUser(), props.getDbPass());
+			con = DriverManager.getConnection(dbInfo.getDbConnectionString(), dbInfo.getUser(), dbInfo.getPass());
 		} catch (SQLException e) {
-			logger.log(Level.WARNING, "Failed to open database connection: "
-					+ e.getLocalizedMessage());
+			logger.log(Level.WARNING, "Failed to open database connection: " + e.getLocalizedMessage());
 			return;
 		}
 
@@ -130,32 +138,23 @@ public class MERLoader {
 						} else {
 							try {
 								if (col.type() == MappingType.LONG) {
-									stmt.setLong(i + 1,
-											csv.getLong(col.csvColumn()));
+									stmt.setLong(i + 1, csv.getLong(col.csvColumn()));
 								} else if (col.type() == MappingType.DOUBLE) {
-									stmt.setDouble(i + 1,
-											csv.getDouble(col.csvColumn()));
+									stmt.setDouble(i + 1, csv.getDouble(col.csvColumn()));
 								} else if (col.type() == MappingType.TIMESTAMP) {
-									stmt.setTimestamp(
-											i + 1,
-											new Timestamp(csv.getDate(
-													col.csvColumn()).getMillis()));
+									stmt.setTimestamp(i + 1, new Timestamp(csv.getDate(col.csvColumn()).getMillis()));
 								} else {
 									logger.log(Level.WARNING,
 											"How are you seeing this message... oh god what did you do");
 								}
 							} catch (NumberFormatException e) {
-								logger.log(
-										Level.WARNING,
-										"Failed to parse as type '"
-												+ col.type().type().toString() + "': "
-												+ e.getLocalizedMessage());
+								logger.log(Level.WARNING, "Failed to parse as type '" + col.type().type().toString()
+										+ "': " + e.getLocalizedMessage());
 							}
 						}
 					}
 				} catch (CSVException e) {
-					logger.log(Level.WARNING, "Failure while reading line: "
-							+ e.getLocalizedMessage());
+					logger.log(Level.WARNING, "Failure while reading line: " + e.getLocalizedMessage());
 					e.printStackTrace();
 				}
 
@@ -169,8 +168,7 @@ public class MERLoader {
 			con.setAutoCommit(true);
 			logger.log(Level.INFO, "Inserted " + count + " records");
 		} catch (SQLException e) {
-			logger.log(Level.WARNING,
-					"Unexpected failure while processing records", e);
+			logger.log(Level.WARNING, "Unexpected failure while processing records", e);
 		}
 
 		Utils.closeQuietly(con);
@@ -178,14 +176,11 @@ public class MERLoader {
 
 	public static void main(String[] args) {
 		if (args.length < 3) {
-			System.out
-					.println("This program requires at least three arguments.");
+			System.out.println("This program requires at least three arguments.");
 			System.out.println("  Usage:");
-			System.out
-					.println("    ./load-mer.sh  <year-month>  <config>  <csv1>  ...");
+			System.out.println("    ./load-mer.sh  <year-month>  <config>  <csv1>  ...");
 			System.out.println("  Example:");
-			System.out
-					.println("    ./load-mer.sh  2017-07  regstat.config  RegionalStats.csv");
+			System.out.println("    ./load-mer.sh  2017-07  regstat.config  RegionalStats.csv");
 			System.exit(1);
 		}
 

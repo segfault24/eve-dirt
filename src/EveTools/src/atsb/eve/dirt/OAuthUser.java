@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +13,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Base64;
 
-import atsb.eve.dirt.util.DirtProperties;
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 import com.google.gson.Gson;
@@ -29,9 +28,12 @@ import java.sql.ResultSet;
  */
 public class OAuthUser {
 
+	private static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
+	private static final String PROPERTY_SSO_SECRET_KEY = "ssosecretkey";
+
 	private static final int EXPIRES_WITHIN = 5000; // milliseconds
 
-	private DirtProperties config;
+	private DbInfo dbInfo;
 
 	private int keyId = -1;
 
@@ -40,12 +42,12 @@ public class OAuthUser {
 	private Timestamp tokenExpires;
 	private String refreshToken;
 
-	private OAuthUser(DirtProperties cfg) {
-		this.config = cfg;
+	private OAuthUser(DbInfo dbInfo) {
+		this.dbInfo = dbInfo;
 	}
 
-	public static OAuthUser getApiAuth(DirtProperties cfg, int keyId) throws Exception {
-		OAuthUser oau = new OAuthUser(cfg);
+	public static OAuthUser getApiAuth(DbInfo dbInfo, int keyId) throws Exception {
+		OAuthUser oau = new OAuthUser(dbInfo);
 		oau.loadFromSql(keyId);
 		return oau;
 	}
@@ -62,8 +64,8 @@ public class OAuthUser {
 		String SELECT_SQL = "SELECT `token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
 
 		Connection con = DriverManager.getConnection(
-				config.getDbConnectionString(), config.getDbUser(),
-				config.getDbPass());
+				dbInfo.getDbConnectionString(), dbInfo.getUser(),
+				dbInfo.getPass());
 		PreparedStatement stmt = con.prepareStatement(SELECT_SQL);
 		stmt.setInt(1, keyId);
 		ResultSet rs = stmt.executeQuery();
@@ -91,10 +93,17 @@ public class OAuthUser {
 				+ EXPIRES_WITHIN));
 	}
 
-	private void doRefresh() throws DirtAuthException, IOException {
+	private void doRefresh() throws DirtAuthException, IOException, SQLException {
 
+		Connection db = DriverManager.getConnection(
+				dbInfo.getDbConnectionString(), dbInfo.getUser(),
+				dbInfo.getPass());
+		
 		URL url = new URL("https://login.eveonline.com/oauth/token");
-		String creds = config.getSSOClientId() + ":" + config.getSSOSecretKey();
+		String ssoClientId = Utils.getProperty(db, PROPERTY_SSO_CLIENT_ID);
+		String ssoSecretKey = Utils.getProperty(db, PROPERTY_SSO_SECRET_KEY);
+		
+		String creds = ssoClientId + ":" + ssoSecretKey;
 		String auth = "Basic "
 				+ new String(Base64.getEncoder().encode(creds.getBytes()));
 		String data = "grant_type=refresh_token&refresh_token=" + refreshToken;
@@ -142,8 +151,8 @@ public class OAuthUser {
 		String UPDATE_SQL = "UPDATE dirtApiAuth SET `token`=?, `expires`=?, `refresh`=? WHERE `keyId`=?;";
 
 		Connection con = DriverManager.getConnection(
-				config.getDbConnectionString(), config.getDbUser(),
-				config.getDbPass());
+				dbInfo.getDbConnectionString(), dbInfo.getUser(),
+				dbInfo.getPass());
 		PreparedStatement stmt = con.prepareStatement(UPDATE_SQL);
 		stmt.setString(1, authToken);
 		stmt.setTimestamp(2, tokenExpires);

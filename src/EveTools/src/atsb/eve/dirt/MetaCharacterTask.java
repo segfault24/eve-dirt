@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import atsb.eve.dirt.util.DirtProperties;
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 /**
@@ -20,19 +20,19 @@ public class MetaCharacterTask implements Runnable {
 			.getLogger(MetaCharacterTask.class.toString());
 
 	private DirtTaskDaemon daemon;
-	private DirtProperties config;
-	private Connection con;
+	private DbInfo dbInfo;
+	private Connection db;
 
-	public MetaCharacterTask(DirtTaskDaemon daemon, DirtProperties cfg) {
+	public MetaCharacterTask(DirtTaskDaemon daemon, DbInfo dbInfo) {
 		this.daemon = daemon;
-		this.config = cfg;
+		this.dbInfo = dbInfo;
 	}
 
 	@Override
 	public void run() {
 		try {
-			con = DriverManager.getConnection(config.getDbConnectionString(),
-					config.getDbUser(), config.getDbPass());
+			db = DriverManager.getConnection(dbInfo.getDbConnectionString(),
+					dbInfo.getUser(), dbInfo.getPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
@@ -43,7 +43,7 @@ public class MetaCharacterTask implements Runnable {
 		// generate new task for each char that need refresh
 		//daemon.addSingleTask(new CharacterTask(config));
 
-		Utils.closeQuietly(con);
+		Utils.closeQuietly(db);
 	}
 
 }

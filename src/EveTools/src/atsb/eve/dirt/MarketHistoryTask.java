@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import atsb.eve.dirt.util.DirtProperties;
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 import is.ccp.tech.ApiException;
@@ -33,19 +33,19 @@ public class MarketHistoryTask implements Runnable {
 	private static final String INSERT_SQL = "INSERT INTO marketHistory (`typeId`,`regionId`,`date`,`highest`,`average`,`lowest`,`volume`,`orderCount`) VALUES (?,?,?,?,?,?,?,?)";
 
 	private int region;
-	private DirtProperties config;
-	private Connection con;
+	private DbInfo dbInfo;
+	private Connection db;
 
-	public MarketHistoryTask(DirtProperties cfg, int region) {
-		this.config = cfg;
+	public MarketHistoryTask(DbInfo dbInfo, int region) {
+		this.dbInfo = dbInfo;
 		this.region = region;
 	}
 
 	@Override
 	public void run() {
 		try {
-			con = DriverManager.getConnection(config.getDbConnectionString(),
-					config.getDbUser(), config.getDbPass());
+			db = DriverManager.getConnection(dbInfo.getDbConnectionString(),
+					dbInfo.getUser(), dbInfo.getPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
@@ -59,7 +59,7 @@ public class MarketHistoryTask implements Runnable {
 					+ " types for region " + region);
 
 			try {
-				con.setAutoCommit(false); // transaction mode
+				db.setAutoCommit(false); // transaction mode
 
 				PreparedStatement stmt;
 
@@ -68,12 +68,12 @@ public class MarketHistoryTask implements Runnable {
 							region, type);
 
 					try {
-						stmt = con.prepareStatement(DELETE_SQL);
+						stmt = db.prepareStatement(DELETE_SQL);
 						stmt.setInt(1, region);
 						stmt.setInt(2, type);
 						stmt.execute();
 
-						stmt = con.prepareStatement(INSERT_SQL);
+						stmt = db.prepareStatement(INSERT_SQL);
 						int count = 0;
 						for (GetMarketsRegionIdHistory200Ok e : history) {
 							stmt.setInt(1, type);
@@ -93,17 +93,17 @@ public class MarketHistoryTask implements Runnable {
 								stmt.executeBatch();
 							}
 						}
-						con.commit();
+						db.commit();
 
 					} catch (SQLException e) {
 						logger.log(Level.WARNING,
 								"Failed to insert history for type " + type
 										+ " for region " + region);
-						con.rollback();
+						db.rollback();
 					}
 				}
 
-				con.setAutoCommit(true);
+				db.setAutoCommit(true);
 				logger.log(Level.INFO, "Inserted history for " + types.size()
 						+ " types for region " + region);
 			} catch (SQLException e) {
@@ -111,13 +111,13 @@ public class MarketHistoryTask implements Runnable {
 			}
 		}
 
-		Utils.closeQuietly(con);
+		Utils.closeQuietly(db);
 	}
 
 	private List<Integer> getMarketableTypes() {
 		List<Integer> typeIds = new ArrayList<Integer>();
 		try {
-			PreparedStatement stmt = con.prepareStatement(TYPES_SQL);
+			PreparedStatement stmt = db.prepareStatement(TYPES_SQL);
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				typeIds.add(rs.getInt("typeId"));
