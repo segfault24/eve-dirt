@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="EveTools" default="package" basedir=".">
+<project name="EveTools" default="build" basedir=".">
 
   <property name="src" location="src"/>
-  <property name="build" location="build/classes"/>
-  <property name="dist" location="build/jar"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
 
   <target name="build" description="compile the source">
     <tstamp/>
@@ -17,9 +17,9 @@
     </javac>
   </target>
 
-  <target name="package" depends="build" description="generate the jar">
+  <target name="dist" depends="build" description="generate the jar">
     <mkdir dir="${dist}"/>
-    <jar jarfile="${dist}/EveTools-${DSTAMP}.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/EveTools.jar" basedir="${build}"/>
   </target>
 
   <target name="clean" description="clean up">

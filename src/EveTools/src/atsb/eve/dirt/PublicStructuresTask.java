@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 import is.ccp.tech.ApiException;
@@ -25,6 +26,8 @@ public class PublicStructuresTask implements Runnable {
 
 	private static Logger logger = Logger.getLogger(PublicStructuresTask.class
 			.toString());
+	
+	private static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
 
 	private static final String INSERT_SQL = "INSERT INTO structure ("
 			+ "`structId`,`structName`,`systemId`,`typeId`"
@@ -33,33 +36,33 @@ public class PublicStructuresTask implements Runnable {
 			+ "`systemId`=VALUES(`systemId`),"
 			+ "`typeId`=VALUES(`typeId`)";
 
-	private DaemonProperties config;
-	private int keyId;
+	private DbInfo dbIni;
 
-	private Connection con;
 	private UniverseApi uapi;
 	private OAuthUser auth;
 
-	public PublicStructuresTask(DaemonProperties cfg) {
-		this.config = cfg;
-		this.keyId = cfg.getScraperAuthKeyId();
+	public PublicStructuresTask(DbInfo cfg) {
+		this.dbIni = cfg;
 	}
 
 	@Override
 	public void run() {
 		uapi = new UniverseApi();
 
+		Connection db;
 		try {
-			con = DriverManager.getConnection(config.getDbConnectionString(),
-					config.getDbUser(), config.getDbPass());
+			db = DriverManager.getConnection(dbIni.getDbConnectionString(),
+					dbIni.getUser(), dbIni.getPass());
 		} catch (SQLException e) {
 			logger.log(Level.WARNING, "Failed to open database connection: "
 					+ e.getLocalizedMessage());
 			return;
 		}
+		
+		int keyId = Integer.parseInt(Utils.getProperty(db, PROPERTY_SCRAPER_KEY_ID));
 
 		try {
-			auth = OAuthUser.getApiAuth(config, keyId);
+			auth = OAuthUser.getApiAuth(dbIni, keyId);
 		} catch (Exception e) {
 			logger.log(Level.WARNING,
 					"Failed to get auth details: " + e.getLocalizedMessage());
@@ -75,7 +78,7 @@ public class PublicStructuresTask implements Runnable {
 
 		int count = 0;
 		try {
-			PreparedStatement stmt = con.prepareStatement(INSERT_SQL);
+			PreparedStatement stmt = db.prepareStatement(INSERT_SQL);
 			for (Long structId : structIds) {
 				try {
 					GetUniverseStructuresStructureIdOk info = getPublicStructure(structId);
@@ -100,14 +103,13 @@ public class PublicStructuresTask implements Runnable {
 
 		logger.log(Level.INFO, "Inserted " + count + " public structure records");
 
-		Utils.closeQuietly(con);
+		Utils.closeQuietly(db);
 	}
 
 	private List<Long> getPublicStructIds() {
 		List<Long> structIds = new ArrayList<Long>();
 		try {
-			structIds = uapi.getUniverseStructures("tranquility",
-					config.getUserAgent(), null);
+			structIds = uapi.getUniverseStructures("tranquility", null);
 		} catch (ApiException e) {
 			logger.log(Level.WARNING,
 					"Failed to retrieve list of public structure ids", e);
@@ -117,8 +119,7 @@ public class PublicStructuresTask implements Runnable {
 
 	private GetUniverseStructuresStructureIdOk getPublicStructure(Long structId)
 			throws ApiException, DirtAuthException, SQLException, IOException {
-		return uapi.getUniverseStructuresStructureId(structId, "tranquility",
-				auth.getAuthToken(), config.getUserAgent(), null);
+		return uapi.getUniverseStructuresStructureId(structId, "tranquility", null, null);
 	}
 
 }

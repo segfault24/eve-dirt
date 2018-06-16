@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eve-dirt" default="build" basedir=".">
+
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+  <property name="distfile" value="eve-dirt"/>
+
+  <target name="build" description="build project and all subprojects">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    
+    <!-- Build the backend stuff -->
+    <ant dir="src/EveTools" target="dist" inheritAll="false"/>
+    <copy todir="${build}/lib">
+      <fileset dir="src/EveTools/dist"/>
+      <fileset dir="src/EveTools/lib"/>
+    </copy>
+
+    <!-- Install the frontend dependencies -->
+    <exec executable="composer">
+      <arg value="install"/>
+      <arg value="--working-dir=src/Frontend"/>
+    </exec>
+    <copy todir="${build}/www">
+      <fileset dir="src/Frontend">
+        <exclude name="**/.*"/>
+        <exclude name="**/.*/**"/>
+      </fileset>
+    </copy>
+
+    <!-- Copy the configs, scripts, sqls, etc -->
+    <copy todir="${build}/cfg">
+      <fileset dir="cfg"/>
+    </copy>
+    <copy todir="${build}/bin">
+      <fileset dir="scripts"/>
+    </copy>
+    <copy todir="${build}/sql">
+      <fileset dir="sql"/>
+    </copy>
+
+  </target>
+
+  <target name="dist" depends="build" description="build distributable tar.gz">
+    <mkdir dir="${dist}"/>
+    <tar destfile="${dist}/${distfile}.tar" basedir="${build}"/>
+    <gzip destfile="${dist}/${distfile}.tar.gz" src="${dist}/${distfile}.tar"/>
+    <delete file="${dist}/${distfile}.tar"/>
+  </target>
+
+  <target name="clean" description="clean up project and sub-projects">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+
+    <!-- Clean up sub projects -->
+    <ant dir="src/EveTools" target="clean" inheritAll="false"/>
+    <delete dir="src/Frontend/vendor"/>
+
+  </target>
+
+</project>

@@ -71,10 +71,19 @@ CREATE TABLE `structure` (
 
 -- -----------------------------------------------------------------------------
 
+DROP TABLE IF EXISTS `property`;
 DROP TABLE IF EXISTS `dirtListItem`;
 DROP TABLE IF EXISTS `dirtList`;
 DROP TABLE IF EXISTS `dirtApiAuth`;
 DROP TABLE IF EXISTS `dirtUser`;
+
+CREATE TABLE `property` (
+	`id` INT AUTO_INCREMENT,
+	`propertyName` VARCHAR(64) NULL,
+	`propertyValue` VARCHAR(256) NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `ux_property_propertyName` (`propertyName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dirtUser` (
 	`userId` INT AUTO_INCREMENT,
@@ -179,9 +188,7 @@ CREATE TABLE `insurancePrice` (
 	`cost` DECIMAL(19, 4),
 	`payout` DECIMAL(19, 4),
 	PRIMARY KEY (`insuranceEntryId`),
-	UNIQUE KEY (`typeId`, `name`),
-	FOREIGN KEY (`typeId`)
-		REFERENCES `invTypes` (`typeID`)
+	UNIQUE KEY (`typeId`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------
@@ -256,55 +263,11 @@ CREATE VIEW vAmarrBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder
 
 -- -----------------------------------------------------------------------------
 
-DROP USER IF EXISTS 'dirt.web'@'localhost';
-DROP USER IF EXISTS 'dirt.scraper'@'localhost';
-DROP USER IF EXISTS 'dirt.merloader'@'localhost';
-
--- web server
-CREATE USER 'dirt.web'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT ON eve.invTypes TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.invMarketGroups TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.mapRegions TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.mapSolarSystems TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.staStations TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.marketOrder TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.marketHistory TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.insurancePrice TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merSinkFaucet TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merMoneySupply TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merIskVolume TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merRegStat TO 'dirt.web'@'localhost';
-GRANT SELECT ON eve.merProdDestMine TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtUser TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtList TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtListItem TO 'dirt.web'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt.web'@'localhost';
-
--- backend scraper
-CREATE USER 'dirt.scraper'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT ON eve.invTypes TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.invMarketGroups TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.mapRegions TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.mapSolarSystems TO 'dirt.scraper'@'localhost';
-GRANT SELECT ON eve.staStations TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketOrder TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.marketHistory TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE,DROP ON eve.insurancePrice TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.dirtApiAuth TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.alliance TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.corporation TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.character TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.structure TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merSinkFaucet TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merMoneySupply TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merIskVolume TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merRegStat TO 'dirt.scraper'@'localhost';
-GRANT SELECT,INSERT,UPDATE,DELETE ON eve.merProdDestMine TO 'dirt.scraper'@'localhost';
-
+DROP USER IF EXISTS 'dirt'@'localhost';
+DROP USER IF EXISTS 'dirt'@'DOMAINNAME';
+CREATE USER 'dirt'@'localhost' IDENTIFIED BY 'DIRTDBPW';
+CREATE USER 'dirt'@'DOMAINNAME' IDENTIFIED BY 'DIRTDBPW';
+GRANT ALL ON eve.* TO 'dirt'@'localhost','dirt'@'DOMAINNAME';
 FLUSH PRIVILEGES;
 
 -- -----------------------------------------------------------------------------
@@ -323,3 +286,22 @@ INSERT INTO `dirtUser` (
 	TRUE,
 	FALSE
 );
+
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("domain","DOMAINNAME");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("adminemail","webmaster@DOMAINNAME");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("scraperkeyid","1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoclientid","APPCLIENTID");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssosecretkey","APPSECRETKEY");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("threads","1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.regions","10000002,10000043,10000032,10000030,10000042");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.period","60");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.regions","10000002,10000043,10000032,10000030,10000042");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.period","1440");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructures.period","1440");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("insuranceprices.period","240");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.period","15");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.expires","60");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketpublic","false");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("maintenancemode","false");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("useragent","DIRT/0.1 (webmaster@DOMAINNAME)");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope","esi-wallet.read_character_wallet.v1 esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-ui.open_window.v1 esi-markets.structure_markets.v1 esi-markets.read_character_orders.v1");

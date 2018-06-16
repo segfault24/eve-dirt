@@ -1,5 +1,0 @@
-# keep log files small...
-0 0 * * * /srv/dirt/bin/trim-logs.sh
-
-# daemon watchdog
-* * * * * flock -n /var/tmp/dirt-daemon.lck -c /srv/dirt/bin/dirt-daemon.sh

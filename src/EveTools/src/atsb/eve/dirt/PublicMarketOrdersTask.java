@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
 import is.ccp.tech.ApiClient;
@@ -24,22 +25,19 @@ import is.ccp.tech.esi.models.GetMarketsRegionIdOrders200Ok;
  */
 public class PublicMarketOrdersTask implements Runnable {
 
-	private static Logger logger = Logger
-			.getLogger(PublicMarketOrdersTask.class.toString());
+	private static Logger logger = Logger.getLogger(PublicMarketOrdersTask.class.toString());
 
 	private static final String DELETE_SQL = "DELETE FROM marketOrder WHERE `regionId`=?";
-	private static final String INSERT_SQL = "INSERT INTO marketOrder ("
-			+ "`issued`,`range`,`isBuyOrder`,`duration`,"
+	private static final String INSERT_SQL = "INSERT INTO marketOrder (" + "`issued`,`range`,`isBuyOrder`,`duration`,"
 			+ "`orderId`,`volumeRemain`,`minVolume`,`typeId`,"
-			+ "`volumeTotal`,`locationId`,`price`,`regionId`,`retrieved`"
-			+ ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			+ "`volumeTotal`,`locationId`,`price`,`regionId`,`retrieved`" + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 	private int region;
-	private DaemonProperties config;
-	private Connection con;
+	private DbInfo dbInfo;
+	private Connection db;
 
-	public PublicMarketOrdersTask(DaemonProperties cfg, int region) {
-		this.config = cfg;
+	public PublicMarketOrdersTask(DbInfo dbInifo, int region) {
+		this.dbInfo = dbInifo;
 		this.region = region;
 	}
 
@@ -47,29 +45,26 @@ public class PublicMarketOrdersTask implements Runnable {
 	public void run() {
 
 		try {
-			con = DriverManager.getConnection(config.getDbConnectionString(),
-					config.getDbUser(), config.getDbPass());
+			db = DriverManager.getConnection(dbInfo.getDbConnectionString(), dbInfo.getUser(), dbInfo.getPass());
 		} catch (SQLException e) {
-			logger.log(Level.WARNING, "Failed to open database connection: "
-					+ e.getLocalizedMessage());
+			logger.log(Level.WARNING, "Failed to open database connection: " + e.getLocalizedMessage());
 			return;
 		}
 
 		logger.log(Level.INFO, "Started order scrape for region " + region);
 		List<GetMarketsRegionIdOrders200Ok> orders = getPublicOrders(region);
-		logger.log(Level.INFO, "Retrieved " + orders.size()
-				+ " orders for region " + region);
+		logger.log(Level.INFO, "Retrieved " + orders.size() + " orders for region " + region);
 
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 		try {
-			con.setAutoCommit(false);
+			db.setAutoCommit(false);
 
-			PreparedStatement stmt = con.prepareStatement(DELETE_SQL);
+			PreparedStatement stmt = db.prepareStatement(DELETE_SQL);
 			stmt.setInt(1, region);
 			stmt.execute();
 			Utils.closeQuietly(stmt);
 
-			stmt = con.prepareStatement(INSERT_SQL);
+			stmt = db.prepareStatement(INSERT_SQL);
 			int count = 0;
 			for (GetMarketsRegionIdOrders200Ok o : orders) {
 				stmt.setTimestamp(1, new Timestamp(o.getIssued().getMillis()));
@@ -93,23 +88,19 @@ public class PublicMarketOrdersTask implements Runnable {
 					try {
 						stmt.executeBatch();
 					} catch (SQLException ex) {
-						logger.log(Level.WARNING,
-								"Failed to insert some orders for region "
-										+ region);
+						logger.log(Level.WARNING, "Failed to insert some orders for region " + region);
 					}
 				}
 			}
 
-			con.commit();
-			con.setAutoCommit(true);
-			logger.log(Level.INFO, "Inserted " + orders.size()
-					+ " orders for region " + region);
+			db.commit();
+			db.setAutoCommit(true);
+			logger.log(Level.INFO, "Inserted " + orders.size() + " orders for region " + region);
 		} catch (SQLException e) {
-			logger.log(Level.WARNING,
-					"Unexpected failure while processing region " + region);
+			logger.log(Level.WARNING, "Unexpected failure while processing region " + region);
 		}
 
-		Utils.closeQuietly(con);
+		Utils.closeQuietly(db);
 	}
 
 	private List<GetMarketsRegionIdOrders200Ok> getPublicOrders(int region) {
@@ -122,8 +113,7 @@ public class PublicMarketOrdersTask implements Runnable {
 		while (!done) {
 			List<GetMarketsRegionIdOrders200Ok> orders;
 			try {
-				orders = mapi.getMarketsRegionIdOrders("all", region,
-						"tranquility", page, null, config.getUserAgent(), null);
+				orders = mapi.getMarketsRegionIdOrders("all", region, "tranquility", null, page, null);
 				if (orders.isEmpty()) {
 					break;
 				}
@@ -132,10 +122,8 @@ public class PublicMarketOrdersTask implements Runnable {
 				retry = 0;
 			} catch (ApiException e) {
 				if (retry == 3) {
-					retry = 0;
-					logger.log(Level.WARNING, "Failed to retrieve page " + page
-							+ " of orders for region " + region);
-					page++;
+					logger.log(Level.WARNING, "Failed to retrieve page " + page + " of orders for region " + region);
+					break;
 				} else {
 					retry++;
 					continue;
