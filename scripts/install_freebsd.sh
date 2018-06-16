@@ -7,7 +7,7 @@ SSO_SECRET_KEY=
 
 if [ -z ${FQDN} ]; then
     echo The Fully Qualified Domain Name \(FQDN\) of the website must be filled
-    echo in at the top of this script \(ex.  dirt.mywebsite.com\)
+    echo in at the top of this script \(ex. dirt.mywebsite.com\)
     exit 1
 fi
 

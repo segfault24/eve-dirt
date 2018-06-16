@@ -2,7 +2,7 @@
 Prerequisites: *git*, *openjdk8*, *apache-ant*, and *php-composer*
 ```bash
 # debian
-# TODO
+apt-get install git openjdk-8-jdk ant composer
 ```
 ```bash
 # freebsd

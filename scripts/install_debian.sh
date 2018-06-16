@@ -1,8 +1,36 @@
 #!/bin/sh
-FQDN=dirt.lan
-INSTALL_DIR=/srv/dirt
+FQDN=
 RUN_USER=dirt
 WWW_USER=www-data
+SSO_CLIENT_ID=
+SSO_SECRET_KEY=
+
+if [ -z ${FQDN} ]; then
+    echo The Fully Qualified Domain Name \(FQDN\) of the website must be filled
+    echo in at the top of this script \(ex. dirt.mywebsite.com\)
+    exit 1
+fi
+
+if [ -z ${SSO_CLIENT_ID} ] || [ -z ${SSO_SECRET_KEY} ]; then
+    echo You need to setup the application with CCP and then
+    echo add the client id and secret to the top of this script
+    echo
+    echo 1\) Go to https://developers.eveonline.com/applications
+    echo 2\) Create New Application
+    echo 3\) Give it a name and description
+    echo 4\) Select Authentication \& API Access
+    echo 5\) Select the following permissions:
+    echo --a\) esi-wallet.read_character_wallet.v1
+    echo --b\) esi-markets.read_character_orders.v1
+    echo --c\) esi-assets.read_assets.v1
+    echo --d\) esi-universe.read_structures.v1
+    echo --e\) esi-markets.structure_markets.v1
+    echo --f\) esi-ui.open_window.v1
+    echo 6\) Enter the call back URL \(https://${FQDN}/sso-auth/callback\)
+    echo 7\) Create Application
+    echo 8\) Copy the client id and secret key into this script
+    exit 1
+fi
 
 if ! [ $(id -u) = 0 ]; then
     echo "This script must be run with root privileges"
@@ -10,21 +38,19 @@ if ! [ $(id -u) = 0 ]; then
 fi
 
 # work from the root of the install directory
-cd ${INSTALL_DIR}
-
-DB_ROOT_PASSWORD=$(openssl rand -base64 16)
-DB_ADMIN_PASSWORD=$(openssl rand -base64 16)
+cd $(dirname "$0")/..
+INSTALL_DIR=$(pwd)
 
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
-    adduser ${RUN_USER} -q -d ${INSTALL_DIR} -D -s /usr/sbin/nologin
+    adduser --quiet --system --disabled-password --home ${INSTALL_DIR} --shell /usr/sbin/nologin ${RUN_USER}
 fi
 
 # add the web server user to the group
 usermod -a -G ${RUN_USER} ${WWW_USER}
 
 # setup data directory
-mkdir -p www/logs
+mkdir -p -m 770 www/logs
 chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
 chmod -R o-rwx ${INSTALL_DIR}
 
@@ -34,56 +60,39 @@ SUBJ="/C=US/ST=New\ York/L=New\ York/O=The\ Ether/CN=${FQDN}"
 KEYOUT=${APACHE}/ssl/${FQDN}.key
 CRTOUT=${APACHE}/ssl/${FQDN}.crt
 mkdir -m 700 ${APACHE}/ssl
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEYOUT} -out ${CRTOUT} -subj ${SUBJ}
+openssl req -newkey rsa:2048 -nodes -x509 -keyout "${KEYOUT}" -out "${CRTOUT}" -subj "${SUBJ}"
 chmod 400 ${KEYOUT} ${CRTOUT}
 
+# customize configuration files
+DIRT_DB_PW=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1)
+INSTALL_DIR_ESC=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
+APACHE_DIR_ESC=$(echo ${APACHE} | sed "s/\//\\\\\//g")
+sed -i "s/DIRTDBPW/${DIRT_DB_PW}/g" sql/dirt.sql
+sed -i "s/DIRTDBPW/${DIRT_DB_PW}/g" cfg/db.ini
+sed -i "s/DOMAINNAME/${FQDN}/g" sql/dirt.sql
+sed -i "s/DOMAINNAME/${FQDN}/g" cfg/site.conf
+sed -i "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/jobs.cron
+sed -i "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/site.conf
+sed -i "s/APACHEDIR/${APACHE_DIR_ESC}/g" cfg/site.conf
+sed -i "s/APPCLIENTID/${SSO_CLIENT_ID}/g" sql/dirt.sql
+sed -i "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" sql/dirt.sql
+
 # add to apache
-cp cfg/site.conf cfg/site.conf.tmp
-sed -i '' "s/example.com/${FQDN}/g" cfg/site.conf.tmp
-TEMP=$(echo ${APACHE} | sed "s/\//\\\\\//g")
-sed -i '' "s/APACHEDIR/${TEMP}/g" cfg/site.conf.tmp
-TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
-sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/site.conf.tmp
-mv cfg/site.conf.tmp ${APACHE}/sites-enabled/dirt-${FQDN}.conf
+cp cfg/site.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf
 
 # initialize db
-#mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('${DB_ROOT_PASSWORD}') WHERE User='root';"
-#mysql -u root -e "CREATE DATABASE eve;"
-#mysql -u root -e "CREATE USER 'dirt.admin'@'localhost' IDENTIFIED BY '${DB_ADMIN_PASSWORD}';"
-#mysql -u root -e "GRANT ALL PRIVILEGES ON eve.* TO 'dirt.admin'@'localhost' WITH GRANT OPTION;"
-#mysql -u root -p eve < ${INSTALL_DIR}/sql/invTypes.sql
-#mysql -u root -p eve < ${INSTALL_DIR}/sql/dirt.sql
+mysql -u root -e "DROP DATABASE IF EXISTS eve;"
+mysql -u root -e "CREATE DATABASE eve;"
+mysql -u root eve < sql/invTypes.sql
+mysql -u root eve < sql/invMarketGroups.sql
+mysql -u root eve < sql/mapRegions.sql
+mysql -u root eve < sql/mapSolarSystems.sql
+mysql -u root eve < sql/staStations.sql
+mysql -u root eve < sql/dirt.sql
 
-# cron job for daemon
-cp cfg/exmaple.cron cfg/cron.tmp
-TEMP=$(echo ${INSTALL_DIR} | sed "s/\//\\\\\//g")
-sed -i '' "s/INSTALLDIR/${TEMP}/g" cfg/cron.tmp
-crontab -u ${RUN_USER} cfg/cron.tmp
-rm cfg/cron.tmp
+# install cron job for daemon
+crontab -u ${RUN_USER} cfg/jobs.cron
 
 # restart apache
 systemctl restart apache2
 
-# save the db password(s)
-echo ${DB_ROOT_PASSWORD} > /root/db_passwords.txt
-echo ${DB_ADMIN_PASSWORD} >> /root/db_passwords.txt
-echo See /root/db_passwords.txt for DB credentials
-
-# sso instructions
-echo Setup SSO integration:
-echo 1\) Go to https://developers.eveonline.com/applications
-echo 2\) Create New Application
-echo 3\) Give it a name and description
-echo 4\) Select Authentication \& API Access
-echo 5\) Select the following permissions:
-echo --a\) esi-wallet.read_character_wallet.v1
-echo --b\) esi-markets.read_character_orders.v1
-echo --c\) esi-assets.read_assets.v1
-echo --d\) esi-universe.read_structures.v1
-echo --e\) esi-markets.structure_markets.v1
-echo --f\) esi-ui.open_window.v1
-echo 6\) Enter the call back URL \(htps://${FQDN}/sso-auth/callback\)
-echo 7\) Create Application
-echo 8\) Copy the Client ID and Secret Key into:
-echo --a\) ${INSTALL_DIR}/cfg/db.config
-echo --b\) ${INSTALL_DIR}/www/classes/Site.php
