@@ -10,7 +10,7 @@ $app->get('/api/lists/', function ($request, $response, $args) {
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
-    
+
     // retrieve all the user's lists
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId, name, public FROM dirtList WHERE userId=:userid;';
@@ -18,9 +18,9 @@ $app->get('/api/lists/', function ($request, $response, $args) {
     $stmt->execute(array(
         ':userid' => $u->getUserId()
     ));
-    
+
     $lists = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     return $response->withJson($lists);
 });
 
@@ -29,7 +29,7 @@ $app->post('/api/lists/', function ($request, $response, $args) {
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
-    
+
     // set default parameters if necessary
     $listname = $request->getParsedBody()['info']['name'];
     if ($listname == '') {
@@ -39,7 +39,7 @@ $app->post('/api/lists/', function ($request, $response, $args) {
     if ($public == '') {
         $public = false;
     }
-    
+
     // create the new list
     $db = Dirt\Database::getDb();
     $sql = 'INSERT INTO dirtList (name, userId, public) VALUES (:listname, :userid, FALSE);';
@@ -48,7 +48,7 @@ $app->post('/api/lists/', function ($request, $response, $args) {
         ':listname' => $listname,
         ':userid' => $u->getUserId()
     ));
-    
+
     return $response;
 });
 
@@ -60,7 +60,7 @@ $app->get('/api/lists/{listid}', function ($request, $response, $args) {
         return $response->withStatus(302)
             ->withHeader('Location', '/login');
     }
-    
+
     // retrieve the list's info
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId, name, public FROM dirtList WHERE listId=:listid;';
@@ -68,19 +68,19 @@ $app->get('/api/lists/{listid}', function ($request, $response, $args) {
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // 404 not found if the list doesn't exist
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // 403 forbidden if the user doesn't own the list and it's not public
     if ($listinfo['public'] != 1 && $listinfo['userId'] != $u->getUserId()) {
         return $response->withStatus(403);
     }
-    
+
     return $response->withJson($listinfo);
 });
 
@@ -93,7 +93,7 @@ $app->delete('/api/lists/{listid}', function ($request, $response, $args) {
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
-    
+
     // does the list exist and is it their list?
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId FROM dirtList WHERE listId=:listid;';
@@ -101,33 +101,33 @@ $app->delete('/api/lists/{listid}', function ($request, $response, $args) {
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // 404 not found if the list doesn't exist
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // 403 forbidden if the user doesn't own the list
     if ($listinfo['userId'] != $u->getUserId()) {
         return $response->withStatus(403);
     }
-    
+
     // remove listitems
     $sql = 'DELETE FROM dirtListItem WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // remove list
     $sql = 'DELETE FROM dirtList WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     return $response;
 });
 
@@ -139,7 +139,7 @@ $app->get('/api/lists/{listid}/types/', function ($request, $response, $args) {
         return $response->withStatus(302)
             ->withHeader('Location', '/login');
     }
-    
+
     // retrieve the list's info
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
@@ -147,28 +147,28 @@ $app->get('/api/lists/{listid}/types/', function ($request, $response, $args) {
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // 404 not found if the list doesn't exist
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // 403 forbidden if the user doesn't own the list and it's not public
     if ($listinfo['public'] != 1 && $listinfo['userId'] != $u->getUserId()) {
         return $response->withStatus(403);
     }
-    
+
     // retrieve the items in the list
     $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invTypes AS i ON li.typeId=i.typeID WHERE li.listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     $listitems = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     return $response->withJson($listitems);
 });
 
@@ -188,7 +188,7 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         return $response->withStatus(302)
             ->withHeader('Location', '/login');
     }
-    
+
     // retrieve the list's info
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
@@ -196,19 +196,19 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // 404 not found if the list doesn't exist
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // 403 forbidden if the user doesn't own the list and it's not public
     if ($listinfo['public'] != 1 && $listinfo['userId'] != $u->getUserId()) {
         return $response->withStatus(403);
     }
-    
+
     // retrieve the item from the list
     $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invTypes AS i ON li.typeId=i.typeID WHERE li.listId=:listid AND li.typeId=:typeid;';
     $stmt = $db->prepare($sql);
@@ -216,14 +216,14 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         ':listid' => $args['listid'],
         ':typeid' => $args['typeid']
     ));
-    
+
     // 404 not found if the item isn't in the list
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listitems = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     return $response->withJson($listitems);
 });
 
@@ -232,7 +232,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
-    
+
     // retrieve the list's info
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
@@ -240,19 +240,19 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // 404 not found if the list doesn't exist
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // 403 forbidden if the user doesn't own the list
     if ($listinfo['userId'] != $u->getUserId()) {
         return $response->withStatus(403);
     }
-    
+
     // check for exact match first
     $typeName = $request->getParsedBody()['typeName'];
     $sql = 'SELECT typeID FROM invTypes WHERE typeName=:typeName AND published=1;';
@@ -260,7 +260,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     $stmt->execute(array(
         ':typeName' => $typeName
     ));
-    
+
     if ($stmt->rowCount() == 1) {
         // exact match found, do nothing & fall through
     } else if ($stmt->rowCount() > 1) {
@@ -276,7 +276,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         $stmt->execute(array(
             ':typeName' => $typeName
         ));
-        
+
         if ($stmt->rowCount() == 1) {
             // found something that is close enough, do nothing & fall through
         } else {
@@ -285,9 +285,9 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
             return $response->withStatus(400);
         }
     }
-    
+
     $typeid = $stmt->fetch(PDO::FETCH_ASSOC)['typeID'];
-    
+
     // get the quantity
     $quantity = $request->getParsedBody()['quantity'];
     if ($quantity == '') {
@@ -302,12 +302,12 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         if ($stmt->rowCount() == 1) {
             return response;
         }
-        
+
         // set the default qt
         $quantity = 1;
     }
     $quantity = intval($quantity); // ensure integer
-                                   
+
     // replace into the list
     $sql = 'REPLACE INTO dirtListItem (listId, typeId, quantity) VALUES (:listid, :typeid, :quantity);';
     $stmt = $db->prepare($sql);
@@ -316,7 +316,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         ':typeid' => $typeid,
         ':quantity' => $quantity
     ));
-    
+
     return $response;
 });
 
@@ -326,7 +326,7 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
         return $response->withStatus(302)
             ->withHeader('Location', '/login');
     }
-    
+
     // retrieve the list's info
     $db = Dirt\Database::getDb();
     $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
@@ -334,19 +334,19 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
-    
+
     // 404 not found if the list doesn't exist
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // 403 forbidden if the user doesn't own the list
     if ($listinfo['userId'] != $u->getUserId()) {
         return $response->withStatus(403);
     }
-    
+
     // retrieve the item from the list
     $sql = 'SELECT typeId FROM dirtListItem WHERE listId=:listid AND typeId=:typeid;';
     $stmt = $db->prepare($sql);
@@ -354,12 +354,12 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
         ':listid' => $args['listid'],
         ':typeid' => $args['typeid']
     ));
-    
+
     // 404 not found if the item isn't in the list
     if ($stmt->rowCount() == 0) {
         return $response->withStatus(404);
     }
-    
+
     // remove the listitem
     $sql = 'DELETE FROM dirtListItem WHERE listId=:listid AND typeId=:typeid;';
     $stmt = $db->prepare($sql);
@@ -367,7 +367,7 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
         ':listid' => $args['listid'],
         ':typeid' => $args['typeid']
     ));
-    
+
     return $response;
 });
 

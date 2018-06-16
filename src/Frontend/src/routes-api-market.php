@@ -5,7 +5,7 @@
 // //////////////////////////////////////////////
 $app->get('/api/market/history/{region}/type/{type}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT `typeId`, `regionId`, `date`, `highest`,
             `average`, `lowest`, `volume`, `orderCount`
             FROM marketHistory
@@ -16,13 +16,13 @@ $app->get('/api/market/history/{region}/type/{type}', function ($request, $respo
     $stmt->bindParam(':region', $args['region']);
     $stmt->bindParam(':type', $args['type']);
     $stmt->execute();
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
 $app->get('/api/market/orders/{location}/type/{type}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT
             o.`orderId`, o.`typeId`, r.`regionName`, s.`stationName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
@@ -40,7 +40,7 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
     }
     $stmt->bindParam(':type', $args['type']);
     $stmt->execute();
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -73,7 +73,7 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
             'error' => 'no character linked to this account'
         ));
     }
-    
+
     // execute the api call
     $header = "Authorization: Bearer " . ($u->getAuthToken());
     $ch = curl_init();
@@ -89,7 +89,7 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     $result = curl_exec($ch);
     curl_close($ch);
-    
+
     return $response->withJson(array(
         'success' => 'made api call'
     ));
@@ -101,55 +101,55 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
 
 $app->get('/api/economic-reports/mined-produced-destroyed', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT `date`, `produced`, `destroyed`, `mined` FROM merProdDestMine';
     $stmt = $db->prepare($sql);
     $stmt->execute();
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
 $app->get('/api/economic-reports/velocity-of-isk', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT `date`, `iskVolume` AS volume FROM merIskVolume;';
     $stmt = $db->prepare($sql);
     $stmt->execute();
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
 $app->get('/api/economic-reports/money-supply', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT `date`, `character`, `corporation`, `total` FROM merMoneySupply;';
     $stmt = $db->prepare($sql);
     $stmt->execute();
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
 $app->get('/api/insurance-prices', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT t.typeID, t.typeName, i.name, i.cost, i.payout' . ' FROM insurancePrice AS i' . ' JOIN invTypes AS t ON i.typeId=t.typeID' . ' WHERE t.marketGroupID IS NOT NULL' . ' AND published=1';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':typeid' => $args['typeid']
     ));
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
 $app->get('/api/insurance-price/{typeid}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
-    
+
     $sql = 'SELECT name, cost, payout FROM insurancePrice WHERE typeId=:typeid';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':typeid' => $args['typeid']
     ));
-    
+
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
