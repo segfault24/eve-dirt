@@ -40,9 +40,12 @@ $(document).ready(function(){
 		],
 		order: [[3, "desc"]],
 		searching: false,
-		paging: false,
+		paging: true,
+		pageLength: 50,
+		bLengthChange: false,
 		bInfo: false,
-		responsive: true
+		responsive: true,
+		select: true
 	});
 	sellTable = $('#sellorders').DataTable({
 		columns: [
@@ -53,9 +56,12 @@ $(document).ready(function(){
 		],
 		order: [[2, "asc"]],
 		searching: false,
-		paging: false,
+		paging: true,
+		pageLength: 50,
+		bLengthChange: false,
 		bInfo: false,
-		responsive: true
+		responsive: true,
+		select: true
 	});
 	historyTable = $('#rawhistory').DataTable({
 		columns: [
@@ -70,7 +76,8 @@ $(document).ready(function(){
 		paging: false,
 		bInfo: false,
 		searching: false,
-		responsive: true
+		responsive: true,
+		select: true
 	});
 
 	// setup the table autoadjust
