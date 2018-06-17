@@ -1,0 +1,39 @@
+{% extends "base.phtml" %}
+{% block title %}List Detail{% endblock %}
+{% block extrahead %}
+{% include 'table-libs.phtml' %}
+<script src="/js/lists.js"></script>
+<script>
+$(function(){
+    listDetailLoad();
+})
+</script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+        <h3 id="list-name"><i class="fa fa-paste fa-fw"></i>&nbsp;</h3>
+        <hr>
+        <form>
+	       <div class="form-group input-group margin-bottom">
+		      <input type="text" class="form-control ui-autocomplete-input" id="item-add-name" placeholder="Item Type">
+		      <span class="input-group-btn">
+			     <button type="submit" id="item-add-button" class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+		      </span>
+	       </div>
+        </form>
+        <hr>
+        <table id="item-table" class="table responsive table-striped table-hover table-condensed border" width="100%">
+	       <thead>
+		      <tr>
+			     <th>Item</th>
+			     <th>Qt</th>
+			     <th></th>
+		      </tr>
+	       </thead>
+	       <tbody>
+	       </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
