@@ -13,7 +13,7 @@ $app->get('/api/lists/', function ($request, $response, $args) {
 
     // retrieve all the user's lists
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, name, public FROM dirtList WHERE userId=:userid;';
+    $sql = 'SELECT dl.listId, dl.userId, dl.name, dl.public, count(dli.typeId) AS typeCount FROM dirtList AS dl LEFT JOIN dirtListItem AS dli ON dl.listId=dli.listId WHERE userId=:userid GROUP BY dl.listId;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':userid' => $u->getUserId()
@@ -35,18 +35,19 @@ $app->post('/api/lists/', function ($request, $response, $args) {
     if ($listname == '') {
         $listname = 'list ' . uniqid();
     }
-    $public = $request->getParsedBody()['public'];
+    $public = $request->getParsedBody()['info']['public'];
     if ($public == '') {
         $public = false;
     }
 
     // create the new list
     $db = Dirt\Database::getDb();
-    $sql = 'INSERT INTO dirtList (name, userId, public) VALUES (:listname, :userid, FALSE);';
+    $sql = 'INSERT INTO dirtList (name, userId, public) VALUES (:listname, :userid, :public);';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listname' => $listname,
-        ':userid' => $u->getUserId()
+        ':userid' => $u->getUserId(),
+        ':public' => $public
     ));
 
     return $response;

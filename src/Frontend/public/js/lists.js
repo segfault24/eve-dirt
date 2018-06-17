@@ -1,27 +1,56 @@
 "use strict";
 
 function myListsLoad() {
-    var listTable = $('#list-table').DataTable({
+	var listTable = $('#list-table').DataTable({
 		order: [[0, "desc"]],
 		searching: false,
 		paging: false,
 		bInfo: false,
 		responsive: true,
+		select: true,
 		language: {
 			emptyTable: "You have no lists"
-		}
+		},
+		dom: 'Bfrtip',
+		buttons: [
+			{
+				text: 'Add',
+				className: 'btn btn-success',
+				action: function (e, dt, node, config) {
+					$('#addListModal').modal();
+				}
+			},
+			{
+				text: 'Edit',
+				className: 'btn btn-info',
+				action: function (e, dt, node, config) {
+					console.log('edit not implemented yet');
+				}
+			},
+			{
+				text: 'Delete',
+				className: 'btn btn-danger',
+				action: function (e, dt, node, config) {
+					if (listTable.rows({selected:true}).count() > 0) {
+						$('#deleteListModal').modal();
+					}
+				}
+			}
+		]
 	});
-	
+
 	$(document).on('click', '#list-add-button', function(e) {
 		e.preventDefault();
 
-		var listname = $('#list-add-name').val();
+		var listnm = $('#list-add-name').val();
+		var listvis = $('#list-add-visibility').val();
 		$.ajax({
 			url: '/api/lists/',
 			type: 'POST',
-			data: {"info":{"name":listname}},
+			data: {"info":{"name":listnm,"public":listvis}},
 			success: function(result) {
 				$('#list-add-name').val('');
+				$('#list-add-visibility').val(0);
 				loadListTable(listTable);
 			},
 			error: function() {},
@@ -29,37 +58,40 @@ function myListsLoad() {
 		});
 	});
 
-	$(document).on('click', '.list-delete-button', function(e) {
+	$(document).on('click', '#list-delete-button', function(e) {
 		e.preventDefault();
-
-		var listid = $(this).attr('id');
-		$.ajax({
-			url: '/api/lists/' + listid,
-			type: 'DELETE',
-			success: function(result) {
-				loadListTable(listTable);
-			},
-			error: function() {},
-			complete: function() {}
+		
+		$('#list-table').dataTable().$('tr.selected').each(function() {
+			var listid = $(this).attr('id');
+			$.ajax({
+				url: '/api/lists/' + listid,
+				type: 'DELETE',
+				success: function(result) {
+					loadListTable(listTable);
+				},
+				error: function() {},
+				complete: function() {}
+			});
 		});
 	});
 
-    loadListTable(listTable);
+	loadListTable(listTable);
 }
 
 function loadListTable(listTable) {
-    $.ajax({
+	$.ajax({
 		url: '/api/lists/',
 		type: 'GET',
 		success: function(result) {
-		    listTable.clear();
+			listTable.clear();
 			var lists = result;
 			for(var i=0; i<lists.length; i++) {
+				var link = $('<a>', {className:'list-select', text:lists[i].name , href:'list-detail?listid='+lists[i].listId });
 				listTable.row.add([
-					'<a id="' + lists[i].listId + '" class="list-select" href="list-detail?listid=' + lists[i].listId + '">' + lists[i].name + '</a>',
-					lists[i].public==1?'Public':'Private',
-					'<button type="submit" id="' + lists[i].listId + '" class="btn btn-xs btn-danger list-delete-button">Delete</button>'
-				]);
+					link[0].outerHTML,
+					lists[i].typeCount,
+					lists[i].public==1?'Public':'Private'
+				]).node().id = lists[i].listId;
 			}
 			listTable.draw();
 		}
@@ -67,18 +99,43 @@ function loadListTable(listTable) {
 }
 
 function listDetailLoad() {
-	
-	var listId = getUrlParam('listid');	
 
-    var itemTable = $('#item-table').DataTable({
-        order: [[0, "asc"]],
+	var listId = getUrlParam('listid');
+
+	var itemTable = $('#item-table').DataTable({
+		order: [[0, "asc"]],
 		searching: true,
 		responsive: true,
+		pageLength: 25,
 		language: {
 			emptyTable: "There are no items in this list"
-		}
+		},
+		/*dom: 'Bfrtip',
+		buttons: [
+			{
+				text: 'Add',
+				className: 'btn btn-success',
+				action: function (e, dt, node, config) {
+					$('#addItemModal').modal();
+				}
+			},
+			{
+				text: 'Edit',
+				className: 'btn btn-info',
+				action: function (e, dt, node, config) {
+					console.log('edit not implemented yet');
+				}
+			},
+			{
+				text: 'Delete',
+				className: 'btn btn-danger',
+				action: function (e, dt, node, config) {
+					$('#deleteItemModal').modal();
+				}
+			}
+		]*/
 	});
-	
+
 	$(document).on('click', '#item-add-button', function(e) {
 		e.preventDefault();
 
@@ -95,7 +152,7 @@ function listDetailLoad() {
 		});
 	});
 	
-    $(document).on('click', '.item-delete-button', function(e) {
+	$(document).on('click', '.item-delete-button', function(e) {
 		e.preventDefault();
 
 		var typeid = $(this).attr('id');
@@ -109,7 +166,7 @@ function listDetailLoad() {
 			complete: function() {}
 		});
 	});
-	
+
 	$.getJSON('/api/search-types', function(data) {
 		$('#item-add-name').autocomplete({
 			source: data,
@@ -120,7 +177,7 @@ function listDetailLoad() {
 			}
 		});
 	});
-	
+
 	$.ajax({
 		url: '/api/lists/' + listId,
 		type: 'GET',
@@ -133,11 +190,11 @@ function listDetailLoad() {
 }
 
 function loadItemTable(itemTable, listId) {
-    $.ajax({
+	$.ajax({
 		url: '/api/lists/' + listId + '/types/',
 		type: 'GET',
 		success: function(result) {
-		    itemTable.clear();
+			itemTable.clear();
 			var items = result;
 			for(var i=0; i<items.length; i++) {
 				itemTable.row.add([
