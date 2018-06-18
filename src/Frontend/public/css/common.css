@@ -1,54 +1,10 @@
-body   {
-	overflow-y:scroll;
-}
-
-footer {
-	background-color: #EEE;
-	color: #222;
-	padding: 10px;
-	font-size: 10px;
-}
-
-#page-wrapper {
-	padding: 0px 15px;
-}
-
 #title-img {
 	width: 42px;
 	height: 42px;
 }
 
-.navbar-default {
-	z-index: 30 !important;
-}
-
 .ui-autocomplete-input {
 	z-index: 0 !important;
-}
-
-/* Bootstrap Overrides */
-
-h1, h2, h3 {
-	margin-top: 10px;
-	margin-bottom: 10px;
-}
-
-.panel, .well, .form-group {
-	margin-bottom: 10px;
-}
-
-.well  {
-	padding: 10px
-}
-
-hr {
-	margin-top: 5px;
-	margin-bottom: 10px;
-}
-
-.page-header {
-	padding-bottom: 4px;
-	margin: 15px 0px 10px;
 }
 
 /* General Use */
@@ -76,14 +32,6 @@ hr {
 	border-right: 1px;
 	border-style: solid;
 	border-color: #ddd;
-}
-
-.margin-top {
-	margin-top: 10px;
-}
-
-.margin-bottom {
-	margin-bottom: 10px;
 }
 
 /* Market Browser Menu */

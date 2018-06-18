@@ -13,8 +13,10 @@
 </div>
 <div class="row">
 	<div class="col-md-4">
-		<div class="form-group input-group margin-bottom">
-			<span class="input-group-addon">Source</span>
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Source</span>
+			</div>
 			<select class="form-control" id="srcregionselect">
 				<option value="10000002">The Forge</option>
 				<option value="10000043">Domain</option>
@@ -25,8 +27,10 @@
 		</div>
 	</div>
 	<div class="col-md-4">
-		<div class="form-group input-group">
-			<span class="input-group-addon">Destination</span>
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Destination</span>
+			</div>
 			<select class="form-control" id="dstregionselect">
 				<option value="10000002">The Forge</option>
 				<option value="10000043">Domain</option>
@@ -74,7 +78,7 @@
 						<div class="well">
 							<canvas id="analysis-graph" width="100%"></canvas>
 						</div>
-						<div class="well">
+						<div class="card card-block">
 							<p>This chart shows the difference in price between the two regions over time. It can show the difference in isk, or by percentage of the source price.</p>
 						</div>
 					</div>
