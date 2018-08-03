@@ -153,3 +153,64 @@ $app->get('/api/insurance-price/{typeid}', function ($request, $response, $args)
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
+$app->get('/api/jita-sell', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+    
+    $sql = 'SELECT typeId, best FROM vJitaBestSell';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/jita-sell-xml', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+    
+    $sql = 'SELECT typeId, best FROM vJitaBestSell';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
+    echo '<types>' . "\r\n";
+    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+        $xml = '<type>';
+        $xml .= '<typeId>' . $row[0] . '</typeId>';
+        $xml .= '<bestSell>' . $row[1] . '</bestSell>';
+        $xml .= '</type>' . "\r\n";
+        echo $xml;
+    }
+    echo '</types>' . "\r\n";
+    
+    return $response->withHeader('Content-Type', 'text/xml');
+});
+
+$app->get('/api/amarr-sell', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+    
+    $sql = 'SELECT typeId, best FROM vAmarrBestSell';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+    
+    $sql = 'SELECT typeId, best FROM vAmarrBestSell';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
+    echo '<types>' . "\r\n";
+    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+        $xml = '<type>';
+        $xml .= '<typeId>' . $row[0] . '</typeId>';
+        $xml .= '<bestSell>' . $row[1] . '</bestSell>';
+        $xml .= '</type>' . "\r\n";
+        echo $xml;
+    }
+    echo '</types>' . "\r\n";
+    
+    return $response->withHeader('Content-Type', 'text/xml');
+});

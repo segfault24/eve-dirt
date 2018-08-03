@@ -76,6 +76,7 @@ DROP TABLE IF EXISTS `dirtListItem`;
 DROP TABLE IF EXISTS `dirtList`;
 DROP TABLE IF EXISTS `dirtApiAuth`;
 DROP TABLE IF EXISTS `dirtUser`;
+DROP TABLE IF EXISTS `fortchain`;
 
 CREATE TABLE `property` (
 	`id` INT AUTO_INCREMENT,
@@ -136,6 +137,12 @@ CREATE TABLE `dirtApiAuth` (
 	FOREIGN KEY (`userId`)
 		REFERENCES `dirtUser` (`userId`)
 		ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `fortchain` (
+	`systemId` int(11) NOT NULL,
+	`superDocking` BOOLEAN DEFAULT FALSE,
+	PRIMARY KEY (`systemId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------

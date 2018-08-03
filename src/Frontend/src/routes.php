@@ -372,33 +372,101 @@ $app->get('/insurance', function ($request, $response, $args) {
 // //////////////////////////////////////////////
 
 $app->get('/economic-reports/regional-by-region', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/regional-by-region.phtml', $args);
 });
 
 $app->get('/economic-reports/regional-by-statistic', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/regional-by-statistic.phtml', $args);
 });
 
 $app->get('/economic-reports/regional-by-month', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/regional-by-month.phtml', $args);
 });
 
 $app->get('/economic-reports/mined-produced-destroyed', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/mined-produced-destroyed.phtml', $args);
 });
 
 $app->get('/economic-reports/velocity-of-isk', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/velocity-of-isk.phtml', $args);
 });
 
 $app->get('/economic-reports/money-supply', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/money-supply.phtml', $args);
 });
 
 $app->get('/economic-reports/isk-faucets-sinks', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'economic-reports/isk-faucets-sinks.phtml', $args);
 });
 
 $app->get('/kill-dump', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
     return $this->renderer->render($response, 'kill-dump.phtml', $args);
 });
+
+$app->get('/fortizar-chain', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
+    return $this->renderer->render($response, 'fortizar-chain.phtml', $args);
+});
+

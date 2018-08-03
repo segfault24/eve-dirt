@@ -88,3 +88,13 @@ $app->get('/api/market-group/{group}', function ($request, $response, $args) {
     return $response->withJson($output);
 });
 
+$app->get('/api/fortizar-chain', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+
+    $sql = 'SELECT s.solarSystemId, s.solarSystemName, s.x, s.y, s.z, f.superDocking FROM fortchain AS f JOIN mapSolarSystems AS s ON f.systemId=s.solarSystemId';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
