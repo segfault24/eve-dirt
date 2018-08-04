@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
-import is.ccp.tech.ApiException;
-import is.ccp.tech.esi.MarketApi;
-import is.ccp.tech.esi.models.GetMarketsRegionIdHistory200Ok;
+import net.evetech.ApiException;
+import net.evetech.esi.MarketApi;
+import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
 
 /**
  * Task to get market history for all items by region.

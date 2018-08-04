@@ -1,9 +1,9 @@
 package atsb.eve.dirt;
 
-import is.ccp.tech.ApiException;
-import is.ccp.tech.esi.InsuranceApi;
-import is.ccp.tech.esi.models.GetInsurancePrices200Ok;
-import is.ccp.tech.esi.models.GetInsurancePricesLevel;
+import net.evetech.ApiException;
+import net.evetech.esi.InsuranceApi;
+import net.evetech.esi.models.GetInsurancePrices200Ok;
+import net.evetech.esi.models.GetInsurancePricesLevel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

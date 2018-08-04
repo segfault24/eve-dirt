@@ -13,9 +13,10 @@ import java.util.logging.Logger;
 import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
-import is.ccp.tech.ApiException;
-import is.ccp.tech.esi.UniverseApi;
-import is.ccp.tech.esi.models.GetUniverseStructuresStructureIdOk;
+import net.evetech.ApiException;
+import net.evetech.esi.UniverseApi;
+import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
+
 
 /**
  * Task to retrieve all public structures.

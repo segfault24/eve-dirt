@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.Utils;
 
-import is.ccp.tech.ApiClient;
-import is.ccp.tech.ApiException;
-import is.ccp.tech.esi.MarketApi;
-import is.ccp.tech.esi.models.GetMarketsRegionIdOrders200Ok;
+import net.evetech.ApiClient;
+import net.evetech.ApiException;
+import net.evetech.esi.MarketApi;
+import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
 
 /**
  * Task to get bulk market orders by region.
