@@ -12,10 +12,18 @@ public class DbInfo {
 
 	public DbInfo() {
 		String filePath = System.getProperties().getProperty("config");
+		if (filePath == null) {
+			throw new RuntimeException("config property must be set to the location of the db.ini file");
+		}
+		File f = new File(filePath);
+		if (!f.exists()) {
+			throw new RuntimeException("the specified db.ini file does not exist");
+		}
+
 		Properties props = new Properties();
 		FileInputStream fis = null;
 		try {
-			fis = new FileInputStream(new File(filePath));
+			fis = new FileInputStream(f);
 			props.load(fis);
 		} catch (IOException e) {
 		} finally {

@@ -23,7 +23,7 @@ import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
  * 
  * @author austin
  */
-public class MarketHistoryTask implements Runnable {
+public class MarketHistoryTask extends DirtTask {
 
 	private static Logger logger = Logger.getLogger(MarketHistoryTask.class
 			.toString());
@@ -39,6 +39,7 @@ public class MarketHistoryTask implements Runnable {
 	public MarketHistoryTask(DbInfo dbInfo, int region) {
 		this.dbInfo = dbInfo;
 		this.region = region;
+		this.taskName = "markethistory_" + region;
 	}
 
 	@Override
@@ -51,6 +52,8 @@ public class MarketHistoryTask implements Runnable {
 					+ e.getLocalizedMessage());
 			return;
 		}
+
+		Utils.updateTaskLastRun(db, taskName);
 
 		List<Integer> types = getMarketableTypes();
 		if (!types.isEmpty()) {

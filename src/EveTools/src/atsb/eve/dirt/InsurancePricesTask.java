@@ -22,7 +22,7 @@ import atsb.eve.dirt.util.Utils;
  * 
  * @author austin
  */
-public class InsurancePricesTask implements Runnable {
+public class InsurancePricesTask extends DirtTask {
 
 	private static Logger logger = Logger.getLogger(InsurancePricesTask.class
 			.toString());
@@ -34,6 +34,7 @@ public class InsurancePricesTask implements Runnable {
 
 	public InsurancePricesTask(DbInfo dbInfo) {
 		this.dbInfo = dbInfo;
+		this.taskName = "insuranceprices";
 	}
 
 	@Override
@@ -46,6 +47,8 @@ public class InsurancePricesTask implements Runnable {
 					+ e.getLocalizedMessage());
 			return;
 		}
+
+		Utils.updateTaskLastRun(db, taskName);
 
 		List<GetInsurancePrices200Ok> prices = getInsurancePrices();
 		logger.log(Level.INFO, "Retrieved " + prices.size()

@@ -145,6 +145,12 @@ CREATE TABLE `fortchain` (
 	PRIMARY KEY (`systemId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `taskStatus` (
+	`taskName` VARCHAR(255),
+	`lastRun` TIMESTAMP,
+	PRIMARY KEY (`taskName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- -----------------------------------------------------------------------------
 
 DROP TABLE IF EXISTS `marketHistory`;

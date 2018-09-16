@@ -23,7 +23,7 @@ import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
  * 
  * @author austin
  */
-public class PublicStructuresTask implements Runnable {
+public class PublicStructuresTask extends DirtTask {
 
 	private static Logger logger = Logger.getLogger(PublicStructuresTask.class
 			.toString());
@@ -44,6 +44,7 @@ public class PublicStructuresTask implements Runnable {
 
 	public PublicStructuresTask(DbInfo cfg) {
 		this.dbIni = cfg;
+		this.taskName = "publicstructures";
 	}
 
 	@Override
@@ -59,7 +60,9 @@ public class PublicStructuresTask implements Runnable {
 					+ e.getLocalizedMessage());
 			return;
 		}
-		
+
+		Utils.updateTaskLastRun(db, taskName);
+
 		int keyId = Integer.parseInt(Utils.getProperty(db, PROPERTY_SCRAPER_KEY_ID));
 
 		try {

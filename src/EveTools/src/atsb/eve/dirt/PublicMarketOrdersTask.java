@@ -23,7 +23,7 @@ import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
  * 
  * @author austin
  */
-public class PublicMarketOrdersTask implements Runnable {
+public class PublicMarketOrdersTask extends DirtTask {
 
 	private static Logger logger = Logger.getLogger(PublicMarketOrdersTask.class.toString());
 
@@ -39,6 +39,7 @@ public class PublicMarketOrdersTask implements Runnable {
 	public PublicMarketOrdersTask(DbInfo dbInifo, int region) {
 		this.dbInfo = dbInifo;
 		this.region = region;
+		this.taskName = "publicmarketorders_" + region;
 	}
 
 	@Override
@@ -50,6 +51,8 @@ public class PublicMarketOrdersTask implements Runnable {
 			logger.log(Level.WARNING, "Failed to open database connection: " + e.getLocalizedMessage());
 			return;
 		}
+
+		Utils.updateTaskLastRun(db, taskName);
 
 		logger.log(Level.INFO, "Started order scrape for region " + region);
 		List<GetMarketsRegionIdOrders200Ok> orders = getPublicOrders(region);
