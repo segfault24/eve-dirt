@@ -8,6 +8,7 @@ use PDO;
  * userid
  * username
  * admin set if the user is an administrator
+ * last_active
  *
  * charid set if the user has a linked character
  * charname
@@ -32,6 +33,12 @@ class User
             ];
         }
 
+        // check for session timeout
+        if (isset($_SESSION['last_active']) && (time() - $_SESSION['last_active'] > 86400)) {
+            session_unset();
+            session_destroy();
+        }
+
         // prevent session hijacking
         if ($_SESSION['canary']['ip'] != hash('sha256', $_SERVER['REMOTE_ADDR']) || $_SESSION['canary']['usragnt'] != hash('sha256', $_SERVER['HTTP_USER_AGENT'])) {
             session_regenerate_id(true);
@@ -40,6 +47,8 @@ class User
                 'usragnt' => hash('sha256', $_SERVER['HTTP_USER_AGENT'])
             ];
         }
+
+        $_SESSION['last_active'] = time();
     }
 
     public static function getUser()
