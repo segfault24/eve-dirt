@@ -1,0 +1,14 @@
+[Unit]
+Description=Eve DIRT Daemon
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=RUNUSER
+PIDFile=/var/run/eve-dirt.pid
+ExecStart=INSTALLDIR/bin/dirt-daemon.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -90,6 +90,14 @@ mysql -u root eve < sql/mapSolarSystems.sql
 mysql -u root eve < sql/staStations.sql
 mysql -u root eve < sql/dirt.sql
 
+# install daemon service
+sed -i "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/eve-dirt.rc
+sed -i "s/RUNUSER/${RUN_USER}/g" cfg/eve-dirt.rc
+cp cfg/eve-dirt.rc /usr/local/etc/rc.d/eve-dirt
+chown root:wheel /usr/local/etc/rc.d/eve-dirt
+chmod 555 /usr/local/etc/rc.d/eve-dirt
+service eve-dirt start
+
 # install cron job for daemon
 crontab -u ${RUN_USER} cfg/jobs.cron
 
