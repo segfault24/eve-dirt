@@ -5,7 +5,7 @@ After=syslog.target network.target
 [Service]
 Type=simple
 User=RUNUSER
-PIDFile=/var/run/eve-dirt.pid
+PIDFile=/var/run/evedirt.pid
 ExecStart=INSTALLDIR/bin/dirt-daemon.sh
 Restart=always
 RestartSec=30

@@ -41,6 +41,9 @@ fi
 cd $(dirname "$0")/..
 INSTALL_DIR=$(pwd)
 
+# install java
+apt-get install openjdk-8-jre-headless
+
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
     adduser --quiet --system --disabled-password --home ${INSTALL_DIR} --shell /usr/sbin/nologin ${RUN_USER}
@@ -50,7 +53,7 @@ fi
 usermod -a -G ${RUN_USER} ${WWW_USER}
 
 # setup data directory
-mkdir -p -m 770 www/logs
+install -d -o ${RUN_USER} -g ${RUN_USER} -m 770 /var/log/evedirt
 chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
 chmod -R o-rwx ${INSTALL_DIR}
 
@@ -91,13 +94,11 @@ mysql -u root eve < sql/staStations.sql
 mysql -u root eve < sql/dirt.sql
 
 # install daemon service
-sed -i "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/eve-dirt.service
-sed -i "s/RUNUSER/${RUN_USER}/g" cfg/eve-dirt.service
-cp cfg/eve-dirt.service /lib/systemd/system
-chown root:root /lib/systemd/system/eve-dirt.service
-chmod 644 /lib/systemd/system/eve-dirt.service
-systemctl enable eve-dirt
-systemctl start eve-dirt
+sed -i "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/evedirt.service
+sed -i "s/RUNUSER/${RUN_USER}/g" cfg/evedirt.service
+install -o root -g root -m 644 cfg/evedirt.service /lib/systemd/system/evedirt.service
+systemctl enable evedirt
+systemctl start evedirt
 
 # install cron job for daemon
 crontab -u ${RUN_USER} cfg/jobs.cron

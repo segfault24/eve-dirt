@@ -1,0 +1,33 @@
+#!/bin/sh
+
+. /etc/rc.subr
+
+name="evedirt"
+rcvar=evedirt_enable
+
+ : ${evedirt_user=RUNUSER}
+ : ${evedirt_chdir=INSTALLDIR}
+
+pidfile="/var/run/${name}/${name}.pid"
+javacmd="/usr/local/bin/java"
+javacp=$(echo INSTALLDIR/lib/*.jar | tr ' ' ':')
+javaopts=""
+dbconfig="cfg/db.ini"
+logfile="/var/log/${name}/scrape.log"
+
+command="/usr/sbin/daemon"
+command_args="-f -P ${pidfile} -o ${logfile} ${javacmd} -cp ${javacp} ${javaopts} -Dconfig=${dbconfig} atsb.eve.dirt.DirtTaskDaemon &"
+start_precmd=my_start_precmd
+
+my_start_precmd()
+{
+    if [ ! -e /var/run/${name} ]; then
+        install -d -o dirt -g dirt /var/run/${name};
+    fi
+    if [ ! -e /var/log/${name} ]; then
+        install -d -o dirt -g dirt /var/log/${name};
+    fi
+}
+
+load_rc_config ${name}
+run_rc_command "$1"

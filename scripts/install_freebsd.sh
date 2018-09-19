@@ -46,11 +46,14 @@ if ! id -u ${RUN_USER}; then
     pw useradd -q -n ${RUN_USER} -d ${INSTALL_DIR} -s /usr/sbin/nologin -w random
 fi
 
+# install java
+pkg install openjdk8-jre
+
 # add the web server user to the group
 pw usermod ${WWW_USER} -G ${RUN_USER}
 
 # setup data directory
-mkdir -p -m 770 www/logs
+install -d -o ${RUN_USER} -g ${RUN_USER} -m 770 /var/log/evedirt
 chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
 chmod -R o-rwx ${INSTALL_DIR}
 
@@ -91,12 +94,11 @@ mysql -u root eve < sql/staStations.sql
 mysql -u root eve < sql/dirt.sql
 
 # install daemon service
-sed -i "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/eve-dirt.rc
-sed -i "s/RUNUSER/${RUN_USER}/g" cfg/eve-dirt.rc
-cp cfg/eve-dirt.rc /usr/local/etc/rc.d/eve-dirt
-chown root:wheel /usr/local/etc/rc.d/eve-dirt
-chmod 555 /usr/local/etc/rc.d/eve-dirt
-service eve-dirt start
+sed -i '' "s/INSTALLDIR/${INSTALL_DIR_ESC}/g" cfg/evedirt.rc
+sed -i '' "s/RUNUSER/${RUN_USER}/g" cfg/evedirt.rc
+install -o root -g wheel -m 555 cfg/evedirt.rc /usr/local/etc/rc.d/evedirt
+sysrc evedirt_enable="YES"
+service evedirt start
 
 # install cron job for daemon
 crontab -u ${RUN_USER} cfg/jobs.cron
