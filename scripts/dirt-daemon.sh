@@ -5,6 +5,6 @@ base=`pwd`
 
 classpath="$base/lib/*"
 props="$base/cfg/db.ini"
-logfile="$base/log/scrape.log"
+logfile="/var/log/evedirt/scrape.log"
 
 java -cp "$classpath" -Dconfig="$props" atsb.eve.dirt.DirtTaskDaemon $@ >> "$logfile" 2>&1
