@@ -57,6 +57,7 @@ install -d -o ${RUN_USER} -g ${RUN_USER} -m 770 /var/log/evedirt
 chown -R ${RUN_USER}:${RUN_USER} ${INSTALL_DIR}
 chmod -R o-rwx ${INSTALL_DIR}
 mv www/public/htaccess www/public/.htaccess
+chmod ug+x bin/*.sh
 
 # generate self signed cert
 APACHE=/usr/local/etc/apache24
