@@ -46,7 +46,7 @@ apt-get install openjdk-8-jre-headless
 
 # create the user if it doesn't exist
 if ! id -u ${RUN_USER}; then
-    adduser --quiet --system --disabled-password --home ${INSTALL_DIR} --shell /usr/sbin/nologin ${RUN_USER}
+    adduser --quiet --system --disabled-password --shell /usr/sbin/nologin --group ${RUN_USER}
 fi
 
 # add the web server user to the group
