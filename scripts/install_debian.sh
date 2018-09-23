@@ -81,7 +81,8 @@ sed -i "s/APPCLIENTID/${SSO_CLIENT_ID}/g" sql/dirt.sql
 sed -i "s/APPSECRETKEY/${SSO_SECRET_KEY}/g" sql/dirt.sql
 
 # add to apache
-cp cfg/site.conf ${APACHE}/sites-enabled/dirt-${FQDN}.conf
+cp cfg/site.conf ${APACHE}/sites-available/dirt-${FQDN}.conf
+a2ensite dirt-${FQDN}
 
 # initialize db
 mysql -u root -e "DROP DATABASE IF EXISTS eve;"
