@@ -1,0 +1,95 @@
+{% extends "base.phtml" %}
+{% block title %}Import Analyzer{% endblock %}
+{% block extrahead %}
+{% include 'chart-libs.phtml' %}
+<script type="text/javascript" src="js/browser-menu.js"></script>
+<script type="text/javascript" src="js/import-analyzer.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header" id="title"><img id="title-img"> Import Analysis</h3>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-4">
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Source</span>
+			</div>
+			<select class="form-control" id="srcregionselect">
+				<option value="10000002">The Forge</option>
+				<option value="10000043">Domain</option>
+				<option value="10000032">Sinq Liasion</option>
+				<option value="10000030">Heimatar</option>
+				<option value="10000042">Metropolis</option>
+			</select>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Destination</span>
+			</div>
+			<select class="form-control" id="dstregionselect">
+				<option value="10000002">The Forge</option>
+				<option value="10000043">Domain</option>
+				<option value="10000032">Sinq Liasion</option>
+				<option value="10000030">Heimatar</option>
+				<option value="10000042">Metropolis</option>
+			</select>
+		</div>
+	</div>
+	<div class="col-md-1">
+	</div>
+	<div class="col-md-3">
+		<div class="btn-group margin-bottom">
+			<button type="button" class="btn btn-primary" id="open-in-market-browser"><i class="fa fa-bar-chart-o fa-fw"></i></button>
+			<button type="button" class="btn btn-primary active" id="open-in-import-analyzer"><i class="fa fa-truck fa-fw"></i></button>
+			<button type="button" class="btn btn-primary" id="open-in-station-trader"><i class="fa fa-exchange fa-fw"></i></button>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-9">
+		<div class="panel panel-default no-border">
+			<div class="panel-body no-padding">
+				<ul class="nav nav-tabs">
+					<li class="active" id="analysistablabel"><a href="#analysis" data-toggle="tab"><i class="fa fa-bolt fa-fw"></i> Analysis</a></li>
+					<li id="histtablabel"><a href="#history" data-toggle="tab"><i class="fa fa-history fa-fw"></i> Historical</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane fade in active" id="analysis">
+						<div class="well margin-top">
+							<p>Src Sell</p>
+							<p>Dst Sell</p>
+							<p>Src Buy</p>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="history">
+						<div class="btn-group margin-top margin-bottom" data-toggle="buttons">
+							<label class="btn btn-default active" id="by-isk">
+								<input type="radio" autocomplete="off" checked>Ƶ
+							</label>
+							<label class="btn btn-default" id="by-percent">
+								<input type="radio" autocomplete="off">%
+							</label>
+						</div>
+						<div class="well">
+							<canvas id="analysis-graph" width="100%"></canvas>
+						</div>
+						<div class="card card-block">
+							<p>This chart shows the difference in price between the two regions over time. It can show the difference in isk, or by percentage of the source price.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="panel panel-default browse-panel">
+			<div class="panel-body no-padding browse-panel" id="g0b"></div>
+		</div>
+	</div>
+</div>
+{% endblock %}

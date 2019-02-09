@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<title>Login</title>
+		
+		<link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="/vendor/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="/vendor/sb-admin/css/sb-admin.min.css">
+	</head>
+	<body class="bg-dark">
+		<div class="container">
+			<div class="card card-login mx-auto mt-5">
+				<div class="card-header">Login</div>
+				<div class="card-body">
+					<form action="/login" method="post">
+						<div class="form-group">
+							<label for="username">Username</label>
+							<input class="form-control" placeholder="Username" id="username" name="username" type="text" autofocus>
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input class="form-control" placeholder="Password" id="password" name="password" type="password" value="">
+						</div>
+{% if error %}
+						<p class="text-danger">{{error}}</p>
+{% endif %}
+						<button type="submit" class="btn btn-primary btn-block">Login</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="/vendor/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+	</body>
+</html>
