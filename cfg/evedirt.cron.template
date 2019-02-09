@@ -1,0 +1,5 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# keep log files small...
+0 0 * * *  RUNUSER  INSTALLDIR/bin/trim-logs.sh

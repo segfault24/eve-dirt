@@ -1,3 +1,6 @@
 build
 deploy
 lib/eve-dirt.jar
+
+cfg/db.ini
+www/public/.htaccess

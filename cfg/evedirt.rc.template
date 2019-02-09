@@ -22,10 +22,10 @@ start_precmd=my_start_precmd
 my_start_precmd()
 {
     if [ ! -e /var/run/${name} ]; then
-        install -d -o dirt -g dirt /var/run/${name};
+        install -d -o RUNUSER -g RUNUSER /var/run/${name};
     fi
     if [ ! -e /var/log/${name} ]; then
-        install -d -o dirt -g dirt /var/log/${name};
+        install -d -o RUNUSER -g RUNUSER /var/log/${name};
     fi
 }
 
