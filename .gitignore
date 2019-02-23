@@ -1,6 +1,9 @@
+# build artifacts
 build
 deploy
 lib/eve-dirt.jar
 
+# runtime artifacts
+log
 cfg/db.ini
 www/public/.htaccess

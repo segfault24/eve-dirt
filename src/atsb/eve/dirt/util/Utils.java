@@ -6,19 +6,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import net.evetech.ApiResponse;
 
 public class Utils {
 
-	private static Logger logger = Logger.getLogger(Utils.class.toString());
+	private static Logger log = LogManager.getLogger();
 
-	private static final String GET_PROPERTY_SQL = "SELECT `propertyValue` FROM property WHERE `propertyName`=?";
-	private static final String SELECT_TASK_SQL = "SELECT `taskName`,`lastRun` FROM taskStatus WHERE `taskName`=?";
-	private static final String UPSERT_TASK_SQL = "INSERT INTO taskStatus (`taskName`,`lastRun`) VALUES(?,?) ON DUPLICATE KEY UPDATE `lastRun`=?";
+	private static final String SELECT_PROPERTY_SQL = "SELECT `propertyValue` FROM property WHERE `propertyName`=?";
+	private static final String SELECT_ETAG_SQL = "SELECT `etag` FROM apiReq WHERE `apiReqName`=?";
+	private static final String UPSERT_ETAG_SQL = "INSERT INTO apiReq (`apiReqName`,`etag`) VALUES(?,?) ON DUPLICATE KEY UPDATE `apiReqName`=VALUES(`apiReqName`),`etag`=VALUES(`etag`)";
 
 	public static void closeQuietly(AutoCloseable c) {
 		if (c != null) {
@@ -50,67 +52,75 @@ public class Utils {
 
 	public static String getProperty(Connection db, String propertyName) {
 		if (db == null || propertyName == null || propertyName.isEmpty()) {
-			logger.log(Level.WARNING, "db and propertyName must be non-null and non-empty");
+			log.warn("The db and propertyName must be non-null and non-empty");
 			return null;
 		}
 
 		String propertyValue = "";
 		try {
-			PreparedStatement stmt = db.prepareStatement(GET_PROPERTY_SQL);
+			PreparedStatement stmt = db.prepareStatement(SELECT_PROPERTY_SQL);
 			stmt.setString(1, propertyName);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				propertyValue = rs.getString("propertyValue");
 			}
 		} catch (SQLException e) {
-			logger.log(Level.WARNING, "failed to read property '" + propertyName + "' from database", e);
+			log.warn("Failed to read property '" + propertyName + "' from database", e);
 		}
 
 		return propertyValue;
 	}
 
-	/**
-	 * @param db
-	 * @param taskName
-	 * @return
-	 */
-	public static TaskStatus getTaskStatus(Connection db, String taskName) {
+	public static String getApiDatasource() {
+		return "tranquility";
+	}
+
+	public static String getApiLanguage() {
+		return "en-us";
+	}
+
+	public static String getEtag(ApiResponse<?> a) {
+		if (a == null || a.getHeaders() == null) {
+			return null;
+		}
+		List<String> h = a.getHeaders().get("Etag");
+		if (h == null || h.isEmpty()) {
+			return null;
+		}
+		return h.get(0).replaceAll("^\"|\"$", "");
+	}
+
+	public static String getEtag(Connection db, String apiReqName) {
+		if (db == null || apiReqName == null) {
+			return null;
+		}
 		try {
-			PreparedStatement stmt = db.prepareStatement(SELECT_TASK_SQL);
-			stmt.setString(1, taskName);
+			PreparedStatement stmt = db.prepareStatement(SELECT_ETAG_SQL);
+			stmt.setString(1, apiReqName);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-				return new TaskStatus(taskName, rs.getTimestamp(2));
+				return rs.getString(1);
 			} else {
-				logger.log(Level.WARNING, "taskStatus for \"" + taskName + "\" not found");
 				return null;
 			}
 		} catch (SQLException e) {
-			logger.log(Level.WARNING, e.getLocalizedMessage());
+			log.warn("Failed to retrieve etag for apiReqName=" + apiReqName, e);
 			return null;
 		}
 	}
 
-	/**
-	 * Inserts or updates the given TaskStatus
-	 * 
-	 * @param db
-	 * @param taskStatus
-	 */
-	public static void upsertTaskStatus(Connection db, TaskStatus taskStatus) {
+	public static void upsertEtag(Connection db, String apiReqName, String etag) {
+		if (db == null || apiReqName == null || etag == null) {
+			return;
+		}
 		try {
-			PreparedStatement stmt = db.prepareStatement(UPSERT_TASK_SQL);
-			stmt.setString(1, taskStatus.taskName);
-			stmt.setTimestamp(2, taskStatus.lastRun);
-			stmt.setTimestamp(3, taskStatus.lastRun);
+			PreparedStatement stmt = db.prepareStatement(UPSERT_ETAG_SQL);
+			stmt.setString(1, apiReqName);
+			stmt.setString(2, etag);
 			stmt.execute();
 		} catch (SQLException e) {
-			logger.log(Level.WARNING, e.getLocalizedMessage());
+			log.warn("Failed to upsert etag for apiReqName=" + apiReqName, e);
 		}
-	}
-
-	public static void updateTaskLastRun(Connection db, String taskName) {
-		upsertTaskStatus(db, new TaskStatus(taskName, new Timestamp(System.currentTimeMillis())));
 	}
 
 }

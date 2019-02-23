@@ -6,16 +6,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import atsb.eve.dirt.util.Utils;
 
 class CSVParser {
 
-	private static Logger logger = Logger.getLogger(CSVParser.class.toString());
+	private static Logger log = LogManager.getLogger();
 
 	private BufferedReader br;
 	private String[] line;
@@ -30,8 +30,7 @@ class CSVParser {
 					for (int i = 0; i < line.length; i++) {
 						String colHeader = line[i].trim().toLowerCase();
 						headers.put(colHeader, i);
-						logger.log(Level.FINE, "Identified column '" + colHeader
-								+ "' at index " + i);
+						log.debug("Identified column '" + colHeader + "' at index " + i);
 					}
 				} else {
 					throw new CSVException("Failed to parse CSV column headers");

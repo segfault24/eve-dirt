@@ -139,6 +139,33 @@ CREATE TABLE `dirtApiAuth` (
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `dirtStructAuth` (
+	`dsaId` INT AUTO_INCREMENT,
+	`keyId` INT NOT NULL,
+	`structId` BIGINT NOT NULL,
+	PRIMARY KEY (`dsaId`),
+	UNIQUE KEY (`keyId`, `structId`),
+	FOREIGN KEY (`keyId`)
+		REFERENCES `dirtApiAuth` (`keyId`)
+		ON DELETE CASCADE,
+	FOREIGN KEY (`structId`)
+		REFERENCES `structure` (`structId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `dirtNotification` (
+	`notifId` INT AUTO_INCREMENT,
+	`time` TIMESTAMP NOT NULL,
+	`userId` INT NOT NULL,
+	`title` VARCHAR(64),
+	`text` VARCHAR(1024),
+	`read` BOOLEAN NOT NULL DEFAULT FALSE,
+	PRIMARY KEY (`notifId`),
+	FOREIGN KEY (`userId`)
+		REFERENCES `dirtUser`(`userId`)
+		ON DELETE CASCADE,
+	KEY `ix_notification_userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `fortchain` (
 	`systemId` int(11) NOT NULL,
 	`superDocking` BOOLEAN DEFAULT FALSE,
@@ -148,7 +175,14 @@ CREATE TABLE `fortchain` (
 CREATE TABLE `taskStatus` (
 	`taskName` VARCHAR(255),
 	`lastRun` TIMESTAMP,
+	`lastRunDuration` INT,
 	PRIMARY KEY (`taskName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `apiReq` (
+	`apiReqName` VARCHAR(64) NOT NULL,
+	`etag` VARCHAR(64),
+	PRIMARY KEY (`apiReqName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------
