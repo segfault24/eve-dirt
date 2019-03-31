@@ -3,8 +3,24 @@
 	height: 42px;
 }
 
-.ui-autocomplete-input {
-	z-index: 0 !important;
+.content-wrapper {
+	background: #545a60;
+}
+
+footer.sticky-footer {
+	background-color: #343a40;
+	color: #858e96;
+}
+
+/* Autocomplete Form */
+
+.ui-menu {
+	z-index: 2000;
+}
+
+.ui-menu-item {
+	background: #212529;
+	color: #868e96;
 }
 
 /* General Use */
@@ -15,6 +31,10 @@
 
 .no-padding {
 	padding: 0px;
+}
+
+.no-padding-left {
+	padding-left: 0;
 }
 
 .no-border {
@@ -34,26 +54,57 @@
 	border-color: #ddd;
 }
 
+/* Tables */
+table.dataTable td {
+	padding: 0.1rem 0.25rem;
+	color: #ccc;
+	border-top: none;
+}
+
+.dataTables_wrapper {
+	padding: 0;
+}
+
+#sellorders {
+	margin: 0 !important;
+}
+
+#buyorders {
+	margin: 0 !important;
+}
+
+.nav-link {
+	color: #000;
+}
+
+.nav-link:hover {
+	color: white;
+}
+
 /* Market Browser Menu */
 
-.browse-panel {
-	margin-bottom: 0px;
-	border-radius: 0px;
+.browse-card {
+	border: 0;
 }
 
-.browse-panel-heading {
-	padding: 1px 8px 1px 8px;
+.browse-card-header {
+	background: #343a40;
+	padding: 0;
+	overflow: hidden;
 }
 
-.browse-panel-title {
-	font-size: 14px;
+.browse-card-body {
+	background: #747a80;
+	padding: 0rem 0rem 0rem .5rem;
+	overflow: hidden;
 }
 
-.browse-panel-body {
-	padding: 0px 0px 0px 10px;
+.browse-btn {
+	padding: 0rem 0.5rem;
+	color: #858e96;
+	text-decoration: none !important;
 }
 
-.browse-panel-item {
-	font-size: 13px;
-	padding: 1px 0px;
+.market-item {
+	color: #141a20;
 }

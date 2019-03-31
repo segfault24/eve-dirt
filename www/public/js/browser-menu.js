@@ -68,14 +68,17 @@ function BrowserMenu() {
 
 		var g = getGroupsInGroup(id);
 		for(var i=0; i<g.length; i++) {
-			blah += '<div class="panel panel-default browse-panel">';
-			blah += '	<div class="panel-heading browse-panel-heading">';
-			blah += '		<p class="panel-title browse-panel-title">';
-			blah += '			<a class="market-group" data-toggle="collapse" data-parent="#g' + id + 'b" href="#g' + g[i].marketGroupID + 'c">' + g[i].marketGroupName + '</a>';
-			blah += '		</p>';
+			var mg_hdr = 'g' + g[i].marketGroupID + 'h';
+			var mg_col = 'g' + g[i].marketGroupID + 'l';
+			var mg_crd = 'g' + g[i].marketGroupID + 'b';
+			blah += '<div class="card browse-card">';
+			blah += '	<div class="card-header browse-card-header" id="' + mg_hdr + '">';
+			blah += '		<button class="btn btn-link browse-btn" type="button" data-toggle="collapse" data-target="#' + mg_col + '" aria-expanded="true" aria-controls="#' + mg_col + '">' + g[i].marketGroupName + '</button>';
 			blah += '	</div>';
-			blah += '	<div id="g' + g[i].marketGroupID + 'c" name="' + g[i].marketGroupID + '" class="panel-collapse collapse browse-collapse">';
-			blah += '		<div id="g' + g[i].marketGroupID + 'b" class="panel-body browse-panel-body">';
+			blah += '	<div class="collapse browse-collapse" id="' + mg_col + '" name="' + g[i].marketGroupID + '" aria-labelledby="' + mg_hdr + '" data-parent="#g' + id + 'b">';
+			blah += '		<div class="card-body browse-card-body">';
+			blah += '			<div class="accordian" id="' + mg_crd + '">';
+			blah += '			</div>';
 			blah += '		</div>';
 			blah += '	</div>';
 			blah += '</div>';
@@ -83,10 +86,12 @@ function BrowserMenu() {
 
 		var t = getTypesInGroup(id);
 		for(var i=0; i<t.length; i++) {
-			blah += '<div class="panel-body no-padding browse-panel-item">'
-			blah += '	<a class="market-item" name="' + t[i].typeID + '" href="/browse?type=' + t[i].typeID + '">' + t[i].typeName + '</a>';
+			blah += '<div class="card browse-card">'
+			blah += '	<div class="card-body browse-card-body">';
+			blah += '		<a class="market-item" name="' + t[i].typeID + '" href="/browse?type=' + t[i].typeID + '">' + t[i].typeName + '</a>';
+			blah += '	</div>';
 			blah += '</div>';
-			blah += '<hr class="no-margin">';
+			//blah += '<hr class="no-margin">';
 		}
 
 		$('#g' + id + 'b').html(blah);
