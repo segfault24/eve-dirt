@@ -1,27 +1,49 @@
 package atsb.eve.dirt;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import atsb.eve.dirt.model.TaskStatus;
+import atsb.eve.dirt.util.DbInfo;
+import atsb.eve.dirt.util.DbPool;
+import atsb.eve.dirt.util.TaskUtils;
 
 public class TaskCli {
 
 	private static Logger log = LogManager.getLogger();
 
 	private DirtTaskDaemon d;
+	private DbPool dbPool;
+	private Connection db;
 
 	public TaskCli(DirtTaskDaemon d) {
 		this.d = d;
+		dbPool = new DbPool(new DbInfo());
+		try {
+			db = dbPool.acquire();
+		} catch (SQLException e) {
+			log.fatal("Failed to acquire database connection", e);
+			return;
+		}
 	}
 
 	private void help() {
-		System.out.println("poolsize <int>");
+		log.debug("help command invoked");
+		System.out.println("poolsize <numthreads>");
+		System.out.println("cleartask <taskname>");
+		System.out.println("removeall");
 		System.out.println("status");
 		System.out.println("help");
+		System.out.println("exit");
 	}
 
 	private void status() {
+		log.debug("status command invoked");
 		System.out.println("poolsize: " + d.getPoolSize());
 		System.out.println("complete: " + d.getCompletedTaskCount());
 		System.out.println("  queued: " + d.getQueue().size());
@@ -29,6 +51,7 @@ public class TaskCli {
 	}
 
 	private void setPoolSize(String[] parts) {
+		log.debug("poolsize command invoked");
 		if (parts.length > 1) {
 			try {
 				int s = Integer.parseInt(parts[1]);
@@ -43,7 +66,45 @@ public class TaskCli {
 		}
 	}
 
+	private void clearTask(String[] parts) {
+		log.debug("cleartask command invoked");
+		if (parts.length > 1) {
+			TaskStatus ts = TaskUtils.getTaskStatus(db, parts[1]);
+			if (ts != null) {
+				ts.setLastRun(new Timestamp(1000));
+				try {
+					TaskUtils.upsertTaskStatus(db, ts);
+				} catch (SQLException e) {
+					log.debug("failed to upsert TaskStatus", e);
+					System.err.println("failed to clear task status");
+				}
+			} else {
+				log.debug("could not find task " + parts[1]);
+				System.err.println("could not find task '" + parts[1] + "'");
+			}
+			
+		} else {
+			log.debug("no task name specified");
+			System.err.println("no task name specified");
+		}
+	}
+
+	private void removeAllTasks() {
+		log.debug("removeall command invoked");
+		d.removeAllTasks();
+	}
+
+	private void exit() {
+		log.debug("exit command invoked");
+		log.warn("received exit command from task cli");
+		dbPool.release(db);
+		System.exit(0);
+	}
+
 	public void loop() {
+		if (db == null) {
+			return;
+		}
 		Scanner in = new Scanner(System.in);
 
 		boolean done = false;
@@ -60,9 +121,17 @@ public class TaskCli {
 			case "poolsize":
 				setPoolSize(parts);
 				break;
-			// -------------
+			case "cleartask":
+				clearTask(parts);
+				break;
+			case "removeall":
+				removeAllTasks();
+				break;
 			case "status":
 				status();
+				break;
+			case "exit":
+				exit();
 				break;
 			case "help":
 			case "?":

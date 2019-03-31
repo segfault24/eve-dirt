@@ -8,11 +8,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.esi.UniverseApiWrapper;
 import atsb.eve.dirt.model.OAuthUser;
 import atsb.eve.dirt.util.OAuthUtils;
 import atsb.eve.dirt.util.Utils;
 import net.evetech.ApiException;
-import net.evetech.esi.UniverseApi;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
 
 /**
@@ -40,7 +40,7 @@ public class CorporationsTask extends DirtTask {
 
 	@Override
 	public void runTask() {
-		UniverseApi uapi = new UniverseApi();
+		UniverseApiWrapper uapiw = new UniverseApiWrapper(getDb());
 
 		int keyId = Integer.parseInt(Utils.getProperty(getDb(), PROPERTY_SCRAPER_KEY_ID));
 
@@ -64,7 +64,7 @@ public class CorporationsTask extends DirtTask {
 		
 		List<Long> structIds = new ArrayList<Long>();
 		try {
-			structIds = uapi.getUniverseStructures("tranquility", null);
+			structIds = uapiw.getUniverseStructures();
 		} catch (ApiException e) {
 			log.fatal("Failed to retrieve list of public structure ids", e);
 			return;
@@ -83,8 +83,7 @@ public class CorporationsTask extends DirtTask {
 			log.debug("Querying for structure information structId=" + structId);
 			try {
 				String authToken = OAuthUtils.getAuthToken(getDb(), auth);
-				GetUniverseStructuresStructureIdOk info = uapi.getUniverseStructuresStructureId(structId, "tranquility",
-						null, authToken);
+				GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, authToken);
 
 				stmt.setLong(1, structId);
 				stmt.setString(2, info.getName());

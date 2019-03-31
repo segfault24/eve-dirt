@@ -24,11 +24,15 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
     $db = Dirt\Database::getDb();
 
     $sql = 'SELECT
-            o.`orderId`, o.`typeId`, r.`regionName`, s.`stationName`, o.`isBuyOrder`, o.`price`,
+            o.`orderId`, o.`typeId`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
             FROM marketOrder AS o
             LEFT JOIN mapRegions AS r ON o.`regionId`=r.`regionID`
-            LEFT JOIN staStations AS s ON o.`locationId`=s.`stationID`
+            LEFT JOIN (
+                SELECT `stationID` AS sId,`stationName` AS sName FROM staStations 
+                UNION ALL
+                SELECT `structId` AS sId,`structName` AS sName FROM structure
+            ) locs ON o.`locationId`=locs.`sId`
             WHERE';
     if ($args['location'] != 0) {
         $sql .= ' (o.`regionId`=:location OR o.`locationId`=:location) AND';
@@ -198,6 +202,37 @@ $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
     
     $sql = 'SELECT typeId, best FROM vAmarrBestSell';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
+    echo '<types>' . "\r\n";
+    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+        $xml = '<type>';
+        $xml .= '<typeId>' . $row[0] . '</typeId>';
+        $xml .= '<bestSell>' . $row[1] . '</bestSell>';
+        $xml .= '</type>' . "\r\n";
+        echo $xml;
+    }
+    echo '</types>' . "\r\n";
+    
+    return $response->withHeader('Content-Type', 'text/xml');
+});
+
+$app->get('/api/staging-sell', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+    
+    $sql = 'SELECT typeId, best FROM vStagingBestSell';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/staging-sell-xml', function ($request, $response, $args) {
+    $db = Dirt\Database::getDb();
+    
+    $sql = 'SELECT typeId, best FROM vStagingBestSell';
     $stmt = $db->prepare($sql);
     $stmt->execute();
     

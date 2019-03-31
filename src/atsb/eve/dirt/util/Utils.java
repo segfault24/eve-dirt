@@ -7,7 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +23,18 @@ public class Utils {
 	private static final String SELECT_PROPERTY_SQL = "SELECT `propertyValue` FROM property WHERE `propertyName`=?";
 	private static final String SELECT_ETAG_SQL = "SELECT `etag` FROM apiReq WHERE `apiReqName`=?";
 	private static final String UPSERT_ETAG_SQL = "INSERT INTO apiReq (`apiReqName`,`etag`) VALUES(?,?) ON DUPLICATE KEY UPDATE `apiReqName`=VALUES(`apiReqName`),`etag`=VALUES(`etag`)";
+
+	public static final String PROPERTY_NUM_THREADS = "threads";
+	public static final String PROPERTY_MARKET_ORDERS_REGIONS = "marketorders.regions";
+	public static final String PROPERTY_MARKET_ORDERS_STRUCTURES = "marketorders.structures";
+	public static final String PROPERTY_MARKET_ORDERS_PERIOD = "marketorders.period";
+	public static final String PROPERTY_MARKET_HISTORY_REGIONS = "markethistory.regions";
+	public static final String PROPERTY_MARKET_HISTORY_PERIOD = "markethistory.period";
+	public static final String PROPERTY_PUBLIC_STRUCTURES_PERIOD = "publicstructures.period";
+	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
+	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
+	public static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
+	public static final String PROPERTY_SSO_SECRET_KEY = "ssosecretkey";
 
 	public static void closeQuietly(AutoCloseable c) {
 		if (c != null) {
@@ -46,6 +60,14 @@ public class Utils {
 		List<Integer> values = new ArrayList<Integer>();
 		for (String s : input.split(",")) {
 			values.add(Integer.parseInt(s.trim()));
+		}
+		return values;
+	}
+
+	public static List<Long> parseLongList(String input) {
+		List<Long> values = new ArrayList<Long>();
+		for (String s : input.split(",")) {
+			values.add(Long.parseLong(s.trim()));
 		}
 		return values;
 	}
@@ -121,6 +143,21 @@ public class Utils {
 		} catch (SQLException e) {
 			log.warn("Failed to upsert etag for apiReqName=" + apiReqName, e);
 		}
+	}
+
+	public static void resetConnection(Connection c) {
+		try {
+			if (!c.getAutoCommit()) {
+				c.rollback();
+				c.setAutoCommit(true);
+			}
+		} catch (SQLException e) {
+			log.error("Failed to reset connection", e);
+		}
+	}
+
+	public static Calendar getGMTCal() {
+		return Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	}
 
 }

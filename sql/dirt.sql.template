@@ -63,8 +63,10 @@ CREATE TABLE `structure` (
 	`structName` VARCHAR(64),
 	`corpId` INT,
 	`systemId` INT NOT NULL,
+	`regionId` INT NOT NULL,
 	`typeId` INT NOT NULL,
 	PRIMARY KEY (`structId`),
+	KEY `ix_structure_regionId` (`regionId`),
 	KEY `ix_structure_systemId` (`systemId`),
 	KEY `ix_structure_corpId` (`corpId`)
 ) ENGINE=InnoDb DEFAULT CHARSET=utf8;
@@ -307,6 +309,7 @@ DROP VIEW IF EXISTS `vAmarrBestSell`;
 
 CREATE VIEW vJitaBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=60003760 AND isBuyOrder=0 GROUP BY typeId, locationId;
 CREATE VIEW vAmarrBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=60008494 AND isBuyOrder=0 GROUP BY typeId, locationId;
+CREATE VIEW vStagingBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=1028573403974 AND isBuyOrder=0 GROUP BY typeId, locationId;
 
 -- -----------------------------------------------------------------------------
 
@@ -341,10 +344,11 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoclientid","A
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssosecretkey","APPSECRETKEY");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("threads","1");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.regions","10000002,10000043,10000032,10000030,10000042");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.structures","");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.period","60");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.regions","10000002,10000043,10000032,10000030,10000042");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.regions","10000002");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.period","1440");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructures.period","1440");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructures.period","2880");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("insuranceprices.period","240");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.period","15");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.expires","60");

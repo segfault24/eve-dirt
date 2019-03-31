@@ -21,9 +21,6 @@ public class MarketOrder {
 	private int region;
 	private Timestamp retrieved;
 
-	public MarketOrder() {
-	}
-
 	public MarketOrder(GetMarketsRegionIdOrders200Ok o) {
 		setIssued(new Timestamp(o.getIssued().getMillis()));
 		setRange(o.getRange().toString());

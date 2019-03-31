@@ -26,8 +26,6 @@ public class OAuthUtils {
 
 	private static Logger log = LogManager.getLogger();
 
-	private static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
-	private static final String PROPERTY_SSO_SECRET_KEY = "ssosecretkey";
 	private static final String SELECT_SQL = "SELECT `token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
 	private static final String UPDATE_SQL = "UPDATE dirtApiAuth SET `token`=?, `expires`=?, `refresh`=? WHERE `keyId`=?;";
 	private static final String OAUTH_REFRESH_URL = "https://login.eveonline.com/oauth/token";
@@ -42,7 +40,7 @@ public class OAuthUtils {
 			oau = new OAuthUser();
 			oau.setKeyId(keyId);
 			oau.setAuthToken(rs.getString("token"));
-			oau.setTokenExpires(rs.getTimestamp("expires"));
+			oau.setTokenExpires(rs.getTimestamp("expires", Utils.getGMTCal()));
 			oau.setRefreshToken(rs.getString("refresh"));
 		}
 
@@ -67,8 +65,8 @@ public class OAuthUtils {
 		log.debug("Performing token refresh for keyId=" + oau.getKeyId());
 
 		URL url = new URL(OAUTH_REFRESH_URL);
-		String ssoClientId = Utils.getProperty(db, PROPERTY_SSO_CLIENT_ID);
-		String ssoSecretKey = Utils.getProperty(db, PROPERTY_SSO_SECRET_KEY);
+		String ssoClientId = Utils.getProperty(db, Utils.PROPERTY_SSO_CLIENT_ID);
+		String ssoSecretKey = Utils.getProperty(db, Utils.PROPERTY_SSO_SECRET_KEY);
 
 		String creds = ssoClientId + ":" + ssoSecretKey;
 		String auth = "Basic " + new String(Base64.getEncoder().encode(creds.getBytes()));

@@ -1,15 +1,17 @@
 package atsb.eve.dirt.task;
 
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.db.SolarSystemTable;
+import atsb.eve.dirt.db.StructureTable;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
 import atsb.eve.dirt.model.OAuthUser;
+import atsb.eve.dirt.model.Structure;
 import atsb.eve.dirt.util.OAuthUtils;
 import atsb.eve.dirt.util.Utils;
 import net.evetech.ApiException;
@@ -24,12 +26,6 @@ public class PublicStructuresTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
-	private static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
-
-	private static final String INSERT_SQL = "INSERT INTO structure (" + "`structId`,`structName`,`corpId`,`systemId`,`typeId`"
-			+ ") VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE " + "`structName`=VALUES(`structName`)," + "`corpId`=VALUES(`corpId`),"
-			+ "`systemId`=VALUES(`systemId`)," + "`typeId`=VALUES(`typeId`)";
-
 	public PublicStructuresTask() {
 	}
 
@@ -42,7 +38,7 @@ public class PublicStructuresTask extends DirtTask {
 	public void runTask() {
 		UniverseApiWrapper uapiw = new UniverseApiWrapper(getDb());
 
-		int keyId = Integer.parseInt(Utils.getProperty(getDb(), PROPERTY_SCRAPER_KEY_ID));
+		int keyId = Integer.parseInt(Utils.getProperty(getDb(), Utils.PROPERTY_SCRAPER_KEY_ID));
 
 		OAuthUser auth;
 		try {
@@ -67,28 +63,15 @@ public class PublicStructuresTask extends DirtTask {
 		}
 		log.debug("Retrieved " + structIds.size() + " public structure ids");
 
-		PreparedStatement stmt;
-		int count = 0;
-		try {
-			stmt = getDb().prepareStatement(INSERT_SQL);
-		} catch (SQLException e) {
-			log.fatal("Unexpected failure while processing public structures", e);
-			return;
-		}
 		for (Long structId : structIds) {
-			log.debug("Querying for structure information structId=" + structId);
 			try {
 				String authToken = OAuthUtils.getAuthToken(getDb(), auth);
 				GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, authToken);
-
-				stmt.setLong(1, structId);
-				stmt.setString(2, info.getName());
-				stmt.setInt(3, info.getOwnerId());
-				stmt.setInt(4, info.getSolarSystemId());
-				stmt.setInt(5, info.getTypeId());
-				stmt.execute();
-
-				count++;
+				Structure s = new Structure(info);
+				s.setStructId(structId);
+				s.setRegionId(SolarSystemTable.findRegionBySystem(getDb(), s.getSystemId()));
+				StructureTable.insert(getDb(), s);
+				log.debug("Inserted structure information for structId=" + structId);
 			} catch (ApiException e) {
 				if (e.getCode() != 304) {
 					log.error("Failed to retrieve info for structure " + structId, e);
@@ -97,7 +80,6 @@ public class PublicStructuresTask extends DirtTask {
 				log.error("Failed to insert info for structure " + structId, e);
 			}
 		}
-		log.debug("Inserted " + count + " public structure records");
 	}
 
 }

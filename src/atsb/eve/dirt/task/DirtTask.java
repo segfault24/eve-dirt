@@ -12,6 +12,7 @@ import atsb.eve.dirt.DirtTaskDaemon;
 import atsb.eve.dirt.model.TaskStatus;
 import atsb.eve.dirt.util.DbPool;
 import atsb.eve.dirt.util.TaskUtils;
+import atsb.eve.dirt.util.Utils;
 
 public abstract class DirtTask implements Runnable {
 
@@ -66,6 +67,7 @@ public abstract class DirtTask implements Runnable {
 		}
 
 		log.debug("Releasing database connection to pool");
+		Utils.resetConnection(db);
 		dbPool.release(db);
 
 		log.info("Completed task " + getTaskName() + " in " + duration + " minutes");

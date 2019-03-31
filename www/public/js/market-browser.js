@@ -244,7 +244,7 @@ function loadOrderTabs() {
 			if(orderData[i].isBuyOrder==1) {
 				buyTable.row.add([
 					orderData[i].regionName,
-					orderData[i].stationName,
+					orderData[i].sName,
 					orderData[i].range,
 					formatIsk(orderData[i].price),
 					formatInt(orderData[i].volumeRemain),
@@ -253,7 +253,7 @@ function loadOrderTabs() {
 			} else {
 				sellTable.row.add([
 					orderData[i].regionName,
-					orderData[i].stationName,
+					orderData[i].sName,
 					formatIsk(orderData[i].price),
 					formatInt(orderData[i].volumeRemain)
 				]);
