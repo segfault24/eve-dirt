@@ -304,12 +304,19 @@ CREATE TABLE `merSinkFaucet` (
 
 -- -----------------------------------------------------------------------------
 
+DROP VIEW IF EXISTS `vJitaBestBuy`;
 DROP VIEW IF EXISTS `vJitaBestSell`;
+DROP VIEW IF EXISTS `vAmarrBestBuy`;
 DROP VIEW IF EXISTS `vAmarrBestSell`;
+DROP VIEW IF EXISTS `vStagingBestSell`;
+DROP VIEW IF EXISTS `vHomeBestSell`;
 
+CREATE VIEW vJitaBestBuy AS SELECT typeId, MAX(price) AS best FROM marketOrder WHERE locationId=60003760 AND isBuyOrder=1 GROUP BY typeId, locationId;
 CREATE VIEW vJitaBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=60003760 AND isBuyOrder=0 GROUP BY typeId, locationId;
+CREATE VIEW vAmarrBestBuy AS SELECT typeId, MAX(price) AS best FROM marketOrder WHERE locationId=60008494 AND isBuyOrder=1 GROUP BY typeId, locationId;
 CREATE VIEW vAmarrBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=60008494 AND isBuyOrder=0 GROUP BY typeId, locationId;
 CREATE VIEW vStagingBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=1028573403974 AND isBuyOrder=0 GROUP BY typeId, locationId;
+CREATE VIEW vHomeBestSell AS SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=1024004680659 AND isBuyOrder=0 GROUP BY typeId, locationId;
 
 -- -----------------------------------------------------------------------------
 

@@ -69,7 +69,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		List<Long> structures = Utils.parseLongList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_STRUCTURES));
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD));
 		for (Long structure : structures) {
-			addPeriodicTask(db, new MarketStructureOrdersTask(structure), period);
+			addPeriodicTask(db, new MarketStructureOrdersTask(structure), 10);
 		}
 
 		// market history for specific regions
@@ -86,11 +86,6 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		// insurance price info
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD));
 		addPeriodicTask(db, new InsurancePricesTask(), period);
-
-		/*
-		 * addPeriodicTask(new MetaCharacterTask(),
-		 * cfg.getCharacterDataPeriod());
-		 */
 
 		// release connection to pool
 		dbPool.release(db);
