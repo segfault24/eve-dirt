@@ -45,7 +45,7 @@ $(document).ready(function() {
 		reloadData();
 	});
 	$('#open-in-market-browser').click(function() { window.location = '/browse?type=' + type; });
-	$('#open-in-import-analyzer').click(function() {});
+	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
 	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
 
 	// load the data for the initial page

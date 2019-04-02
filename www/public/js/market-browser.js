@@ -151,7 +151,7 @@ $(document).ready(function(){
 		name = n;
 		reloadData();
 	});
-	$('#open-in-market-browser').click(function() {});
+	$('#open-in-market-browser').click(function() { window.location = '/browse?type=' + type; });
 	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
 	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
 
