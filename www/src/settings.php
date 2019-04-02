@@ -12,7 +12,7 @@ return [
         // Monolog settings
         'logger' => [
             'name' => 'slim-app',
-            'path' => '/var/log/evedirt/webapp.log',
+            'path' => __DIR__ . '/../../log/slim.log',
             'level' => \Monolog\Logger::DEBUG
         ]
     ]

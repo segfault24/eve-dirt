@@ -43,11 +43,11 @@
 	</div>
 	<div class="col-md-1">
 	</div>
-	<div class="col-md-3">
+	<div class="col-md-3 no-padding-left">
 		<div class="btn-group margin-bottom">
 			<button type="button" class="btn btn-primary" id="open-in-market-browser"><i class="fa fa-bar-chart-o fa-fw"></i></button>
-			<button type="button" class="btn btn-primary active" id="open-in-import-analyzer"><i class="fa fa-truck fa-fw"></i></button>
-			<button type="button" class="btn btn-primary" id="open-in-station-trader"><i class="fa fa-exchange fa-fw"></i></button>
+			<button type="button" class="btn btn-primary" id="open-in-station-trader"><i class="fa fa-exchange fa-rotate-90 fa-fw"></i></button>
+			<button type="button" class="btn btn-primary active" id="open-in-import-analyzer"><i class="fa fa-sign-in fa-fw"></i></button>
 		</div>
 	</div>
 </div>
@@ -55,19 +55,23 @@
 	<div class="col-md-9">
 		<div class="panel panel-default no-border">
 			<div class="panel-body no-padding">
-				<ul class="nav nav-tabs">
-					<li class="active" id="analysistablabel"><a href="#analysis" data-toggle="tab"><i class="fa fa-bolt fa-fw"></i> Analysis</a></li>
-					<li id="histtablabel"><a href="#history" data-toggle="tab"><i class="fa fa-history fa-fw"></i> Historical</a></li>
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="analysislabel" href="#analysis" data-toggle="tab" role="tab" aria-controls="analysis" aria-selected="true"><i class="fa fa-bolt fa-fw"></i> Analysis</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="historylabel" href="#history" data-toggle="tab" role="tab" aria-controls="history" aria-selected="false"><i class="fa fa-history fa-fw"></i> Historical</a>
+					</li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane fade in active" id="analysis">
-						<div class="well margin-top">
+					<div class="tab-pane fade tab-border show active" id="analysis" aria-labelledby="analysislabel">
+						<div class="card margin-top">
 							<p>Src Sell</p>
 							<p>Dst Sell</p>
 							<p>Src Buy</p>
 						</div>
 					</div>
-					<div class="tab-pane fade" id="history">
+					<div class="tab-pane fade tab-border" id="history" aria-labelledby="historylabel">
 						<div class="btn-group margin-top margin-bottom" data-toggle="buttons">
 							<label class="btn btn-default active" id="by-isk">
 								<input type="radio" autocomplete="off" checked>Ƶ
@@ -76,7 +80,7 @@
 								<input type="radio" autocomplete="off">%
 							</label>
 						</div>
-						<div class="well">
+						<div class="card">
 							<canvas id="analysis-graph" width="100%"></canvas>
 						</div>
 						<div class="card card-block">
@@ -87,9 +91,9 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-md-3 no-padding-left">
 		<div class="panel panel-default browse-panel">
-			<div class="panel-body no-padding browse-panel" id="g0b"></div>
+			<div class="accordian" id="g0b"></div>
 		</div>
 	</div>
 </div>

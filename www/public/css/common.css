@@ -93,7 +93,7 @@ table.dataTable thead .sorting_desc_disabled::after {
 }
 
 .nav-link {
-	color: #000;
+	color: inherit;
 }
 
 .nav-link:hover {

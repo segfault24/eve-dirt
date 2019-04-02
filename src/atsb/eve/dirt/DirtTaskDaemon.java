@@ -76,12 +76,12 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_REGIONS));
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_PERIOD));
 		for (int regionId : regions) {
-			addPeriodicTask(db, new MarketHistoryTask(regionId), period);
+			//addPeriodicTask(db, new MarketHistoryTask(regionId), period);
 		}
 
 		// public structure info
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_PUBLIC_STRUCTURES_PERIOD));
-		addPeriodicTask(db, new PublicStructuresTask(), period);
+		//addPeriodicTask(db, new PublicStructuresTask(), period);
 
 		// insurance price info
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD));

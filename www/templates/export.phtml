@@ -18,22 +18,36 @@
 			<div class="panel-body no-padding">
 				<ul class="nav nav-tabs" role="tablist">
 					<li class="nav-item">
-						<a class="nav-link active" id="stagingtojitalabel" href="#stagingtojita" data-toggle="tab" role="tab" aria-controls="stagingtojita" aria-selected="true"><i class="fa fa-flag fa-fw"></i> Staging</a>
+						<a class="nav-link active" id="s2jb-label" href="#s2jb" data-toggle="tab" role="tab" aria-controls="s2jb" aria-selected="true"><i class="fa fa-flag fa-fw"></i>Staging<i class="fa fa-angle-right fa-fw"></i>JBV</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" id="hometojitalabel" href="#hometojita" data-toggle="tab" role="tab" aria-controls="hometojita" aria-selected="false"><i class="fa fa-home fa-fw"></i> Home</a>
+						<a class="nav-link" id="s2js-label" href="#s2js" data-toggle="tab" role="tab" aria-controls="s2js" aria-selected="false"><i class="fa fa-flag fa-fw"></i>Staging<i class="fa fa-angle-right fa-fw"></i>JSV</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="h2jb-label" href="#h2jb" data-toggle="tab" role="tab" aria-controls="h2jb" aria-selected="false"><i class="fa fa-home fa-fw"></i>Home<i class="fa fa-angle-right fa-fw"></i>JBV</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="h2js-label" href="#h2js" data-toggle="tab" role="tab" aria-controls="h2js" aria-selected="false"><i class="fa fa-home fa-fw"></i>Home<i class="fa fa-angle-right fa-fw"></i>JSV</a>
 					</li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane fade tab-border show active" id="stagingtojita" aria-labelledby="stagingtojitalabel">
+					<div class="tab-pane fade tab-border show active" id="s2jb" aria-labelledby="s2jb-label">
 						<div class="table-responsive">
 							<table id="ss2jb" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
+						</div>
+					</div>
+					<div class="tab-pane fade tab-border" id="s2js" aria-labelledby="s2js-label">
+						<div class="table-responsive">
 							<table id="ss2js" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
-					<div class="tab-pane fade tab-border" id="hometojita" aria-labelledby="hometojitalabel">
+					<div class="tab-pane fade tab-border" id="h2jb" aria-labelledby="h2jb-label">
 						<div class="table-responsive">
 							<table id="hs2jb" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
+						</div>
+					</div>
+					<div class="tab-pane fade tab-border" id="h2js" aria-labelledby="h2js-label">
+						<div class="table-responsive">
 							<table id="hs2js" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
@@ -43,6 +57,7 @@
 	</div>
 	<div class="col-md-3 no-padding-left">
 		<div class="panel panel-default browse-panel">
+			<!-- cost to export, unit profit, ROI -->
 			<div class="accordian" id="g0b"></div>
 		</div>
 	</div>

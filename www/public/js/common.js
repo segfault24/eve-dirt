@@ -230,6 +230,18 @@ function sma(data, len) {
 	return sma;
 }
 
+function myAjax(endpoint, callback) {
+	$.ajax({
+		url: '/api/' + endpoint,
+		async: true,
+		success: function(result) {
+			if(callback != null) {
+				callback(result);
+			}
+		}
+	});
+}
+
 $(function() {
 	$.getJSON('/api/search-types', function(data) {
 		$('#search').autocomplete({

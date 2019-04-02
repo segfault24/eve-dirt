@@ -2,6 +2,11 @@
 // DIC configuration
 $container = $app->getContainer();
 
+// cache control
+$container['cache'] = function () {
+    return new \Slim\HttpCache\CacheProvider();
+};
+
 // view renderer
 $container['renderer'] = function ($c) {
     $settings = $c->get('settings')['renderer'];

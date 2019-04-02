@@ -33,6 +33,7 @@ $app->get('/api/search-types', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 86400);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 

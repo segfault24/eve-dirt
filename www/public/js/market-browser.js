@@ -1,7 +1,7 @@
 "use strict";
 
 var region = 0; // default to All Regions
-var type = 587; // default to the Rifter
+var type = 29668; // default to PLEX
 var name = '';
 
 var orderData = null;
@@ -93,13 +93,10 @@ $(document).ready(function(){
 	if(r != '') { region = r; }
 	// grab the initial type's typeName
 	// only necessary here since the menu passes the typeName on clicks
-	$.ajax({
-		url: '/api/types/' + type,
-		success: function(result) {
-			name = result.typeName;
-			$('#title').html(name);
-			$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
-		}
+	myAjax('types/' + type, function(result) {
+		name = result.typeName;
+		$('#title').html(name);
+		$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
 	});
 
 	// setup the history buttons' click handlers
@@ -141,8 +138,7 @@ $(document).ready(function(){
 
 	$('#oig').click(function() { ajaxOpenInGame(type); });
 
-	// setup the tab click handlers, so that the data and charts
-	// that are needed for that tab are loaded on demand
+	// demand load the tables and chart tabs
 	$('#selltablabel').click(function() { loadOrderTabs(); });
 	$('#buytablabel').click(function() { loadOrderTabs(); });
 	$('#depthtablabel').click(function() { loadDepthTab(); });
@@ -157,7 +153,7 @@ $(document).ready(function(){
 	});
 	$('#open-in-market-browser').click(function() {});
 	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
-	$('#open-in-station-trader').click(function() {});
+	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
 
 	// capture history events
 	$(window).bind('popstate', function(event) {

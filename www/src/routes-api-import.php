@@ -11,6 +11,7 @@ $app->get('/api/jita-buy', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -32,6 +33,7 @@ $app->get('/api/jita-buy-xml', function ($request, $response, $args) {
     }
     echo '</types>' . "\r\n";
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
@@ -42,6 +44,7 @@ $app->get('/api/jita-sell', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -63,6 +66,7 @@ $app->get('/api/jita-sell-xml', function ($request, $response, $args) {
     }
     echo '</types>' . "\r\n";
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
@@ -73,6 +77,7 @@ $app->get('/api/amarr-buy', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -94,6 +99,7 @@ $app->get('/api/amarr-buy-xml', function ($request, $response, $args) {
     }
     echo '</types>' . "\r\n";
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
@@ -104,6 +110,7 @@ $app->get('/api/amarr-sell', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -125,6 +132,7 @@ $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
     }
     echo '</types>' . "\r\n";
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
@@ -135,6 +143,7 @@ $app->get('/api/staging-sell', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -156,6 +165,7 @@ $app->get('/api/staging-sell-xml', function ($request, $response, $args) {
     }
     echo '</types>' . "\r\n";
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
@@ -166,6 +176,7 @@ $app->get('/api/home-sell', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -187,6 +198,7 @@ $app->get('/api/home-sell-xml', function ($request, $response, $args) {
     }
     echo '</types>' . "\r\n";
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
@@ -207,6 +219,7 @@ $app->get('/api/staging-sell-to-jita-sell', function ($request, $response, $args
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -222,6 +235,7 @@ $app->get('/api/staging-sell-to-jita-buy', function ($request, $response, $args)
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -237,6 +251,7 @@ $app->get('/api/home-sell-to-jita-sell', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -252,5 +267,6 @@ $app->get('/api/home-sell-to-jita-buy', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });

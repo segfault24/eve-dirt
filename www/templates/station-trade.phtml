@@ -1,38 +1,42 @@
 {% extends "base.phtml" %}
 {% block title %}Station Trading{% endblock %}
 {% block extrahead %}
+{% include 'chart-libs.phtml' %}
 <script type="text/javascript" src="js/browser-menu.js"></script>
 <script type="text/javascript" src="js/station-trade.js"></script>
-<link rel="stylesheet" href="css/browser-menu.css">
 {% endblock %}
 {% block content %}
 <div class="row">
-	<div class="row">
-		<div class="col-sm-12">
-			<h3 class="page-header" id="title"> Station Trading</h3>
-			<hr>
+	<div class="col-sm-12">
+		<h3 class="page-header" id="title"><img id="title-img"> Station Trading</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-4">
+	</div>
+	<div class="col-md-4">
+	</div>
+	<div class="col-md-1">
+	</div>
+	<div class="col-md-3 no-padding-left">
+		<div class="btn-group margin-bottom">
+			<button type="button" class="btn btn-primary" id="open-in-market-browser"><i class="fa fa-bar-chart-o fa-fw"></i></button>
+			<button type="button" class="btn btn-primary active" id="open-in-station-trader"><i class="fa fa-exchange fa-rotate-90 fa-fw"></i></button>
+			<button type="button" class="btn btn-primary" id="open-in-import-analyzer"><i class="fa fa-sign-in fa-fw"></i></button>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-md-4">
-		</div>
-		<div class="col-md-4">
-		</div>
-		<div class="col-md-1">
-		</div>
-		<div class="col-md-3">
-			<button type="button" class="btn btn-primary"><i class="fa fa-bar-chart-o fa-fw"></i></button>
-			<button type="button" class="btn btn-primary"><i class="fa fa-truck fa-fw"></i></button>
-			<button type="button" class="btn btn-primary active"><i class="fa fa-exchange fa-fw"></i></button>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-9">
-		</div>
-		<div class="col-md-3">
-			<div class="panel panel-default">
-				<div class="panel-body panel-no-padding" id="mrktgrp0_body"></div>
+</div>
+<div class="row">
+	<div class="col-md-9">
+		<div class="panel panel-default no-border">
+			<div class="panel-body no-padding">
 			</div>
+		</div>
+	</div>
+	<div class="col-md-3 no-padding-left">
+		<div class="panel panel-default browse-panel">
+			<div class="accordian" id="g0b"></div>
 		</div>
 	</div>
 </div>
