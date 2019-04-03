@@ -1,6 +1,6 @@
 "use strict";
 
-var type = 29668; // default to PLEX
+var type = 44992; // default to PLEX
 
 $(document).ready(function() {
 

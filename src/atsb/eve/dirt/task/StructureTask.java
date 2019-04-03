@@ -1,17 +1,18 @@
 package atsb.eve.dirt.task;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.db.ApiAuthTable;
 import atsb.eve.dirt.db.SolarSystemTable;
+import atsb.eve.dirt.db.StructAuthTable;
 import atsb.eve.dirt.db.StructureTable;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
 import atsb.eve.dirt.model.OAuthUser;
 import atsb.eve.dirt.model.Structure;
-import atsb.eve.dirt.util.OAuthUtils;
-import atsb.eve.dirt.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
 
@@ -38,11 +39,25 @@ public class StructureTask extends DirtTask {
 	protected void runTask() {
 		UniverseApiWrapper uapiw = new UniverseApiWrapper(getDb());
 
-		int keyId = Integer.parseInt(Utils.getProperty(getDb(), Utils.PROPERTY_SCRAPER_KEY_ID));
+		// get auth keys that are authorized to read the structure's information
+		List<Integer> keys;
+		try {
+			keys = StructAuthTable.findAuthKeyByStruct(getDb(), structId);
+		} catch (SQLException e1) {
+			log.fatal("Failed to search for auth keys for structure " + structId);
+			return;
+		}
+		int keyId;
+		if (!keys.isEmpty()) {
+			keyId = keys.get(0);
+		} else {
+			log.fatal("Failed to find any auth keys for structure " + structId);
+			return;
+		}
 
 		OAuthUser auth;
 		try {
-			auth = OAuthUtils.loadFromSql(getDb(), keyId);
+			auth = ApiAuthTable.getUser(getDb(), keyId);
 			if (auth == null) {
 				log.fatal("No auth details found for key=" + keyId);
 				return;
@@ -54,8 +69,7 @@ public class StructureTask extends DirtTask {
 
 		log.debug("Querying structure information for structId=" + structId);
 		try {
-			String authToken = OAuthUtils.getAuthToken(getDb(), auth);
-			GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, authToken);
+			GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, auth.getAuthToken());
 			Structure s = new Structure(info);
 			s.setStructId(structId);
 			s.setRegionId(SolarSystemTable.findRegionBySystem(getDb(), s.getSystemId()));

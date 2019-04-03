@@ -1,7 +1,7 @@
 "use strict";
 
 var region = 0; // default to All Regions
-var type = 29668; // default to PLEX
+var type = 44992; // default to PLEX
 var name = '';
 
 var orderData = null;
@@ -198,7 +198,8 @@ function reloadData() {
 	}
 
 	// update page title
-	$('#title').html(name);
+	$('#title').text(name);
+	$('head title', window.parent.document).text(name);
 	$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
 	// expand menu to current item
 	menu.expandTo(type);

@@ -2,7 +2,7 @@
 
 var srcRegion = 10000002; // default to The Forge
 var dstRegion = 10000042; // default to Metropolis
-var type = 29668; // default to PLEX
+var type = 44992; // default to PLEX
 
 var itemData = null;
 var srcHistoryData = null;
@@ -93,6 +93,7 @@ function loadItemInfo(typeId) {
 
 			// update page title
 			$('#title').html('<img id="title-img"> ' + itemData.typeName);
+			$('head title', window.parent.document).text(itemData.typeName);
 			$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
 
 			// expand menu to current item

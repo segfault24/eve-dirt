@@ -1,4 +1,4 @@
-package atsb.eve.dirt.util;
+package atsb.eve.dirt.db;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,27 +21,35 @@ import com.google.gson.Gson;
 
 import atsb.eve.dirt.DirtAuthException;
 import atsb.eve.dirt.model.OAuthUser;
+import atsb.eve.dirt.util.Utils;
 
-public class OAuthUtils {
+/**
+ * 
+ * 
+ * @author austin
+ */
+public class ApiAuthTable {
 
 	private static Logger log = LogManager.getLogger();
 
 	private static final String SELECT_SQL = "SELECT `token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
 	private static final String UPDATE_SQL = "UPDATE dirtApiAuth SET `token`=?, `expires`=?, `refresh`=? WHERE `keyId`=?;";
 	private static final String OAUTH_REFRESH_URL = "https://login.eveonline.com/oauth/token";
+	private static final int EXPIRES_WITHIN = 60000; // milliseconds
 
-	public static OAuthUser loadFromSql(Connection db, int keyId) throws SQLException {
+	public static OAuthUser getUser(Connection db, int keyId) throws SQLException {
 		PreparedStatement stmt = db.prepareStatement(SELECT_SQL);
 		stmt.setInt(1, keyId);
 		ResultSet rs = stmt.executeQuery();
 
-		OAuthUser oau = null;
+		OAuthUserImpl oau = null;
 		if (rs.next()) {
-			oau = new OAuthUser();
-			oau.setKeyId(keyId);
-			oau.setAuthToken(rs.getString("token"));
-			oau.setTokenExpires(rs.getTimestamp("expires", Utils.getGMTCal()));
-			oau.setRefreshToken(rs.getString("refresh"));
+			oau = new OAuthUserImpl();
+			oau.db = db;
+			oau.keyId = keyId;
+			oau.authToken = rs.getString("token");
+			oau.tokenExpires = rs.getTimestamp("expires");
+			oau.refreshToken = rs.getString("refresh");
 		}
 
 		Utils.closeQuietly(rs);
@@ -50,23 +58,40 @@ public class OAuthUtils {
 		return oau;
 	}
 
-	public static String getAuthToken(Connection db, OAuthUser oau) {
-		if (oau.tokenExpired()) {
+	private static synchronized void checkExpiredAndRefresh(OAuthUserImpl oau) {
+		if (oau.isExpired()) {
+			OAuthUserImpl oau2 = null;
 			try {
-				refresh(db, oau);
+				oau2 = (OAuthUserImpl) getUser(oau.db, oau.keyId);
+			} catch(SQLException e) {
+				log.error("Failed to query ApiAuth table");
+				return;
+			}
+
+			// if the token in the database doesn't match ours, and isn't expired,
+			// some other thread/app must've refreshed it, so just use that
+			if (oau2.authToken != oau.authToken && !oau2.isExpired()) {
+				oau.authToken = oau2.authToken;
+				oau.tokenExpires = oau2.tokenExpires;
+				oau.refreshToken = oau2.refreshToken;
+				return;
+			}
+
+			// otherwise continue with a refresh
+			try {
+				refresh(oau);
 			} catch (IOException | SQLException | DirtAuthException e) {
 				log.error("Failed to refresh OAuth token for key=" + oau.getKeyId(), e);
 			}
 		}
-		return oau.getAuthToken();
 	}
 
-	private static void refresh(Connection db, OAuthUser oau) throws IOException, DirtAuthException, SQLException {
+	private static void refresh(OAuthUserImpl oau) throws IOException, DirtAuthException, SQLException {
 		log.debug("Performing token refresh for keyId=" + oau.getKeyId());
 
 		URL url = new URL(OAUTH_REFRESH_URL);
-		String ssoClientId = Utils.getProperty(db, Utils.PROPERTY_SSO_CLIENT_ID);
-		String ssoSecretKey = Utils.getProperty(db, Utils.PROPERTY_SSO_SECRET_KEY);
+		String ssoClientId = Utils.getProperty(oau.db, Utils.PROPERTY_SSO_CLIENT_ID);
+		String ssoSecretKey = Utils.getProperty(oau.db, Utils.PROPERTY_SSO_SECRET_KEY);
 
 		String creds = ssoClientId + ":" + ssoSecretKey;
 		String auth = "Basic " + new String(Base64.getEncoder().encode(creds.getBytes()));
@@ -102,12 +127,12 @@ public class OAuthUtils {
 		Utils.closeQuietly(is);
 
 		RefreshData rd = new Gson().fromJson(rsp, RefreshData.class);
-		oau.setAuthToken(rd.access_token);
-		oau.setTokenType(rd.token_type);
-		oau.setRefreshToken(rd.refresh_token);
-		oau.setTokenExpires(new Timestamp(System.currentTimeMillis() + Long.valueOf(rd.expires_in) * 1000));
+		oau.authToken = rd.access_token;
+		oau.tokenType = rd.token_type;
+		oau.refreshToken = rd.refresh_token;
+		oau.tokenExpires = new Timestamp(System.currentTimeMillis() + Long.valueOf(rd.expires_in) * 1000);
 
-		PreparedStatement stmt = db.prepareStatement(UPDATE_SQL);
+		PreparedStatement stmt = oau.db.prepareStatement(UPDATE_SQL);
 		stmt.setString(1, oau.getAuthToken());
 		stmt.setTimestamp(2, oau.getTokenExpires());
 		stmt.setString(3, oau.getRefreshToken());
@@ -121,6 +146,73 @@ public class OAuthUtils {
 		public String token_type;
 		public String expires_in;
 		public String refresh_token;
+	}
+
+	private static class OAuthUserImpl implements OAuthUser {
+
+		private Connection db;
+
+		private int keyId;
+		private int userId;
+		private int charId;
+		private String charName;
+		private String charHash;
+		private String authToken;
+		private String tokenType;
+		private Timestamp tokenExpires;
+		private String refreshToken;
+
+		@Override
+		public int getKeyId() {
+			return keyId;
+		}
+
+		@Override
+		public int getUserId() {
+			return userId;
+		}
+
+		@Override
+		public int getCharId() {
+			return charId;
+		}
+
+		@Override
+		public String getCharName() {
+			return charName;
+		}
+
+		@Override
+		public String getCharHash() {
+			return charHash;
+		}
+
+		@Override
+		public String getTokenType() {
+			return tokenType;
+		}
+
+		@Override
+		public Timestamp getTokenExpires() {
+			return tokenExpires;
+		}
+
+		@Override
+		public String getRefreshToken() {
+			return refreshToken;
+		}
+
+		@Override
+		public String getAuthToken() {
+			checkExpiredAndRefresh(this);
+			return authToken;
+		}
+
+		@Override
+		public boolean isExpired() {
+			return tokenExpires.before(new Timestamp(System.currentTimeMillis() + EXPIRES_WITHIN));
+		}
+
 	}
 
 }

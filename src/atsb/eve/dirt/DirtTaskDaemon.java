@@ -85,7 +85,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
 		// insurance price info
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD));
-		addPeriodicTask(db, new InsurancePricesTask(), period);
+		//addPeriodicTask(db, new InsurancePricesTask(), period);
 
 		// release connection to pool
 		dbPool.release(db);

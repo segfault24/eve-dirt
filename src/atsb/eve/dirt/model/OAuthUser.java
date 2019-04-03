@@ -5,94 +5,59 @@ import java.sql.Timestamp;
 /**
  * @author austin
  */
-public class OAuthUser {
+public interface OAuthUser {
 
-	private static final int EXPIRES_WITHIN = 60000; // milliseconds
+	/**
+	 * @return
+	 */
+	public int getKeyId();
 
-	private int keyId;
-	private int userId;
-	private int charId;
-	private String charName;
-	private String charHash;
-	private String authToken;
-	private String tokenType;
-	private Timestamp tokenExpires;
-	private String refreshToken;
+	/**
+	 * @return
+	 */
+	public int getUserId();
 
-	public int getKeyId() {
-		return keyId;
-	}
+	/**
+	 * @return
+	 */
+	public int getCharId();
 
-	public void setKeyId(int keyId) {
-		this.keyId = keyId;
-	}
+	/**
+	 * @return
+	 */
+	public String getCharName();
 
-	public int getUserId() {
-		return userId;
-	}
+	/**
+	 * @return
+	 */
+	public String getCharHash();
 
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
+	/**
+	 * @return
+	 */
+	public String getTokenType();
 
-	public int getCharId() {
-		return charId;
-	}
+	/**
+	 * @return
+	 */
+	public Timestamp getTokenExpires();
 
-	public void setCharId(int charId) {
-		this.charId = charId;
-	}
+	/**
+	 * @return
+	 */
+	public String getRefreshToken();
 
-	public String getCharName() {
-		return charName;
-	}
+	/**
+	 * Get the auth token to pass to API calls.
+	 * This function does automatic token refreshes as necessary.
+	 * 
+	 * @return
+	 */
+	public String getAuthToken();
 
-	public void setCharName(String charName) {
-		this.charName = charName;
-	}
-
-	public String getCharHash() {
-		return charHash;
-	}
-
-	public void setCharHash(String charHash) {
-		this.charHash = charHash;
-	}
-
-	public String getTokenType() {
-		return tokenType;
-	}
-
-	public void setTokenType(String tokenType) {
-		this.tokenType = tokenType;
-	}
-
-	public Timestamp getTokenExpires() {
-		return tokenExpires;
-	}
-
-	public void setTokenExpires(Timestamp tokenExpires) {
-		this.tokenExpires = tokenExpires;
-	}
-
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
-	}
-
-	public String getAuthToken() {
-		return authToken;
-	}
-
-	public void setAuthToken(String authToken) {
-		this.authToken = authToken;
-	}
-
-	public boolean tokenExpired() {
-		return tokenExpires.before(new Timestamp(System.currentTimeMillis() + EXPIRES_WITHIN));
-	}
+	/**
+	 * @return
+	 */
+	public boolean isExpired();
 
 }

@@ -81,15 +81,16 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
     // execute the api call
     $header = "Authorization: Bearer " . ($u->getAuthToken());
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://esi.tech.ccp.is/latest/ui/openwindow/marketdetails/?type_id=" . $args['type']);
-    curl_setopt($ch, CURLOPT_USERAGENT, Dirt\Tools::SSO_USERAGENT);
+    $url = "https://esi.evetech.net/latest/ui/openwindow/marketdetails/?datasource=tranquility&type_id=" . $args['type'];
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_USERAGENT, Dirt\Tools::getProperty('useragent'));
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         $header
     ));
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     $result = curl_exec($ch);
     curl_close($ch);

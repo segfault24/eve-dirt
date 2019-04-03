@@ -7,9 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,10 +152,6 @@ public class Utils {
 		} catch (SQLException e) {
 			log.error("Failed to reset connection", e);
 		}
-	}
-
-	public static Calendar getGMTCal() {
-		return Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	}
 
 }

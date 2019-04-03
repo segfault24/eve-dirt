@@ -7,7 +7,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import atsb.eve.dirt.model.MarketOrder;
-import atsb.eve.dirt.util.Utils;
 
 public class MarketOrderTable {
 
@@ -24,7 +23,7 @@ public class MarketOrderTable {
 		PreparedStatement stmt = db.prepareStatement(INSERT_SQL);
 		int count = 0;
 		for (MarketOrder o : os) {
-			stmt.setTimestamp(1, o.getIssued(), Utils.getGMTCal());
+			stmt.setTimestamp(1, o.getIssued());
 			stmt.setString(2, o.getRange());
 			stmt.setBoolean(3, o.isBuyOrder());
 			stmt.setInt(4, o.getDuration());

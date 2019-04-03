@@ -44,6 +44,7 @@ $app->get('/api/market-groups', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 86400);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -54,6 +55,7 @@ $app->get('/api/market-types', function ($request, $response, $args) {
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
+    $response = $this->cache->withExpires($response, time() + 86400);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -66,6 +68,7 @@ $app->get('/api/types/{typeid}', function ($request, $response, $args) {
         ':typeid' => $args['typeid']
     ));
 
+    $response = $this->cache->withExpires($response, time() + 86400);
     return $response->withJson($stmt->fetch(PDO::FETCH_ASSOC));
 });
 
@@ -86,6 +89,7 @@ $app->get('/api/market-group/{group}', function ($request, $response, $args) {
 
     $output['types'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $response = $this->cache->withExpires($response, time() + 86400);
     return $response->withJson($output);
 });
 

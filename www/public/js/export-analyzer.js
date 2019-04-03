@@ -84,23 +84,24 @@ $(document).ready(function() {
 	var menu = new BrowserMenu();
 
 	myAjax('staging-sell-to-jita-buy', function(result) {
-		populateTable(ss2jbTable, result);
+		populateTable(ss2jbTable, result, 800);
 	});
 	myAjax('staging-sell-to-jita-sell', function(result) {
-		populateTable(ss2jsTable, result);
+		populateTable(ss2jsTable, result, 800);
 	});
 	myAjax('home-sell-to-jita-buy', function(result) {
-		populateTable(hs2jbTable, result);
+		populateTable(hs2jbTable, result, 1500);
 	});
 	myAjax('home-sell-to-jita-sell', function(result) {
-		populateTable(hs2jsTable, result);
+		populateTable(hs2jsTable, result, 1500);
 	});
 
 });
 
-function populateTable(table, result) {
+// shipping_rate = isk/m3
+function populateTable(table, result, shipping_rate) {
 	for(var i=0; i<result.length; i++) {
-		var freight = result[i].volume*1500 + result[i].source*0.01;
+		var freight = result[i].volume*shipping_rate + result[i].source*0.01;
 		var margin = result[i].dest - result[i].source - freight;
 		if (margin > 0) {
 			table.row.add([

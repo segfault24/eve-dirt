@@ -8,14 +8,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.db.ApiAuthTable;
 import atsb.eve.dirt.db.MarketOrderTable;
+import atsb.eve.dirt.db.StructAuthTable;
 import atsb.eve.dirt.db.StructureTable;
 import atsb.eve.dirt.esi.MarketApiWrapper;
 import atsb.eve.dirt.model.MarketOrder;
 import atsb.eve.dirt.model.OAuthUser;
 import atsb.eve.dirt.model.Structure;
-import atsb.eve.dirt.util.OAuthUtils;
-import atsb.eve.dirt.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
 
@@ -43,8 +43,21 @@ public class MarketStructureOrdersTask extends DirtTask {
 	protected void runTask() {
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 
-		// TODO: get list of keyIds allowed to query struct orders from dirtStructAuth
-		int keyId = Integer.parseInt(Utils.getProperty(getDb(), Utils.PROPERTY_SCRAPER_KEY_ID));
+		// get auth keys that are authorized to read the structure's market
+		List<Integer> keys;
+		try {
+			keys = StructAuthTable.findAuthKeyByStruct(getDb(), structId);
+		} catch (SQLException e1) {
+			log.fatal("Failed to search for auth keys for structure " + structId);
+			return;
+		}
+		int keyId;
+		if (!keys.isEmpty()) {
+			keyId = keys.get(0);
+		} else {
+			log.fatal("Failed to find any auth keys for structure " + structId);
+			return;
+		}
 
 		// get the structure's region id
 		// queue a task to get its info if we don't have it
@@ -59,7 +72,7 @@ public class MarketStructureOrdersTask extends DirtTask {
 		// get the auth token
 		OAuthUser auth;
 		try {
-			auth = OAuthUtils.loadFromSql(getDb(), keyId);
+			auth = ApiAuthTable.getUser(getDb(), keyId);
 			if (auth == null) {
 				log.fatal("No auth details found for key=" + keyId);
 				return;
@@ -68,7 +81,6 @@ public class MarketStructureOrdersTask extends DirtTask {
 			log.fatal("Failed to get auth details for key=" + keyId, e);
 			return;
 		}
-		String authToken = OAuthUtils.getAuthToken(getDb(), auth);
 
 		// iterate through the pages
 		MarketApiWrapper mapiw = new MarketApiWrapper(getDb());
@@ -78,7 +90,7 @@ public class MarketStructureOrdersTask extends DirtTask {
 		do {
 			page++;
 			try {
-				orders = mapiw.getMarketsStructuresStructureId(structId, page, authToken);
+				orders = mapiw.getMarketsStructuresStructureId(structId, page, auth.getAuthToken());
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
 					continue;
