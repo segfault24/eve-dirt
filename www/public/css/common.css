@@ -102,18 +102,52 @@ table.dataTable thead .sorting_desc_disabled::after {
 
 /* Market Browser Menu */
 
-.browse-card {
-	border: 0;
+.card {
+	background: #747a80;
+	border-color: #343a40;
+}
+
+.card-header {
+	color: #858e96;
+	background: #343a40;
+	padding: .2rem .5rem;
+}
+
+.card-body {
+	background: #747a80;
+	padding: 0.2rem;
+}
+
+.page-link {
+	color: #fff;
+	background-color: #343a40;
+	border: 1px solid #343a40;
+}
+
+.page-item.active .page-link {
+	color: #fff;
+	background-color: #545a60;
+	border-color: #343a40;
+}
+
+.page-item.disabled .page-link {
+	color: #6c757d;
+	background-color: #343a40;
+	border-color: #343a40;
+}
+
+.btn-primary {
+	color: #62abff;
+	background-color: #343a40;
+	border-color: #343a40;
 }
 
 .browse-card-header {
-	background: #343a40;
 	padding: 0;
 	overflow: hidden;
 }
 
 .browse-card-body {
-	background: #747a80;
 	padding: 0rem 0rem 0rem .5rem;
 	overflow: hidden;
 }
@@ -126,4 +160,8 @@ table.dataTable thead .sorting_desc_disabled::after {
 
 .market-item {
 	color: #141a20;
+}
+
+.chart-card-body {
+	background: #545a60;
 }

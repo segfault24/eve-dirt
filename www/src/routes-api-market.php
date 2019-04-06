@@ -95,8 +95,9 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
     $result = curl_exec($ch);
     curl_close($ch);
 
+    $this->logger->debug('/open-in-game sent esi request for character ' . $u->getUserId() . ' type ' . $args['type']); 
     return $response->withJson(array(
-        'success' => 'made api call'
+        'success' => 'made esi call'
     ));
 });
 

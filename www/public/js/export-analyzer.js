@@ -83,17 +83,42 @@ $(document).ready(function() {
 	// generate the sidebar
 	var menu = new BrowserMenu();
 
-	myAjax('staging-sell-to-jita-buy', function(result) {
-		populateTable(ss2jbTable, result, 800);
+	// demand load the tables
+	var ss2jb_loaded = false;
+	//$('#s2jb-label').click(function() {
+		if(!ss2jb_loaded) {
+			myAjax('staging-sell-to-jita-buy', function(result) {
+				populateTable(ss2jbTable, result, 800);
+				ss2jb_loaded = true;
+			});
+		}
+	//});
+	var ss2js_loaded = false;
+	$('#s2js-label').click(function() {
+		if(!ss2js_loaded) {
+			myAjax('staging-sell-to-jita-sell', function(result) {
+				populateTable(ss2jsTable, result, 800);
+				ss2js_loaded = true;
+			});
+		}
 	});
-	myAjax('staging-sell-to-jita-sell', function(result) {
-		populateTable(ss2jsTable, result, 800);
+	var hs2jb_loaded = false;
+	$('#h2jb-label').click(function() {
+		if(!hs2jb_loaded) {
+			myAjax('home-sell-to-jita-buy', function(result) {
+				populateTable(hs2jbTable, result, 1500);
+				hs2jb_loaded = true;
+			});
+		}
 	});
-	myAjax('home-sell-to-jita-buy', function(result) {
-		populateTable(hs2jbTable, result, 1500);
-	});
-	myAjax('home-sell-to-jita-sell', function(result) {
-		populateTable(hs2jsTable, result, 1500);
+	var hs2js_loaded = false;
+	$('#h2js-label').click(function() {
+		if(!hs2js_loaded) {
+			myAjax('home-sell-to-jita-sell', function(result) {
+				populateTable(hs2jsTable, result, 1500);
+				hs2js_loaded = true;
+			});
+		}
 	});
 
 });

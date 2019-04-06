@@ -20,7 +20,6 @@ var distributionKMBTx;
 var distributionKMBTy;
 var historyChart = null;
 var historyKMBT;
-var volumeChart = null;
 var volumeKMBT;
 
 var historyRange = 182;
@@ -73,7 +72,9 @@ $(document).ready(function(){
 			{title:'Orders', responsivePriority: 6}
 		],
 		order: [[0, "desc"]],
-		paging: false,
+		paging: true,
+		pageLength: 30,
+		bLengthChange: false,
 		bInfo: false,
 		searching: false,
 		responsive: true,
@@ -96,38 +97,25 @@ $(document).ready(function(){
 	myAjax('types/' + type, function(result) {
 		name = result.typeName;
 		$('#title').html(name);
+		$('head title', window.parent.document).text(name);
 		$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
 	});
 
 	// setup the history buttons' click handlers
-	function resetHistoryTab() {
+	function resetHistoryTab(range) {
+		historyRange = range;
 		if(historyChart != null) {
 			historyChart.destroy();
 			historyChart = null;
 		}
-		if(volumeChart != null) {
-			volumeChart.destroy();
-			volumeChart = null;
-		}
 		historyTable.clear().draw();
 		loadHistoryTab();
 	}
-	$('#dates-all').click(function(){
-		historyRange = 0;
-		resetHistoryTab();
-	});
-	$('#dates-6m').click(function(){
-		historyRange = 182;
-		resetHistoryTab();
-	});
-	$('#dates-3m').click(function(){
-		historyRange = 91;
-		resetHistoryTab();
-	});
-	$('#dates-1m').click(function(){
-		historyRange = 30;
-		resetHistoryTab();
-	});
+	$('#dates-all').click(function(){ resetHistoryTab(0); });
+	$('#dates-1y').click(function(){ resetHistoryTab(365); });
+	$('#dates-6m').click(function(){ resetHistoryTab(182); });
+	$('#dates-3m').click(function(){ resetHistoryTab(91); });
+	$('#dates-1m').click(function(){ resetHistoryTab(30); });
 
 	// setup region select handler
 	$('#regionselect').val(region);
@@ -136,7 +124,12 @@ $(document).ready(function(){
 		reloadData();
 	});
 
-	$('#oig').click(function() { ajaxOpenInGame(type); });
+	$('#oig').click(function() {
+		$.ajax({
+			url: '/api/market/open-in-game/' + type,
+			async: true
+		});
+	});
 
 	// demand load the tables and chart tabs
 	$('#selltablabel').click(function() { loadOrderTabs(); });
@@ -179,7 +172,6 @@ function reloadData() {
 	historyData = null;
 
 	// clear title, tables, and charts
-	$('#title').html('Market Browser');
 	sellTable.clear().draw();
 	buyTable.clear().draw();
 	orderTablesLoaded = false;
@@ -191,10 +183,6 @@ function reloadData() {
 	if(historyChart != null) {
 		historyChart.destroy();
 		historyChart = null;
-	}
-	if(volumeChart != null) {
-		volumeChart.destroy();
-		volumeChart = null;
 	}
 
 	// update page title
@@ -330,7 +318,7 @@ function loadDepthTab() {
 					{
 						label: 'Buy Vol',
 						data: b,
-						pointRadius: 4,
+						pointRadius: 0,
 						lineTension: 0,
 						borderWidth: myBorderWidth,
 						borderColor: myColors.data[0].border,
@@ -339,7 +327,7 @@ function loadDepthTab() {
 					{
 						label: 'Sell Vol',
 						data: s,
-						pointRadius: 4,
+						pointRadius: 0,
 						lineTension: 0,
 						borderWidth: myBorderWidth,
 						borderColor: myColors.data[1].border,
@@ -356,6 +344,7 @@ function loadDepthTab() {
 						ticks: {
 							min: xmin,
 							max: xmax,
+							fontColor: '#dddddd',
 							callback: function(label, index, labels) {
 								return formatKMBT(label, distributionKMBTx);
 							}
@@ -365,6 +354,7 @@ function loadDepthTab() {
 						ticks: {
 							min: 0,
 							max: ymax,
+							fontColor: '#dddddd',
 							callback: function(label, index, labels) {
 								return formatKMBT(label, distributionKMBTy);
 							}
@@ -373,6 +363,10 @@ function loadDepthTab() {
 				},
 				legend: {
 					display: false
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false
 				}
 			}
 		});
@@ -404,13 +398,12 @@ function loadHistoryTab() {
 		var end = historyData.length;
 		for(var i=start; i<end; i++) {
 			var day = historyData[i];
-			//dateSqlToJs(day.date);
-			h.push({x:i, y:parseFloat(day.highest)});
-			a.push({x:i, y:parseFloat(day.average)});
-			l.push({x:i, y:parseFloat(day.lowest)});
-			v.push({x:i, y:parseInt(day.volume)});
-			sma30_temp.push(sma30[i]);
-			sma100_temp.push(sma100[i]);
+			h.push({t:day.date, y:parseFloat(day.highest)});
+			a.push({t:day.date, y:parseFloat(day.average)});
+			l.push({t:day.date, y:parseFloat(day.lowest)});
+			v.push({t:day.date, y:parseInt(day.volume)});
+			//sma30_temp.push(sma30[i]);
+			//sma100_temp.push(sma100[i]);
 
 			historyTable.row.add([
 				(day.date).split(' ')[0],
@@ -441,8 +434,9 @@ function loadHistoryTab() {
 						pointRadius: 0,
 						lineTension: 0,
 						borderWidth: myBorderWidth,
-						borderColor: myColors.data[0].border,
-						backgroundColor: myColors.data[0].fill
+						borderColor: myColors.data[1].border,
+						backgroundColor: myColors.data[1].fill,
+						yAxisID: 'y-axis-1'
 					},
 					{
 						label: 'Average',
@@ -452,8 +446,9 @@ function loadHistoryTab() {
 						pointRadius: 0,
 						lineTension: 0,
 						borderWidth: myBorderWidth,
-						borderColor: myColors.data[1].border,
-						backgroundColor: myColors.data[1].fill
+						borderColor: myColors.data[0].border,
+						backgroundColor: myColors.data[0].fill,
+						yAxisID: 'y-axis-1'
 					},
 					{
 						label: 'Lowest',
@@ -464,7 +459,8 @@ function loadHistoryTab() {
 						lineTension: 0,
 						borderWidth: myBorderWidth,
 						borderColor: myColors.data[2].border,
-						backgroundColor: myColors.data[2].fill
+						backgroundColor: myColors.data[2].fill,
+						yAxisID: 'y-axis-1'
 					},
 					{
 						label: 'SMA30',
@@ -473,7 +469,8 @@ function loadHistoryTab() {
 						pointRadius: 0,
 						borderWidth: myBorderWidth,
 						borderColor: myColors.stat[0].border,
-						backgroundColor: myColors.stat[0].fill
+						backgroundColor: myColors.stat[0].fill,
+						yAxisID: 'y-axis-1'
 					},
 					{
 						label: 'SMA100',
@@ -482,48 +479,17 @@ function loadHistoryTab() {
 						pointRadius: 0,
 						borderWidth: myBorderWidth,
 						borderColor: myColors.stat[1].border,
-						backgroundColor: myColors.stat[1].fill
-					}
-				]
-			},
-			options: {
-				responsive: true,
-				scales: {
-					xAxes: [{
-						type: 'time',
-						time: {
-							displayFormats: myDisplayFormatYr
-						},
-						position: 'bottom'
-					}],
-					yAxes: [{
-						ticks: {
-							//min: bounds.lower,
-							//max: bounds.upper,
-							callback: function(label, index, labels) {
-								return formatKMBT(label, historyKMBT);
-							}
-						}
-					}]
-				},
-				legend: {
-					display: true
-				}
-			}
-		});
-
-		// trade volume chart
-		volumeChart = new Chart($("#tradevolume"), {
-			type: 'line',
-			data: {
-				datasets: [
+						backgroundColor: myColors.stat[1].fill,
+						yAxisID: 'y-axis-1'
+					},
 					{
 						label: 'Volume',
 						data: v,
 						pointRadius: 0,
 						borderWidth: myBorderWidth,
 						borderColor: myColors.data[0].border,
-						backgroundColor: myColors.data[0].fill
+						backgroundColor: myColors.data[0].fill,
+						yAxisID: 'y-axis-2'
 					}
 				]
 			},
@@ -535,19 +501,47 @@ function loadHistoryTab() {
 						time: {
 							displayFormats: myDisplayFormatYr
 						},
-						position: 'bottom'
-					}],
-					yAxes: [{
+						position: 'bottom',
 						ticks: {
-							beginAtZero: true,
+							fontColor: '#dddddd'
+						}
+					}],
+					yAxes: [
+					{
+						ticks: {
+							//min: bounds.lower,
+							//max: bounds.upper,
+							fontColor: '#dddddd',
+							callback: function(label, index, labels) {
+								return formatKMBT(label, historyKMBT);
+							}
+						},
+						id: "y-axis-1"
+					},{
+						type: "linear",
+						display: true,
+						position: "right",
+						ticks: {
+							fontColor: '#dddddd',
 							callback: function(label, index, labels) {
 								return formatKMBT(label, volumeKMBT);
 							}
-						}
+						},
+						gridLines: {
+							drawOnChartArea: false
+						},
+						id: "y-axis-2"
 					}]
 				},
 				legend: {
-					display: false
+					display: true,
+					labels: {
+						fontColor: '#dddddd'
+					}
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false
 				}
 			}
 		});
@@ -573,8 +567,13 @@ function ajaxOrderData(callback) {
 }
 
 function ajaxHistoryData(callback) {
+	var tmpregion = region;
+	if (tmpregion == 0) {
+		// default to The Forge if "All Regions" is selected
+		tmpregion = 10000002;
+	}
 	$.ajax({
-		url: '/api/market/history/' + region + '/type/' + type,
+		url: '/api/market/history/' + tmpregion + '/type/' + type,
 		async: true,
 		success: function(result) {
 			historyData = result;
@@ -582,25 +581,18 @@ function ajaxHistoryData(callback) {
 			// one-time processing
 			var a = [];
 			for(var i=0; i<historyData.length; i++) {
-				a.push({x:i, y:parseFloat(historyData[i].average)});
+				a.push({t:historyData[i].date, y:parseFloat(historyData[i].average)});
 			}
 
 			var bounds = getOutlierBounds(a);
 			var clean = removeOutliers(a, bounds);
 
-			sma30 = sma(clean, 30);
-			sma100 = sma(clean, 100);
+			//sma30 = sma(clean, 30);
+			//sma100 = sma(clean, 100);
 
 			if(callback != null) {
 				callback();
 			}
 		}
-	});
-}
-
-function ajaxOpenInGame(type) {
-	$.ajax({
-		url: '/api/market/open-in-game/' + type,
-		async: true
 	});
 }

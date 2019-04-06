@@ -72,12 +72,12 @@ public class MarketStructureOrdersTask extends DirtTask {
 		// get the auth token
 		OAuthUser auth;
 		try {
-			auth = ApiAuthTable.getUser(getDb(), keyId);
+			auth = ApiAuthTable.getUserByKeyId(getDb(), keyId);
 			if (auth == null) {
 				log.fatal("No auth details found for key=" + keyId);
 				return;
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			log.fatal("Failed to get auth details for key=" + keyId, e);
 			return;
 		}

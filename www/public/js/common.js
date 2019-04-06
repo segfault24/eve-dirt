@@ -3,8 +3,8 @@
 // global chart formatting information
 var myColors = {
 	data: [
-		{border: "rgba(0,0,255,0.4)", fill: "rgba(0,0,255,0.2)"},
-		{border: "rgba(0,255,0,0.4)", fill: "rgba(0,255,0,0.2)"},
+		{border: "rgba(255,153,102,0.6)", fill: "rgba(255,153,102,0.4)"},
+		{border: "rgba(51,153,255,0.6)", fill: "rgba(51,153,255,0.4)"},
 		{border: "rgba(255,0,0,0.4)", fill: "rgba(255,0,0,0.2)"}
 	],
 	stat: [
@@ -201,33 +201,6 @@ function removeOutliers(arr, bounds) {
 	}
 
 	return narr;
-}
-
-// given an array of evenly spaced {x:, y:} pairs, this function returns an
-// array of {x:, y:} pairs representing a simple moving average of length 'len'
-function sma(data, len) {
-	if(data.length < len) {
-		return [];
-	}
-
-	var sma = [];
-
-	// calculate the sma for the first possible point
-	var init = 0;
-	for(var i=0; i<len; i++) {
-		init += data[i].y;
-	}
-	sma.push({x:data[len-1].x, y:init/len});
-
-	// calculate the successive sma's
-	var prev = sma[0].y;
-	for(var i=len; i<data.length; i++) {
-		var cur = prev + data[i].y/len - data[i-len].y/len;
-		sma.push({x:data[i].x, y:cur});
-		prev = cur;
-	}
-
-	return sma;
 }
 
 function myAjax(endpoint, callback) {

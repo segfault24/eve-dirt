@@ -79,6 +79,10 @@ DROP TABLE IF EXISTS `dirtList`;
 DROP TABLE IF EXISTS `dirtApiAuth`;
 DROP TABLE IF EXISTS `dirtUser`;
 DROP TABLE IF EXISTS `fortchain`;
+DROP TABLE IF EXISTS `dirtStructAuth`;
+DROP TABLE IF EXISTS `dirtNotification`;
+DROP TABLE IF EXISTS `taskStatus`;
+DROP TABLE IF EXISTS `apiReq`;
 
 CREATE TABLE `property` (
 	`id` INT AUTO_INCREMENT,
@@ -185,6 +189,41 @@ CREATE TABLE `apiReq` (
 	`apiReqName` VARCHAR(64) NOT NULL,
 	`etag` VARCHAR(64),
 	PRIMARY KEY (`apiReqName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `walletJournal` (
+	`journalId` BIGINT,
+	`charId` INT NOT NULL,
+	`amount` DECIMAL(19,4),
+	`balance` DECIMAL(19,4),
+	`contextId` BIGINT,
+	`contextIdType` VARCHAR(255),
+	`date` TIMESTAMP NOT NULL,
+	`description` VARCHAR(255),
+	`firstPartyId` INT,
+	`reason` VARCHAR(255),
+	`refType` VARCHAR(255),
+	`secondPartyId` INT,
+	`tax` DECIMAL(19,4),
+	`taxReceiverId` INT,
+	PRIMARY KEY (`journalId`),
+	KEY `ix_walletJournal_charId` (`charId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `walletTransaction` (
+	`transactionId` BIGINT,
+	`charId` INT NOT NULL,
+	`clientId` INT,
+	`date` TIMESTAMP NOT NULL,
+	`isBuy` BOOLEAN NOT NULL,
+	`isPersonal` BOOLEAN,
+	`typeId` INT NOT NULL,
+	`quantity` INT NOT NULL,
+	`unitPrice` DECIMAL(19,4),
+	`locationId` BIGINT NOT NULL,
+	`journalRefId` BIGINT,
+	PRIMARY KEY (`transactionId`),
+	KEY `ix_walletTransaction_charId` (`charId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------------------------------

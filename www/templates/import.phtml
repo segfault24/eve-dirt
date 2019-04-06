@@ -23,7 +23,6 @@
 				<option value="10000043">Domain</option>
 				<option value="10000032">Sinq Liasion</option>
 				<option value="10000030">Heimatar</option>
-				<option value="10000042">Metropolis</option>
 			</select>
 		</div>
 	</div>
@@ -37,17 +36,19 @@
 				<option value="10000043">Domain</option>
 				<option value="10000032">Sinq Liasion</option>
 				<option value="10000030">Heimatar</option>
-				<option value="10000042">Metropolis</option>
 			</select>
 		</div>
 	</div>
 	<div class="col-md-1">
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="btn-group margin-bottom">
+		<div class="btn-group mb-3">
 			<button type="button" class="btn btn-primary" id="open-in-market-browser"><i class="fa fa-bar-chart-o fa-fw"></i></button>
 			<button type="button" class="btn btn-primary" id="open-in-station-trader"><i class="fa fa-exchange fa-rotate-90 fa-fw"></i></button>
 			<button type="button" class="btn btn-primary active" id="open-in-import-analyzer"><i class="fa fa-sign-in fa-fw"></i></button>
+		</div>
+		<div class="btn-group mb-3">
+			<button type="button" class="btn btn-primary" id="oig"><i class="fa fa-magnet fa-fw"></i></button>
 		</div>
 	</div>
 </div>
@@ -64,27 +65,29 @@
 					</li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane fade tab-border show active" id="analysis" aria-labelledby="analysislabel">
-						<div class="card margin-top">
-							<p>Src Sell</p>
-							<p>Dst Sell</p>
-							<p>Src Buy</p>
+					<div class="tab-pane fade tab-border mb-3 show active" id="analysis" aria-labelledby="analysislabel">
+						<div class="card">
+							<div class="card-body">
+								<p>Src Sell</p>
+								<p>Dst Sell</p>
+								<p>Src Buy</p>
+							</div>
 						</div>
 					</div>
-					<div class="tab-pane fade tab-border" id="history" aria-labelledby="historylabel">
-						<div class="btn-group margin-top margin-bottom" data-toggle="buttons">
-							<label class="btn btn-default active" id="by-isk">
-								<input type="radio" autocomplete="off" checked>Ƶ
-							</label>
-							<label class="btn btn-default" id="by-percent">
-								<input type="radio" autocomplete="off">%
-							</label>
+					<div class="tab-pane fade tab-border mb-3" id="history" aria-labelledby="historylabel">
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-secondary" id="by-isk">&#x01B5;</button>
+							<button type="button" class="btn btn-secondary" id="by-percent">%</button>
+						</div>
+						<div class="card chart-card">
+							<div class="card-body chart-card-body" style="position:relative">
+								<canvas id="analysis-graph" width="100%"></canvas>
+							</div>
 						</div>
 						<div class="card">
-							<canvas id="analysis-graph" width="100%"></canvas>
-						</div>
-						<div class="card card-block">
-							<p>This chart shows the difference in price between the two regions over time. It can show the difference in isk, or by percentage of the source price.</p>
+							<div class="card-body">
+								<p>This chart shows the difference in price between the two regions over time. It can show the difference in isk, or by percentage of the source price.</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -92,7 +95,7 @@
 		</div>
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="panel panel-default browse-panel">
+		<div class="panel panel-default browse-panel mb-3">
 			<div class="accordian" id="g0b"></div>
 		</div>
 	</div>

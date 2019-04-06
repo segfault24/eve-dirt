@@ -18,6 +18,8 @@ public class MarketApiWrapper {
 
 	private static Logger log = LogManager.getLogger();
 
+	private static final int MAX_ATTEMPTS = 3;
+
 	private Connection db;
 	private MarketApi mapi;
 
@@ -29,8 +31,25 @@ public class MarketApiWrapper {
 	public List<GetMarketsRegionIdOrders200Ok> getMarketsRegionIdOrders(int regionId, int page) throws ApiException {
 		String etag = Utils.getEtag(db, "orders-" + regionId + "-" + page);
 		log.trace("Executing API query getMarketsRegionIdOrders(" + regionId + ", " + page + ")");
-		ApiResponse<List<GetMarketsRegionIdOrders200Ok>> resp = mapi.getMarketsRegionIdOrdersWithHttpInfo("all",
-				regionId, Utils.getApiDatasource(), etag, page, null);
+		ApiResponse<List<GetMarketsRegionIdOrders200Ok>> resp = null;
+		boolean done = false;
+		int attempt = 1;
+		while (!done && attempt<=MAX_ATTEMPTS) {
+			try {
+				resp = mapi.getMarketsRegionIdOrdersWithHttpInfo("all", regionId, Utils.getApiDatasource(), etag, page, null);
+				done = true;
+			} catch (ApiException e) {
+				if (e.getCode() < 500 || attempt == MAX_ATTEMPTS) {
+					// immediately throw non-500 errors (our problem) and
+					// throw error if we got 'MAX_ATTEMPTS' 500 codes in a row
+					throw e;
+				} else {
+					// do nothing and continue to retry
+					log.warn("Retrying API query getMarketsRegionIdOrders(" + regionId + ", " + page + ")");
+				}
+			}
+			attempt++;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
 			Utils.upsertEtag(db, "orders-" + regionId + "-" + page, Utils.getEtag(resp));

@@ -132,6 +132,7 @@ class User
             return true; // already linked, pretend we were successful
         }
 
+		date_default_timezone_set('America/New_York');
         $expires_timestamp = date('Y-m-d H:i:s', strtotime('now +' . $expires . ' seconds'));
 
         $sql = 'INSERT INTO dirtApiAuth (`userId`, `charId`, `charName`, `charHash`, `token`, `expires`, `refresh`)
@@ -348,7 +349,6 @@ class User
 
         // do the refresh
         $result = Tools::oauthRefresh($old_refresh_token);
-        ;
         if ($result == false) {
             return;
         }
@@ -360,6 +360,7 @@ class User
         // get the new values
         $new_token = $rsp->access_token;
         $new_expires = $rsp->expires_in;
+        date_default_timezone_set('America/New_York');
         $new_expires_timestamp = date('Y-m-d H:i:s', strtotime('now +' . $new_expires . ' seconds'));
         $new_refresh_token = $rsp->refresh_token;
         $userid = $_SESSION['userid'];

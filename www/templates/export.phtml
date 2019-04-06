@@ -32,22 +32,22 @@
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane fade tab-border show active" id="s2jb" aria-labelledby="s2jb-label">
-						<div class="table-responsive">
+						<div class="table-responsive mb-3">
 							<table id="ss2jb" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
 					<div class="tab-pane fade tab-border" id="s2js" aria-labelledby="s2js-label">
-						<div class="table-responsive">
+						<div class="table-responsive mb-3">
 							<table id="ss2js" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
 					<div class="tab-pane fade tab-border" id="h2jb" aria-labelledby="h2jb-label">
-						<div class="table-responsive">
+						<div class="table-responsive mb-3">
 							<table id="hs2jb" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
 					<div class="tab-pane fade tab-border" id="h2js" aria-labelledby="h2js-label">
-						<div class="table-responsive">
+						<div class="table-responsive mb-3">
 							<table id="hs2js" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
@@ -56,9 +56,35 @@
 		</div>
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="panel panel-default browse-panel">
-			<!-- cost to export, unit profit, ROI -->
-			<div class="accordian" id="g0b"></div>
+		<div class="card">
+			<div class="card-header">
+				<a>Freight</a>
+			</div>
+			<div class="card-body">
+			</div>
+		</div>
+		<div class="card mt-3">
+			<div class="card-header">
+				<a>Filters</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&#x01B5; Profit &gt;</div>
+					</div>
+					<input type="text" class="form-control" placeholder="isk">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&percnt; Profit &gt;</div>
+					</div>
+					<input type="text" class="form-control" placeholder="&percnt;">
+				</div>
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary">Filter</button>
+					<button type="button" class="btn btn-primary">Clear</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

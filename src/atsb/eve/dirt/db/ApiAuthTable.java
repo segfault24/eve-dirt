@@ -12,7 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,13 +34,15 @@ public class ApiAuthTable {
 
 	private static Logger log = LogManager.getLogger();
 
-	private static final String SELECT_SQL = "SELECT `token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
+	private static final String BYKEYID_SELECT_SQL = "SELECT `charId`,`token`,`expires`,`refresh` FROM dirtApiAuth WHERE `keyId`=?;";
+	private static final String BYCHARID_SELECT_SQL = "SELECT `keyId`,`token`,`expires`,`refresh` FROM dirtApiAuth WHERE `charId`=?;";
+	private static final String SELECT_ALL_SQL = "SELECT `charId` FROM dirtApiAuth";
 	private static final String UPDATE_SQL = "UPDATE dirtApiAuth SET `token`=?, `expires`=?, `refresh`=? WHERE `keyId`=?;";
 	private static final String OAUTH_REFRESH_URL = "https://login.eveonline.com/oauth/token";
 	private static final int EXPIRES_WITHIN = 60000; // milliseconds
 
-	public static OAuthUser getUser(Connection db, int keyId) throws SQLException {
-		PreparedStatement stmt = db.prepareStatement(SELECT_SQL);
+	public static OAuthUser getUserByKeyId(Connection db, int keyId) throws SQLException {
+		PreparedStatement stmt = db.prepareStatement(BYKEYID_SELECT_SQL);
 		stmt.setInt(1, keyId);
 		ResultSet rs = stmt.executeQuery();
 
@@ -47,6 +51,7 @@ public class ApiAuthTable {
 			oau = new OAuthUserImpl();
 			oau.db = db;
 			oau.keyId = keyId;
+			oau.charId = rs.getInt("charId");
 			oau.authToken = rs.getString("token");
 			oau.tokenExpires = rs.getTimestamp("expires");
 			oau.refreshToken = rs.getString("refresh");
@@ -58,12 +63,49 @@ public class ApiAuthTable {
 		return oau;
 	}
 
+	public static OAuthUser getUserByCharId(Connection db, int charId) throws SQLException {
+		PreparedStatement stmt = db.prepareStatement(BYCHARID_SELECT_SQL);
+		stmt.setInt(1, charId);
+		ResultSet rs = stmt.executeQuery();
+
+		OAuthUserImpl oau = null;
+		if (rs.next()) {
+			oau = new OAuthUserImpl();
+			oau.db = db;
+			oau.keyId = rs.getInt("keyId");
+			oau.charId = charId;
+			oau.authToken = rs.getString("token");
+			oau.tokenExpires = rs.getTimestamp("expires");
+			oau.refreshToken = rs.getString("refresh");
+		}
+
+		Utils.closeQuietly(rs);
+		Utils.closeQuietly(stmt);
+
+		return oau;
+	}
+
+	public static List<Integer> getAllCharacters(Connection db) throws SQLException {
+		PreparedStatement stmt = db.prepareStatement(SELECT_ALL_SQL);
+		ResultSet rs = stmt.executeQuery();
+
+		List<Integer> charIds = new ArrayList<Integer>();
+		while (rs.next()) {
+			charIds.add(rs.getInt("charId"));
+		}
+
+		Utils.closeQuietly(rs);
+		Utils.closeQuietly(stmt);
+
+		return charIds;
+	}
+
 	private static synchronized void checkExpiredAndRefresh(OAuthUserImpl oau) {
 		if (oau.isExpired()) {
 			OAuthUserImpl oau2 = null;
 			try {
-				oau2 = (OAuthUserImpl) getUser(oau.db, oau.keyId);
-			} catch(SQLException e) {
+				oau2 = (OAuthUserImpl) getUserByKeyId(oau.db, oau.keyId);
+			} catch (SQLException e) {
 				log.error("Failed to query ApiAuth table");
 				return;
 			}

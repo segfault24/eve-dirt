@@ -42,7 +42,7 @@ public class PublicStructuresTask extends DirtTask {
 
 		OAuthUser auth;
 		try {
-			auth = ApiAuthTable.getUser(getDb(), keyId);
+			auth = ApiAuthTable.getUserByKeyId(getDb(), keyId);
 			if (auth == null) {
 				log.fatal("No auth details found for key=" + keyId);
 				return;

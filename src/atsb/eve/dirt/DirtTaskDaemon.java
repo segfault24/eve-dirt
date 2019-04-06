@@ -17,6 +17,7 @@ import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.MarketHistoryTask;
 import atsb.eve.dirt.task.MarketRegionOrdersTask;
 import atsb.eve.dirt.task.MarketStructureOrdersTask;
+import atsb.eve.dirt.task.MetaCharacterTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
 import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.DbPool;
@@ -39,7 +40,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		super(1);
 
 		log.info("==================================");
-		log.info("==  DirtTaskDaemon starting up  ==");
+		log.info("==  DirtTaskDaemon Starting Up  ==");
 		log.info("==================================");
 
 		dbPool = new DbPool(new DbInfo());
@@ -76,7 +77,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_REGIONS));
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_PERIOD));
 		for (int regionId : regions) {
-			//addPeriodicTask(db, new MarketHistoryTask(regionId), period);
+			addPeriodicTask(db, new MarketHistoryTask(regionId), period);
 		}
 
 		// public structure info
@@ -86,6 +87,9 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		// insurance price info
 		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD));
 		//addPeriodicTask(db, new InsurancePricesTask(), period);
+
+		// character wallet and orders
+		addPeriodicTask(db, new MetaCharacterTask(), 60);
 
 		// release connection to pool
 		dbPool.release(db);

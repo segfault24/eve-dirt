@@ -9,7 +9,7 @@
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
-		<h3 class="page-header" ><img id="title-img"> <span id="title">Market Browser</span> <a id="oig"><i class="fa fa-magnet fa-fw"></i></a></h3>
+		<h3 class="page-header"><img id="title-img"> <span id="title">Market Browser</span></h3>
 		<hr>
 	</div>
 </div>
@@ -39,7 +39,6 @@
 					<option value="10000043">Domain (Amarr)</option>
 					<option value="10000032">Sinq Liasion (Dodixie)</option>
 					<option value="10000030">Heimatar (Rens)</option>
-					<option value="10000042">Metropolis (Hek)</option>
 				</optgroup>
 			</select>
 		</div>
@@ -49,10 +48,13 @@
 	<div class="col-md-1">
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="btn-group margin-bottom">
+		<div class="btn-group mb-3">
 			<button type="button" class="btn btn-primary active" id="open-in-market-browser"><i class="fa fa-bar-chart-o fa-fw"></i></button>
 			<button type="button" class="btn btn-primary" id="open-in-station-trader"><i class="fa fa-exchange fa-rotate-90 fa-fw"></i></button>
 			<button type="button" class="btn btn-primary" id="open-in-import-analyzer"><i class="fa fa-sign-in fa-fw"></i></button>
+		</div>
+		<div class="btn-group mb-3">
+			<button type="button" class="btn btn-primary" id="oig"><i class="fa fa-magnet fa-fw"></i></button>
 		</div>
 	</div>
 </div>
@@ -75,49 +77,45 @@
 					</li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane fade tab-border show active" id="sell" aria-labelledby="selltablabel">
+					<div class="tab-pane fade tab-border mb-3 show active" id="sell" aria-labelledby="selltablabel">
 						<div class="table-responsive">
 							<table id="sellorders" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
-					<div class="tab-pane fade tab-border" id="buy" aria-labelledby="buytablabel">
+					<div class="tab-pane fade tab-border mb-3" id="buy" aria-labelledby="buytablabel">
 						<div class="table-responsive">
 							<table id="buyorders" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 						</div>
 					</div>
 					<div class="tab-pane fade tab-border" id="depth" aria-labelledby="depthtablabel">
-						<div class="well">
-							<canvas id="orderdepth"></canvas>
+						<div class="card no-border mt-3 mb-3">
+							<div class="card-body chart-card-body" style="position:relative; max-height:600px">
+								<canvas id="orderdepth"></canvas>
+							</div>
+						</div>
+						<div class="card chart-card mb-3">
+							<div class="card-body chart-card-body">
+							</div>
 						</div>
 					</div>
 					<div class="tab-pane fade tab-border" id="history" aria-labelledby="historytablabel">
-						<div class="btn-group" data-toggle="buttons">
-							<label class="btn btn-default" id="dates-all">
-								<input type="radio" autocomplete="off">All
-							</label>
-							<label class="btn btn-default active" id="dates-6m">
-								<input type="radio" autocomplete="off" checked>6m
-							</label>
-							<label class="btn btn-default" id="dates-3m">
-								<input type="radio" autocomplete="off">3m
-							</label>
-							<label class="btn btn-default" id="dates-1m">
-								<input type="radio" autocomplete="off">1m
-							</label>
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-primary" id="dates-all">All</button>
+							<button type="button" class="btn btn-primary" id="dates-1y">1y</button>
+							<button type="button" class="btn btn-primary" id="dates-6m">6m</button>
+							<button type="button" class="btn btn-primary" id="dates-3m">3m</button>
+							<button type="button" class="btn btn-primary" id="dates-1m">1m</button>
 						</div>
-						<div class="well">
-							<canvas id="itemhistory" width="100%"></canvas>
-						</div>
-						<div class="well">
-							<canvas id="tradevolume" width="100%"></canvas>
-						</div>
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a data-toggle="collapse" href="#collapseOne" aria-expanded="false" class="collapsed">Raw Data</a>
-								</h4>
+						<div class="card mb-3 no-border">
+							<div class="card-body chart-card-body" style="position:relative; max-height:600px">
+								<canvas id="itemhistory"></canvas>
 							</div>
-							<div id="collapseOne" class="panel-collapse collapse" aria-expanded="false">
+						</div>
+						<div class="card chart-card mb-3">
+							<div class="card-header chart-card-header">
+								<a data-toggle="collapse" href="#collapseOne" aria-expanded="false" class="collapsed">Raw Data</a>
+							</div>
+							<div id="collapseOne" class="card-body chart-card-body collapse" aria-expanded="false">
 								<div class="table-responsive">
 									<table id="rawhistory" class="table responsive table-striped table-condensed" style="width:100%"></table>
 								</div>
@@ -129,7 +127,7 @@
 		</div>
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="panel panel-default browse-panel">
+		<div class="panel panel-default browse-panel mb-3">
 			<div class="accordian" id="g0b"></div>
 		</div>
 	</div>

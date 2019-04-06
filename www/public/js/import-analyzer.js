@@ -1,7 +1,7 @@
 "use strict";
 
 var srcRegion = 10000002; // default to The Forge
-var dstRegion = 10000042; // default to Metropolis
+var dstRegion = 10000043; // default to Domain
 var type = 44992; // default to PLEX
 
 var itemData = null;

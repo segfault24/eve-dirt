@@ -17,8 +17,9 @@ import net.evetech.ApiException;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
 
 /**
+ * Task to retrieve information about a structure.
+ * 
  * @author austin
- *
  */
 public class StructureTask extends DirtTask {
 
@@ -57,7 +58,7 @@ public class StructureTask extends DirtTask {
 
 		OAuthUser auth;
 		try {
-			auth = ApiAuthTable.getUser(getDb(), keyId);
+			auth = ApiAuthTable.getUserByKeyId(getDb(), keyId);
 			if (auth == null) {
 				log.fatal("No auth details found for key=" + keyId);
 				return;

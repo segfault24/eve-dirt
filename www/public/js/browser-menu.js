@@ -71,7 +71,7 @@ function BrowserMenu() {
 			var mg_hdr = 'g' + g[i].marketGroupID + 'h';
 			var mg_col = 'g' + g[i].marketGroupID + 'l';
 			var mg_crd = 'g' + g[i].marketGroupID + 'b';
-			blah += '<div class="card browse-card">';
+			blah += '<div class="card no-border">';
 			blah += '	<div class="card-header browse-card-header" id="' + mg_hdr + '">';
 			blah += '		<button class="btn btn-link browse-btn" type="button" data-toggle="collapse" data-target="#' + mg_col + '" aria-expanded="true" aria-controls="#' + mg_col + '">' + g[i].marketGroupName + '</button>';
 			blah += '	</div>';
@@ -86,7 +86,7 @@ function BrowserMenu() {
 
 		var t = getTypesInGroup(id);
 		for(var i=0; i<t.length; i++) {
-			blah += '<div class="card browse-card">'
+			blah += '<div class="card no-border">'
 			blah += '	<div class="card-body browse-card-body">';
 			blah += '		<a class="market-item" name="' + t[i].typeID + '" href="/browse?type=' + t[i].typeID + '">' + t[i].typeName + '</a>';
 			blah += '	</div>';
