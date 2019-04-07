@@ -124,13 +124,6 @@ $(document).ready(function(){
 		reloadData();
 	});
 
-	$('#oig').click(function() {
-		$.ajax({
-			url: '/api/market/open-in-game/' + type,
-			async: true
-		});
-	});
-
 	// demand load the tables and chart tabs
 	$('#selltablabel').click(function() { loadOrderTabs(); });
 	$('#buytablabel').click(function() { loadOrderTabs(); });
@@ -147,6 +140,8 @@ $(document).ready(function(){
 	$('#open-in-market-browser').click(function() { window.location = '/browse?type=' + type; });
 	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
 	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
+	$('#refresh-data').click(function() { reloadData(); });
+	$('#open-in-game').click(function() { myAjax('market/open-in-game/' + type, null); });
 
 	// capture history events
 	$(window).bind('popstate', function(event) {

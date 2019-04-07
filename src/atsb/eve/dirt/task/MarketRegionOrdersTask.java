@@ -83,10 +83,10 @@ public class MarketRegionOrdersTask extends DirtTask {
 		// TODO: only remove public orders
 		if (totalOrders > 0) {
 			try {
-				MarketOrderTable.deleteOldPublicRegionOrders(getDb(), region, now);
-				log.debug("Cleared old orders for region " + region);
+				int count = MarketOrderTable.deleteOldPublicRegionOrders(getDb(), region, now);
+				log.debug("Deleted " + count + " old market orders for region " + region);
 			} catch (SQLException e) {
-				log.fatal("Unexpected failure while processing region " + region, e);
+				log.fatal("Failed to delete old market orders for region" + region, e);
 				return;
 			}
 		}

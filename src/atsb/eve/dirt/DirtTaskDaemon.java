@@ -18,6 +18,7 @@ import atsb.eve.dirt.task.MarketHistoryTask;
 import atsb.eve.dirt.task.MarketRegionOrdersTask;
 import atsb.eve.dirt.task.MarketStructureOrdersTask;
 import atsb.eve.dirt.task.MetaCharacterTask;
+import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
 import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.DbPool;
@@ -52,7 +53,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 			return;
 		}
 
-		int threads = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_NUM_THREADS));
+		int threads = Utils.getIntProperty(db, Utils.PROPERTY_NUM_THREADS);
 		setCorePoolSize(threads);
 		dbPool.setMinPoolSize(threads);
 		log.info("Starting with " + threads + " worker threads");
@@ -61,35 +62,39 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
 		// public market orders for specific regions
 		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_REGIONS));
-		int period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD));
+		int period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD);
 		for (Integer regionId : regions) {
 			addPeriodicTask(db, new MarketRegionOrdersTask(regionId), period);
 		}
 
 		// structure market orders
 		List<Long> structures = Utils.parseLongList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_STRUCTURES));
-		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD));
+		period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD);
 		for (Long structure : structures) {
-			addPeriodicTask(db, new MarketStructureOrdersTask(structure), 10);
+			addPeriodicTask(db, new MarketStructureOrdersTask(structure), period);
 		}
+
+		// auto-delete old market orders that might not be cleaned up elsewhere
+		addPeriodicTask(db, new OrderReaperTask(), 30);
 
 		// market history for specific regions
 		regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_REGIONS));
-		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_PERIOD));
+		period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_HISTORY_PERIOD);
 		for (int regionId : regions) {
 			addPeriodicTask(db, new MarketHistoryTask(regionId), period);
 		}
 
 		// public structure info
-		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_PUBLIC_STRUCTURES_PERIOD));
-		//addPeriodicTask(db, new PublicStructuresTask(), period);
+		period = Utils.getIntProperty(db, Utils.PROPERTY_PUBLIC_STRUCTURES_PERIOD);
+		addPeriodicTask(db, new PublicStructuresTask(), period);
 
 		// insurance price info
-		period = Integer.parseInt(Utils.getProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD));
-		//addPeriodicTask(db, new InsurancePricesTask(), period);
+		period = Utils.getIntProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD);
+		addPeriodicTask(db, new InsurancePricesTask(), period);
 
 		// character wallet and orders
-		addPeriodicTask(db, new MetaCharacterTask(), 60);
+		period = Utils.getIntProperty(db, Utils.PROPERTY_WALLET_PERIOD);
+		addPeriodicTask(db, new MetaCharacterTask(), period);
 
 		// release connection to pool
 		dbPool.release(db);

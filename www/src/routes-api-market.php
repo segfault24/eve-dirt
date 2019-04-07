@@ -3,6 +3,7 @@
 // //////////////////////////////////////////////
 // // Market Data ////
 // //////////////////////////////////////////////
+
 $app->get('/api/market/history/{region}/type/{type}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
@@ -33,11 +34,10 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
                 UNION ALL
                 SELECT `structId` AS sId,`structName` AS sName FROM structure
             ) locs ON o.`locationId`=locs.`sId`
-            WHERE';
+            WHERE o.`typeId`=:type AND o.`source`<=1';
     if ($args['location'] != 0) {
-        $sql .= ' (o.`regionId`=:location OR o.`locationId`=:location) AND';
+        $sql .= ' AND (o.`regionId`=:location OR o.`locationId`=:location);';
     }
-    $sql .= ' o.`typeId`=:type;';
     $stmt = $db->prepare($sql);
     if ($args['location'] != 0) {
         $stmt->bindParam(':location', $args['location']);

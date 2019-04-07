@@ -26,10 +26,13 @@ public class Utils {
 	public static final String PROPERTY_MARKET_ORDERS_REGIONS = "marketorders.regions";
 	public static final String PROPERTY_MARKET_ORDERS_STRUCTURES = "marketorders.structures";
 	public static final String PROPERTY_MARKET_ORDERS_PERIOD = "marketorders.period";
+	public static final String PROPERTY_MARKET_ORDERS_MAX_AGE = "marketorders.maxage";
 	public static final String PROPERTY_MARKET_HISTORY_REGIONS = "markethistory.regions";
 	public static final String PROPERTY_MARKET_HISTORY_PERIOD = "markethistory.period";
 	public static final String PROPERTY_PUBLIC_STRUCTURES_PERIOD = "publicstructures.period";
 	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
+	public static final String PROPERTY_WALLET_PERIOD = "wallet.period";
+
 	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
 	public static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
 	public static final String PROPERTY_SSO_SECRET_KEY = "ssosecretkey";
@@ -89,6 +92,14 @@ public class Utils {
 		}
 
 		return propertyValue;
+	}
+
+	public static int getIntProperty(Connection db, String propertyName) {
+		return Integer.parseInt(getProperty(db, propertyName));
+	}
+
+	public static long getLongProperty(Connection db, String propertyName) {
+		return Long.parseLong(getProperty(db, propertyName));
 	}
 
 	public static String getApiDatasource() {

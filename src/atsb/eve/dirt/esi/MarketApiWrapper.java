@@ -10,6 +10,7 @@ import atsb.eve.dirt.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.MarketApi;
+import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
 import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
 import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
 import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
@@ -70,7 +71,7 @@ public class MarketApiWrapper {
 		return resp.getData();
 	}
 
-	public List<GetMarketsStructuresStructureId200Ok> getMarketsStructuresStructureId(long structId, int page, String token) throws ApiException {
+	public List<GetMarketsStructuresStructureId200Ok> getMarketsStructureIdOrders(long structId, int page, String token) throws ApiException {
 		String etag = Utils.getEtag(db, "orders-" + structId + "-" + page);
 		log.trace("Executing API query getMarketsStructureStructureId(" + structId + ", " + page + ")");
 		ApiResponse<List<GetMarketsStructuresStructureId200Ok>> resp = mapi.getMarketsStructuresStructureIdWithHttpInfo(structId, Utils.getApiDatasource(), etag, page, token);
@@ -80,4 +81,16 @@ public class MarketApiWrapper {
 		}
 		return resp.getData();
 	}
+	
+	public List<GetCharactersCharacterIdOrders200Ok> getMarketsCharacterIdOrders(int charId, String token) throws ApiException {
+		String etag = Utils.getEtag(db, "character-orders-" + charId);
+		log.trace("Executing API query getCharactersCharacterIdOrders(" + charId + ")");
+		ApiResponse<List<GetCharactersCharacterIdOrders200Ok>> resp = mapi.getCharactersCharacterIdOrdersWithHttpInfo(charId, Utils.getApiDatasource(), etag, token);
+		log.trace("API query returned status code " + resp.getStatusCode());
+		if (!resp.getData().isEmpty()) {
+			Utils.upsertEtag(db, "character-orders-" + charId, Utils.getEtag(resp));
+		}
+		return resp.getData();
+	}
+
 }

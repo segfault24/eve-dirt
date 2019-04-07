@@ -30,6 +30,7 @@ require __DIR__ . '/../src/routes-api-misc.php';
 require __DIR__ . '/../src/routes-api-market.php';
 require __DIR__ . '/../src/routes-api-import.php';
 require __DIR__ . '/../src/routes-api-lists.php';
+require __DIR__ . '/../src/routes-api-wallet.php';
 
 // Run app
 $app->run();

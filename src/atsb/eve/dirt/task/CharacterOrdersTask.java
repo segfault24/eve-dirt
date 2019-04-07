@@ -1,7 +1,20 @@
 package atsb.eve.dirt.task;
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import atsb.eve.dirt.db.ApiAuthTable;
+import atsb.eve.dirt.db.MarketOrderTable;
+import atsb.eve.dirt.esi.MarketApiWrapper;
+import atsb.eve.dirt.model.MarketOrder;
+import atsb.eve.dirt.model.OAuthUser;
+import net.evetech.ApiException;
+import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
 
 /**
  * Task to retrieve order information for a character.
@@ -14,6 +27,10 @@ public class CharacterOrdersTask extends DirtTask {
 
 	private int charId;
 
+	public CharacterOrdersTask(int charId) {
+		this.charId = charId;
+	}
+
 	@Override
 	public String getTaskName() {
 		return "character-orders-" + charId;
@@ -21,7 +38,51 @@ public class CharacterOrdersTask extends DirtTask {
 
 	@Override
 	protected void runTask() {
-		
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+
+		// get api auth info
+		OAuthUser auth;
+		try {
+			auth = ApiAuthTable.getUserByCharId(getDb(), charId);
+			if (auth == null) {
+				log.fatal("No auth details found for char=" + charId);
+				return;
+			}
+		} catch (SQLException e) {
+			log.fatal("Failed to get auth details for char=" + charId);
+			return;
+		}
+
+		MarketApiWrapper mapiw = new MarketApiWrapper(getDb());
+		List<GetCharactersCharacterIdOrders200Ok> aos;
+		try {
+			aos = mapiw.getMarketsCharacterIdOrders(charId, auth.getAuthToken());
+			log.debug("Retrieved " + aos.size() + " character orders");
+		} catch (ApiException e) {
+			if (e.getCode() != 304) {
+				log.fatal("Failed to query character orders", e);
+			}
+			return;
+		}
+		if (aos.isEmpty()) {
+			return;
+		}
+		List<MarketOrder> os = new ArrayList<MarketOrder>(aos.size());
+		for (GetCharactersCharacterIdOrders200Ok ao : aos) {
+			MarketOrder o = new MarketOrder(ao);
+			o.setRetrieved(now);
+			o.setCharId(charId);
+			os.add(o);
+		}
+		try {
+			getDb().setAutoCommit(false);
+			MarketOrderTable.insertMany(getDb(), os);
+			getDb().commit();
+			getDb().setAutoCommit(true);
+			log.debug("Inserted " + os.size() + " orders for character " + charId);
+		} catch (SQLException e) {
+			log.error("Unexpected failure while processing orders for character " + charId, e);
+		}
 	}
 
 }

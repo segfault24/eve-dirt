@@ -36,6 +36,7 @@ public class MetaCharacterTask extends DirtTask {
 		}
 		for (Integer charId : charIds) {
 			getDaemon().addTask(new WalletTask(charId));
+			getDaemon().addTask(new CharacterOrdersTask(charId));
 		}
 	}
 

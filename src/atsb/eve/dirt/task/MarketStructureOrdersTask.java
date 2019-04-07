@@ -90,7 +90,7 @@ public class MarketStructureOrdersTask extends DirtTask {
 		do {
 			page++;
 			try {
-				orders = mapiw.getMarketsStructuresStructureId(structId, page, auth.getAuthToken());
+				orders = mapiw.getMarketsStructureIdOrders(structId, page, auth.getAuthToken());
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
 					continue;
@@ -126,10 +126,10 @@ public class MarketStructureOrdersTask extends DirtTask {
 		// delete old orders (where 'retrieved' is older than 'now')
 		if (totalOrders > 0) {
 			try {
-				MarketOrderTable.deleteOldStructureOrders(getDb(), structId, now);
-				log.debug("Cleared old orders for structure " + structId);
+				int count = MarketOrderTable.deleteOldStructureOrders(getDb(), structId, now);
+				log.debug("Deleted " + count + " old market orders for structure " + structId);
 			} catch (SQLException e) {
-				log.fatal("Unexpected failure while processing structure " + structId, e);
+				log.fatal("Failed to delete old market orders for structure " + structId, e);
 				return;
 			}
 		}

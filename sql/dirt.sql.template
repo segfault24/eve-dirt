@@ -261,8 +261,10 @@ CREATE TABLE `marketOrder` (
 	`locationId` BIGINT NOT NULL,
 	`price` DECIMAL(19,4),
 	`regionId` INT NOT NULL,
-	-- `visibility` INT, -- 0=private, 1=corp, 2=alliance, 3=public
 	`retrieved` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	-- source: 0=public, 1=structure, 2=character
+	`source` INT NOT NULL DEFAULT 0,
+	`charId` INT,
 	PRIMARY KEY (`orderEntryId`),
 	UNIQUE KEY `ux_marketOrder_orderId_retrieved` (`orderId`, `retrieved`),
 	KEY `ix_marketOrder_typeId_regionId` (`typeId`, `regionId`),
@@ -391,9 +393,11 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssosecretkey","
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("threads","1");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.regions","10000002,10000043,10000032,10000030,10000042");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.structures","");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.period","60");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.period","20");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.maxage","2880");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.regions","10000002");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.period","1440");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("wallet.period","60");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructures.period","2880");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("insuranceprices.period","240");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.period","15");

@@ -36,7 +36,7 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
     if (! isset($_SESSION['sso_auth_state']) || ! $_SESSION['sso_auth_state'] == $request->getQueryParam('state')) {
         $this->logger->error('/sso-auth/callback failed to verify pre auth state');
         return $response->withStatus(302)
-            ->withHeader('Location', '/user-settings');
+            ->withHeader('Location', '/characters');
     }
 
     // we're done with this
@@ -47,13 +47,13 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
     if ($result == false) {
         $this->logger->error('/sso-auth/callback failed to retrieve oauth token');
         return $response->withStatus(302)
-            ->withHeader('Location', '/user-settings');
+            ->withHeader('Location', '/characters');
     }
     $rsp = json_decode($result);
     if (! isset($rsp->access_token)) {
         $this->logger->error('/sso-auth/callback failed to parse oauth token');
         return $response->withStatus(302)
-            ->withHeader('Location', '/user-settings');
+            ->withHeader('Location', '/characters');
     }
     $access_token = $rsp->access_token;
     $token_expires = $rsp->expires_in;
@@ -64,13 +64,13 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
     if ($result == false) {
         $this->logger->error('/sso-auth/callback failed to retrieve character details');
         return $response->withStatus(302)
-            ->withHeader('Location', '/user-settings');
+            ->withHeader('Location', '/characters');
     }
     $rsp = json_decode($result);
     if (! isset($rsp->CharacterID)) {
         $this->logger->error('/sso-auth/callback failed to parse character details');
         return $response->withStatus(302)
-            ->withHeader('Location', '/user-settings');
+            ->withHeader('Location', '/characters');
     }
 
     $u = Dirt\User::getUser();
@@ -83,7 +83,7 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
     }
 
     return $response->withStatus(302)
-        ->withHeader('Location', '/user-settings');
+        ->withHeader('Location', '/characters');
 });
 
 $app->post('/sso-auth/unlink', function ($request, $response, $args) {
@@ -105,5 +105,5 @@ $app->post('/sso-auth/unlink', function ($request, $response, $args) {
     }
 
     return $response->withStatus(302)
-        ->withHeader('Location', '/user-settings');
+        ->withHeader('Location', '/characters');
 });

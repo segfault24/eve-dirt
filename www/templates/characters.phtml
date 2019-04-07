@@ -16,7 +16,7 @@
 					<td><img src="https://imageserver.eveonline.com/Character/{{result.charId}}_64.jpg"></td>
 					<td>{{result.charName}}</td>
 					<td>
-						<form action="/user-settings" method="post">
+						<form action="/characters" method="post">
 							<input type="hidden" id="charId" name="charId" value="{{result.charId}}">
 							<button type="submit" class="btn btn-primary">Set Active</button>
 						</form>

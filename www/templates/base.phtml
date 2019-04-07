@@ -30,6 +30,12 @@
 							<span class="nav-link-text">Dashboard</span>
 						</a>
 					</li>
+					<li class="nav-item" title="Wallet">
+						<a class="nav-link" href="/wallet">
+							<i class="fa fa-credit-card fa-fw"></i>
+							<span class="nav-link-text">My Wallet</span>
+						</a>
+					</li>
 					<li class="nav-item" title="My Lists">
 						<a class="nav-link" href="/my-lists">
 							<i class="fa fa-list fa-fw"></i>
@@ -127,34 +133,18 @@
 							</div>
 						</form>
 					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle ml-lg-2" id="alertsDropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="fa fa-gear fa-fw"></i>
-							<span class="d-lg-none">Settings</span>
-							<span class="indicator text-warning d-none d-lg-block">
-								<i class="fa fa-fw fa-cicle"></i>
-							</span>
+					<li class="nav-item dropdown no-arrow mx-1">
+						<a class="nav-link dropdown-toggle" id="user-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fa fa-user-circle fa-fw"></i>
 						</a>
-						<div class="dropdown-menu" aria-labelledby="alertsDropdown">
-							<a class="dropdown-item" href="/user-settings">
-								<span class="text-success">
-									<strong><i class="fa fa-gear fa-fw"></i>User</strong>
-								</span>
-							</a>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="user-dropdown">
+							<a class="dropdown-item" href="/characters">Characters</a>
 							{% if admin %}
-							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="/admin">
-								<span class="text-danger">
-									<strong><i class="fa fa-gear fa-fw"></i>Admin</strong>
-								</span>
-							</a>
+							<a class="dropdown-item" href="/admin">Admin</a>
 							{% endif %}
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="/logout">Logout</a>
 						</div>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="/logout">
-							<i class="fa fa-fw fa-sign-out"></i>Logout
-						</a>
 					</li>
 				</ul>
 			</div>

@@ -42,7 +42,7 @@ $app->get('/logout', function ($request, $response, $args) {
         ->withHeader('Location', '/');
 });
 
-$app->get('/user-settings', function ($request, $response, $args) {
+$app->get('/characters', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -64,10 +64,10 @@ $app->get('/user-settings', function ($request, $response, $args) {
 
     $args['charlist'] = $rows;
 
-    return $this->renderer->render($response, 'user-settings.phtml', $args);
+    return $this->renderer->render($response, 'characters.phtml', $args);
 });
 
-$app->post('/user-settings', function ($request, $response, $args) {
+$app->post('/characters', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -75,9 +75,9 @@ $app->post('/user-settings', function ($request, $response, $args) {
     }
 
     $u->setActiveChar($request->getParsedBody()['charId']);
-    $this->logger->info('/user-settings set active character ' . $u->getActiveCharId() . ' for user ' . $u->getUserId());
+    $this->logger->info('/characters set active character ' . $u->getActiveCharId() . ' for user ' . $u->getUserId());
     return $response->withStatus(302)
-        ->withHeader('Location', '/user-settings');
+        ->withHeader('Location', '/characters');
 });
 
 // //////////////////////////////////////////////
@@ -193,6 +193,17 @@ $app->post('/appraisal[/{appraisalid}]', function ($request, $response, $args) {
     // $sql = 'INSERT INTO appraisals (appraisalid, typeid, quantity) VALUES '.str_repeat('(?,?,?),', count($a)-3).'(?,?,?)';
 
     return $this->renderer->render($response, 'appraisal.phtml', $args);
+});
+
+$app->get('/wallet', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
+    return $this->renderer->render($response, 'wallet.phtml', $args);
 });
 
 $app->get('/my-lists', function ($request, $response, $args) {
