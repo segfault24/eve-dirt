@@ -1,0 +1,133 @@
+{% extends "base.phtml" %}
+{% block title %}Trade Analyzer{% endblock %}
+{% block extrahead %}
+{% include 'table-libs.phtml' %}
+<script type="text/javascript" src="js/browser-menu.js"></script>
+<script type="text/javascript" src="js/trade.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header"><i class="fa fa-sign-out fa-fw"></i> Trade Opportunities</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-3">
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Src</span>
+			</div>
+			<select class="form-control" id="src-region-select">
+{% include 'region-select-options.phtml' %}
+			</select>
+		</div>
+		<div class="input-group mb-3">
+			<select class="form-control" id="src-struct-select">
+			</select>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Dst</span>
+			</div>
+			<select class="form-control" id="dst-region-select">
+{% include 'region-select-options.phtml' %}
+			</select>
+		</div>
+		<div class="input-group mb-3">
+			<select class="form-control" id="dst-struct-select">
+			</select>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="input-group mb-3">
+			<select class="form-control" id="trade-type-select">
+				<option value="sell-buy">Sell &gt; Buy</option>
+				<option value="sell-sell">Sell &gt; Sell</option>
+			</select>
+		</div>
+		<div class="btn-group mb-3">
+			<button type="button" class="btn btn-primary" id="refresh-data"><i class="fa fa-refresh fa-fw"></i> Load / Refresh</button>
+		</div>
+	</div>
+	<div class="col-md-3 no-padding-left">
+		<div class="card">
+			<div class="card-body">
+			This tool assumes buy-immediate at the Source.
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-9">
+		<div class="table-responsive mb-3">
+			<table id="trade-table" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
+		</div>
+	</div>
+	<div class="col-md-3 no-padding-left">
+		<div class="card">
+			<div class="card-header">
+				<a>Freight</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&#x01B5; / Jump</div>
+					</div>
+					<input id="freight-route" type="text" class="form-control" placeholder="isk" value="800">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&percnt; Collateral</div>
+					</div>
+					<input id="freight-collat" type="text" class="form-control" placeholder="&percnt;" value="1">
+				</div>
+			</div>
+		</div>
+		<div class="card mt-3">
+			<div class="card-header">
+				<a>Taxes & Fees</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Sales Tax</div>
+					</div>
+					<input id="sales-tax" type="text" class="form-control" placeholder="&percnt;" value="1.2">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Broker Fee</div>
+					</div>
+					<input id="broker-fee" type="text" class="form-control" placeholder="&percnt;" value="2.6">
+				</div>
+			</div>
+		</div>
+		<div class="card mt-3">
+			<div class="card-header">
+				<a>Filters</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&#x01B5; Profit &gt;</div>
+					</div>
+					<input id="filter-profit-isk" type="text" class="form-control" placeholder="isk">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&percnt; Profit &gt;</div>
+					</div>
+					<input id="filter-profit-percent" type="text" class="form-control" placeholder="&percnt;">
+				</div>
+			</div>
+		</div>
+		<div class="btn-group mt-3">
+			<button id="filter-btn" type="button" class="btn btn-primary">Filter</button>
+			<button id="reset-btn" type="button" class="btn btn-primary">Reset</button>
+		</div>
+	</div>
+</div>
+{% endblock %}

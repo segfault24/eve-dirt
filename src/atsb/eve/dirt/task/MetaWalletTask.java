@@ -9,20 +9,17 @@ import org.apache.logging.log4j.Logger;
 import atsb.eve.dirt.db.ApiAuthTable;
 
 /**
- * Meta-task that enqueues tasks for character data.
+ * Meta-task that enqueues tasks for character wallet data
  * 
  * @author austin
  */
-public class MetaCharacterTask extends DirtTask {
+public class MetaWalletTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
-	public MetaCharacterTask() {
-	}
-
 	@Override
 	public String getTaskName() {
-		return "meta-character";
+		return "meta-character-wallet";
 	}
 
 	@Override
@@ -36,7 +33,6 @@ public class MetaCharacterTask extends DirtTask {
 		}
 		for (Integer charId : charIds) {
 			getDaemon().addTask(new WalletTask(charId));
-			getDaemon().addTask(new CharacterOrdersTask(charId));
 		}
 	}
 

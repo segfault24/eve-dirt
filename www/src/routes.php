@@ -254,7 +254,7 @@ $app->get('/import', function ($request, $response, $args) {
     return $this->renderer->render($response, 'import.phtml', $args);
 });
 
-$app->get('/export', function ($request, $response, $args) {
+$app->get('/trade', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -262,7 +262,7 @@ $app->get('/export', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
-    return $this->renderer->render($response, 'export.phtml', $args);
+    return $this->renderer->render($response, 'trade.phtml', $args);
 });
 
 $app->get('/station-trade', function ($request, $response, $args) {

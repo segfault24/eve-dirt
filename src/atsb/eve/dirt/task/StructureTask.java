@@ -26,9 +26,15 @@ public class StructureTask extends DirtTask {
 	private static Logger log = LogManager.getLogger();
 
 	private long structId;
+	private int keyId = -1;
 
 	public StructureTask(long structId) {
 		this.structId = structId;
+	}
+
+	public StructureTask(long structId, int keyId) {
+		this.structId = structId;
+		this.keyId = keyId;
 	}
 
 	@Override
@@ -40,20 +46,21 @@ public class StructureTask extends DirtTask {
 	protected void runTask() {
 		UniverseApiWrapper uapiw = new UniverseApiWrapper(getDb());
 
-		// get auth keys that are authorized to read the structure's information
-		List<Integer> keys;
-		try {
-			keys = StructAuthTable.findAuthKeyByStruct(getDb(), structId);
-		} catch (SQLException e1) {
-			log.fatal("Failed to search for auth keys for structure " + structId);
-			return;
-		}
-		int keyId;
-		if (!keys.isEmpty()) {
-			keyId = keys.get(0);
-		} else {
-			log.fatal("Failed to find any auth keys for structure " + structId);
-			return;
+		if (keyId == -1) {
+			// get auth keys that are authorized to read the structure's information
+			List<Integer> keys;
+			try {
+				keys = StructAuthTable.findAuthKeyByStruct(getDb(), structId);
+			} catch (SQLException e1) {
+				log.fatal("Failed to search for auth keys for structure " + structId);
+				return;
+			}
+			if (!keys.isEmpty()) {
+				keyId = keys.get(0);
+			} else {
+				log.fatal("Failed to find any auth keys for structure " + structId);
+				return;
+			}
 		}
 
 		OAuthUser auth;

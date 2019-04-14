@@ -113,6 +113,12 @@ table.dataTable thead .sorting_desc_disabled::after {
 	padding: .2rem .5rem;
 }
 
+.card-footer {
+	color: #858e96;
+	background: #343a40;
+	padding: .2rem .5rem;
+}
+
 .card-body {
 	background: #747a80;
 	padding: 0.2rem;

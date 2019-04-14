@@ -136,137 +136,72 @@ $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
     return $response->withHeader('Content-Type', 'text/xml');
 });
 
-$app->get('/api/staging-sell', function ($request, $response, $args) {
-    $db = Dirt\Database::getDb();
-
-    $sql = 'SELECT typeId, best FROM vStagingBestSell';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-
-    $response = $this->cache->withExpires($response, time() + 300);
-    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
-});
-
-$app->get('/api/staging-sell-xml', function ($request, $response, $args) {
-    $db = Dirt\Database::getDb();
-
-    $sql = 'SELECT typeId, best FROM vStagingBestSell';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-
-    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
-    echo '<types>' . "\r\n";
-    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-        $xml = '<type>';
-        $xml .= '<typeId>' . $row[0] . '</typeId>';
-        $xml .= '<bestSell>' . $row[1] . '</bestSell>';
-        $xml .= '</type>' . "\r\n";
-        echo $xml;
-    }
-    echo '</types>' . "\r\n";
-
-    $response = $this->cache->withExpires($response, time() + 300);
-    return $response->withHeader('Content-Type', 'text/xml');
-});
-
-$app->get('/api/home-sell', function ($request, $response, $args) {
-    $db = Dirt\Database::getDb();
-
-    $sql = 'SELECT typeId, best FROM vHomeBestSell';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-
-    $response = $this->cache->withExpires($response, time() + 300);
-    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
-});
-
-$app->get('/api/home-sell-xml', function ($request, $response, $args) {
-    $db = Dirt\Database::getDb();
-
-    $sql = 'SELECT typeId, best FROM vHomeBestSell';
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-
-    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\r\n";
-    echo '<types>' . "\r\n";
-    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-        $xml = '<type>';
-        $xml .= '<typeId>' . $row[0] . '</typeId>';
-        $xml .= '<bestSell>' . $row[1] . '</bestSell>';
-        $xml .= '</type>' . "\r\n";
-        echo $xml;
-    }
-    echo '</types>' . "\r\n";
-
-    $response = $this->cache->withExpires($response, time() + 300);
-    return $response->withHeader('Content-Type', 'text/xml');
-});
-
 
 // //////////////////////////////////////////////
 // // Exports ////
 // //////////////////////////////////////////////
 
-$app->get('/api/staging-sell-to-jita-sell', function ($request, $response, $args) {
+$app->get('/api/trade/structs-by-region/{region}/', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT s.typeId, i.typeName, s.best AS source, d.best AS dest, i.volume';
-    $sql .= ' FROM vJitaBestSell AS d';
-    $sql .= ' JOIN vStagingBestSell AS s ON d.typeId=s.typeId';
-    $sql .= ' JOIN invTypes AS i ON i.typeID=s.typeId';
-    $sql .= ' WHERE s.best < d.best';
+    $sql  = 'SELECT `stationID` AS sId,`stationName` AS sName FROM staStations where regionId=:regiona';
+    $sql .= ' UNION ALL';
+    $sql .= ' SELECT `structId` AS sId,`structName` AS sName FROM structure where regionId=:regionb';
+    $sql .= ' ORDER BY sName';
 
     $stmt = $db->prepare($sql);
-    $stmt->execute();
+    $stmt->execute(array(
+        ':regiona' => $args['region'],
+        ':regionb' => $args['region']
+    ));
 
     $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/staging-sell-to-jita-buy', function ($request, $response, $args) {
+$app->get('/api/trade/sell-sell/{source}/{destination}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT s.typeId, i.typeName, s.best AS source, d.best AS dest, i.volume';
-    $sql .= ' FROM vJitaBestBuy AS d';
-    $sql .= ' JOIN vStagingBestSell AS s ON d.typeId=s.typeId';
-    $sql .= ' JOIN invTypes AS i ON i.typeID=s.typeId';
-    $sql .= ' WHERE s.best < d.best';
+    $sql  = 'SELECT o.typeId, i.typeName, o.price AS source, o.volumeRemain AS qt, d.best AS dest, i.volume';
+    $sql .= ' FROM marketOrder AS o';
+    $sql .= ' JOIN (';
+    $sql .= '  SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=0 GROUP BY typeId, locationId';
+    $sql .= ' ) AS d ON o.typeId=d.typeId';
+    $sql .= ' JOIN invTypes AS i ON o.typeId=i.typeID';
+    $sql .= ' WHERE o.locationId=:source';
+    $sql .= ' AND o.isBuyOrder=0';
+    $sql .= ' AND o.price < d.best';
 
     $stmt = $db->prepare($sql);
-    $stmt->execute();
+    $stmt->execute(array(
+        ':source' => $args['source'],
+        ':destination' => $args['destination']
+    ));
 
     $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/home-sell-to-jita-sell', function ($request, $response, $args) {
+$app->get('/api/trade/sell-buy/{source}/{destination}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT s.typeId, i.typeName, s.best AS source, d.best AS dest, i.volume';
-    $sql .= ' FROM vJitaBestSell AS d';
-    $sql .= ' JOIN vHomeBestSell AS s ON d.typeId=s.typeId';
-    $sql .= ' JOIN invTypes AS i ON i.typeID=s.typeId';
-    $sql .= ' WHERE s.best < d.best';
+    $sql  = 'SELECT o.typeId, i.typeName, o.price AS source, o.volumeRemain AS qt, d.best AS dest, i.volume';
+    $sql .= ' FROM marketOrder AS o';
+    $sql .= ' JOIN (';
+    $sql .= '  SELECT typeId, MAX(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=1 GROUP BY typeId, locationId';
+    $sql .= ' ) AS d ON o.typeId=d.typeId';
+    $sql .= ' JOIN invTypes AS i ON o.typeId=i.typeID';
+    $sql .= ' WHERE o.locationId=:source';
+    $sql .= ' AND o.isBuyOrder=0';
+    $sql .= ' AND o.price < d.best';
 
     $stmt = $db->prepare($sql);
-    $stmt->execute();
+    $stmt->execute(array(
+        ':source' => $args['source'],
+        ':destination' => $args['destination']
+    ));
 
     $response = $this->cache->withExpires($response, time() + 300);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/home-sell-to-jita-buy', function ($request, $response, $args) {
-    $db = Dirt\Database::getDb();
-
-    $sql  = 'SELECT s.typeId, i.typeName, s.best AS source, d.best AS dest, i.volume';
-    $sql .= ' FROM vJitaBestBuy AS d';
-    $sql .= ' JOIN vHomeBestSell AS s ON d.typeId=s.typeId';
-    $sql .= ' JOIN invTypes AS i ON i.typeID=s.typeId';
-    $sql .= ' WHERE s.best < d.best';
-
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-
-    $response = $this->cache->withExpires($response, time() + 300);
-    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
-});

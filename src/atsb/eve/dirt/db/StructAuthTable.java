@@ -21,4 +21,22 @@ public class StructAuthTable {
 		return keys;
 	}
 
+	public static List<Long> getAllUniqueStructs(Connection db) throws SQLException {
+		PreparedStatement stmt;
+		stmt = db.prepareStatement("SELECT DISTINCT structId FROM dirtStructAuth");
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<Long> structs = new ArrayList<Long>();
+		while (rs.next()) {
+			structs.add(rs.getLong(1));
+		}
+		return structs;
+	}
+
+	public static void insert(Connection db, long structId, int keyId) throws SQLException {
+		PreparedStatement stmt = db.prepareStatement("INSERT INTO dirtStructAuth (`structId`,`keyId`) VALUES (?,?)");
+		stmt.setLong(1, structId);
+		stmt.setInt(2, keyId);
+		stmt.executeUpdate();
+	}
+
 }

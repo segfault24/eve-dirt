@@ -123,6 +123,8 @@ public class MarketStructureOrdersTask extends DirtTask {
 			}
 		} while (orders.size() > 0);
 
+		log.debug("Inserted " + totalOrders + " total orders for structure " + structId);
+
 		// delete old orders (where 'retrieved' is older than 'now')
 		if (totalOrders > 0) {
 			try {

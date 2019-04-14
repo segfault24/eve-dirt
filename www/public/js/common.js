@@ -216,6 +216,12 @@ function myAjax(endpoint, callback) {
 }
 
 $(function() {
+	// click handler for opening types in game
+	$(document).on('click', '.open-in-game', function(e) {
+		e.preventDefault();
+		myAjax('market/open-in-game/' + $(this).attr('data-typeid'), null);
+	});
+
 	$.getJSON('/api/search-types', function(data) {
 		$('#search').autocomplete({
 			source: data,

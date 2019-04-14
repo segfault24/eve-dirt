@@ -16,8 +16,9 @@ import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.MarketHistoryTask;
 import atsb.eve.dirt.task.MarketRegionOrdersTask;
-import atsb.eve.dirt.task.MarketStructureOrdersTask;
-import atsb.eve.dirt.task.MetaCharacterTask;
+import atsb.eve.dirt.task.MetaCharacterOrdersTask;
+import atsb.eve.dirt.task.MetaStructureOrdersTask;
+import atsb.eve.dirt.task.MetaWalletTask;
 import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
 import atsb.eve.dirt.util.DbInfo;
@@ -62,17 +63,14 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
 		// public market orders for specific regions
 		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_REGIONS));
-		int period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD);
+		int period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_REGION_ORDERS_PERIOD);
 		for (Integer regionId : regions) {
 			addPeriodicTask(db, new MarketRegionOrdersTask(regionId), period);
 		}
 
 		// structure market orders
-		List<Long> structures = Utils.parseLongList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_STRUCTURES));
-		period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_ORDERS_PERIOD);
-		for (Long structure : structures) {
-			addPeriodicTask(db, new MarketStructureOrdersTask(structure), period);
-		}
+		period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_STRUCTURE_ORDERS_PERIOD);
+		addPeriodicTask(db, new MetaStructureOrdersTask(), period);
 
 		// auto-delete old market orders that might not be cleaned up elsewhere
 		addPeriodicTask(db, new OrderReaperTask(), 30);
@@ -92,9 +90,13 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		period = Utils.getIntProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD);
 		addPeriodicTask(db, new InsurancePricesTask(), period);
 
-		// character wallet and orders
+		// character wallet
 		period = Utils.getIntProperty(db, Utils.PROPERTY_WALLET_PERIOD);
-		addPeriodicTask(db, new MetaCharacterTask(), period);
+		addPeriodicTask(db, new MetaWalletTask(), period);
+
+		// character orders
+		period = Utils.getIntProperty(db, Utils.PROPERTY_CHARACTER_ORDERS_PERIOD);
+		addPeriodicTask(db, new MetaCharacterOrdersTask(), period);
 
 		// release connection to pool
 		dbPool.release(db);

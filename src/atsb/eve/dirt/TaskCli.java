@@ -8,10 +8,13 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.db.StructAuthTable;
 import atsb.eve.dirt.model.TaskStatus;
+import atsb.eve.dirt.task.StructureTask;
 import atsb.eve.dirt.util.DbInfo;
 import atsb.eve.dirt.util.DbPool;
 import atsb.eve.dirt.util.TaskUtils;
+import atsb.eve.dirt.util.Utils;
 
 public class TaskCli {
 
@@ -37,6 +40,7 @@ public class TaskCli {
 		System.out.println("poolsize <numthreads>");
 		System.out.println("cleartask <taskname>");
 		System.out.println("removeall");
+		System.out.println("addstruct <structid>");
 		System.out.println("status");
 		System.out.println("help");
 		System.out.println("exit");
@@ -94,6 +98,28 @@ public class TaskCli {
 		d.removeAllTasks();
 	}
 
+	private void addStruct(String[] parts) {
+		log.debug("addstruct command invoked");
+		if (parts.length > 1) {
+			Long structId = Long.parseLong(parts[1]);
+			if (structId != null) {
+				int keyId = Utils.getIntProperty(db, Utils.PROPERTY_SCRAPER_KEY_ID);
+				StructureTask st = new StructureTask(structId, keyId);
+				st.setDaemon(d);
+				st.setDbPool(dbPool);
+				st.run();
+				try {
+					StructAuthTable.insert(db, structId, keyId);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			log.debug("no structure id specified");
+			System.err.println("no structure id specified");
+		}
+	}
+
 	private void exit() {
 		log.debug("exit command invoked");
 		log.warn("received exit command from task cli");
@@ -126,6 +152,9 @@ public class TaskCli {
 				break;
 			case "removeall":
 				removeAllTasks();
+				break;
+			case "addstruct":
+				addStruct(parts);
 				break;
 			case "status":
 				status();

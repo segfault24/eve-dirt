@@ -79,14 +79,15 @@ public class MarketRegionOrdersTask extends DirtTask {
 			}
 		} while (orders.size() > 0);
 
+		log.debug("Inserted " + totalOrders + " total orders for region " + region);
+
 		// delete old orders (where 'retrieved' is older than 'now')
-		// TODO: only remove public orders
 		if (totalOrders > 0) {
 			try {
 				int count = MarketOrderTable.deleteOldPublicRegionOrders(getDb(), region, now);
 				log.debug("Deleted " + count + " old market orders for region " + region);
 			} catch (SQLException e) {
-				log.fatal("Failed to delete old market orders for region" + region, e);
+				log.fatal("Failed to delete old market orders for region " + region, e);
 				return;
 			}
 		}

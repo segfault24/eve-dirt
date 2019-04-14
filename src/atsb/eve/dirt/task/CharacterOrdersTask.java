@@ -83,6 +83,15 @@ public class CharacterOrdersTask extends DirtTask {
 		} catch (SQLException e) {
 			log.error("Unexpected failure while processing orders for character " + charId, e);
 		}
+
+		// delete old orders (where 'retrieved' is older than 'now')
+		try {
+			int count = MarketOrderTable.deleteOldCharacterOrders(getDb(), charId, now);
+			log.debug("Deleted " + count + " old market orders for character " + charId);
+		} catch (SQLException e) {
+			log.fatal("Failed to delete old market orders for character " + charId, e);
+			return;
+		}
 	}
 
 }

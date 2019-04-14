@@ -1,5 +1,6 @@
 package atsb.eve.dirt.esi;
 
+import java.net.SocketTimeoutException;
 import java.sql.Connection;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class MarketApiWrapper {
 	private static Logger log = LogManager.getLogger();
 
 	private static final int MAX_ATTEMPTS = 3;
+	private static final int RETRY_WAIT = 5000; // milliseconds
 
 	private Connection db;
 	private MarketApi mapi;
@@ -35,18 +37,21 @@ public class MarketApiWrapper {
 		ApiResponse<List<GetMarketsRegionIdOrders200Ok>> resp = null;
 		boolean done = false;
 		int attempt = 1;
-		while (!done && attempt<=MAX_ATTEMPTS) {
+		while (!done && attempt <= MAX_ATTEMPTS) {
 			try {
 				resp = mapi.getMarketsRegionIdOrdersWithHttpInfo("all", regionId, Utils.getApiDatasource(), etag, page, null);
 				done = true;
 			} catch (ApiException e) {
-				if (e.getCode() < 500 || attempt == MAX_ATTEMPTS) {
-					// immediately throw non-500 errors (our problem) and
-					// throw error if we got 'MAX_ATTEMPTS' 500 codes in a row
+				if (attempt == MAX_ATTEMPTS) {
+					// throw after reaching MAX_ATTEMPTS
+					throw e;
+				} else if (e.getCode() < 500 && !(e.getCause() instanceof SocketTimeoutException)) {
+					// immediately throw non-500 errors (probably our fault)
 					throw e;
 				} else {
-					// do nothing and continue to retry
+					// sleep with linear backoff and then retry
 					log.warn("Retrying API query getMarketsRegionIdOrders(" + regionId + ", " + page + ")");
+					Utils.sleep(RETRY_WAIT * attempt);
 				}
 			}
 			attempt++;
@@ -74,7 +79,28 @@ public class MarketApiWrapper {
 	public List<GetMarketsStructuresStructureId200Ok> getMarketsStructureIdOrders(long structId, int page, String token) throws ApiException {
 		String etag = Utils.getEtag(db, "orders-" + structId + "-" + page);
 		log.trace("Executing API query getMarketsStructureStructureId(" + structId + ", " + page + ")");
-		ApiResponse<List<GetMarketsStructuresStructureId200Ok>> resp = mapi.getMarketsStructuresStructureIdWithHttpInfo(structId, Utils.getApiDatasource(), etag, page, token);
+		ApiResponse<List<GetMarketsStructuresStructureId200Ok>> resp = null;
+		boolean done = false;
+		int attempt = 1;
+		while (!done && attempt <= MAX_ATTEMPTS) {
+			try {
+				resp = mapi.getMarketsStructuresStructureIdWithHttpInfo(structId, Utils.getApiDatasource(), etag, page, token);
+				done = true;
+			} catch (ApiException e) {
+				if (attempt == MAX_ATTEMPTS) {
+					// throw after reaching MAX_ATTEMPTS
+					throw e;
+				} else if (e.getCode() < 500 && !(e.getCause() instanceof SocketTimeoutException)) {
+					// immediately throw non-500 errors (probably our fault)
+					throw e;
+				} else {
+					// sleep with linear backoff and then retry
+					log.warn("Retrying API query getMarketsStructuresStructureId(" + structId + ", " + page + ")");
+					Utils.sleep(RETRY_WAIT * attempt);
+				}
+			}
+			attempt++;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
 			Utils.upsertEtag(db, "orders-" + structId + "-" + page, Utils.getEtag(resp));

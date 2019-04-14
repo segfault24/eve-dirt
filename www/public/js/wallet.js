@@ -49,7 +49,8 @@ $(document).ready(function(){
 			{title:'Type', responsivePriority: 1},
 			{title:'Buy/Sell', responsivePriority: 4},
 			{title:'Quantity', responsivePriority: 3},
-			{title:'Unit Price', responsivePriority: 2}
+			{title:'Unit Price', responsivePriority: 2},
+			{title:'Ext Price', responsivePriority: 2}
 		],
 		order: [[0, "desc"]],
 		searching: true,
@@ -70,13 +71,18 @@ $(document).ready(function(){
 			{title:'Description', responsivePriority: 3}
 		],
 		order: [[0, "desc"]],
-		searching: false,
+		searching: true,
 		paging: true,
 		pageLength: 40,
 		bLengthChange: false,
 		bInfo: false,
 		responsive: true,
 		select: true
+	});
+
+	// setup the table autoadjust
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 	});
 
 	var ordersLoaded = false;
@@ -98,13 +104,15 @@ $(document).ready(function(){
 					transactionsTable.row.add([
 						result[i].date,
 						result[i].charName,
-						'<a href="browse?type=' + result[i].typeID + '" target="_blank">' + result[i].typeName + '</a>',
+						'<a class="open-in-game" data-typeId="' + result[i].typeID + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeID + '" target="_blank">' + result[i].typeName + '</a>',
 						result[i].isBuy,
 						formatInt(result[i].quantity),
-						formatIsk(result[i].unitPrice)
+						formatIsk(result[i].unitPrice),
+						formatInt(result[i].quantity*result[i].unitPrice)
 					]);
 				}
 				transactionsTable.draw();
+				$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 				transactionsLoaded = true;
 			});
 		}
@@ -124,6 +132,7 @@ $(document).ready(function(){
 					]);
 				}
 				journalTable.draw();
+				$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 				journalLoaded = true;
 			});
 		}
@@ -140,7 +149,7 @@ $(document).ready(function(){
 						result[i].charName,
 						result[i].regionName,
 						result[i].sName,
-						'<a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
+						'<a class="open-in-game" data-typeid="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
 						formatIsk(result[i].price),
 						formatInt(result[i].volumeRemain),
 						formatInt(result[i].volumeTotal),
@@ -151,16 +160,16 @@ $(document).ready(function(){
 						result[i].charName,
 						result[i].regionName,
 						result[i].sName,
-						'<a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
+						'<a class="open-in-game" data-typeid="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
 						formatIsk(result[i].price),
 						formatInt(result[i].volumeRemain),
 						formatInt(result[i].volumeTotal)
 					]);
 				}
 			}
-	
 			buyOrdersTable.draw();
 			sellOrdersTable.draw();
+			$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 			ordersLoaded = true;
 		});
 	}

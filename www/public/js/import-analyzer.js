@@ -49,7 +49,6 @@ $(document).ready(function() {
 	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
 	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
 	$('#refresh-data').click(function() { reloadData(); });
-	$('#open-in-game').click(function() { myAjax('market/open-in-game/' + type, null); });
 
 	// load the data for the initial page
 	reloadData();
@@ -98,6 +97,7 @@ function loadItemInfo(typeId) {
 			$('#title').html('<img id="title-img"> ' + itemData.typeName);
 			$('head title', window.parent.document).text(itemData.typeName);
 			$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
+			$('#open-in-game').attr('data-typeid', type);
 
 			// expand menu to current item
 			menu.expandTo(itemData.m);

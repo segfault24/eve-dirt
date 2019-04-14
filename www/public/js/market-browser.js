@@ -99,6 +99,7 @@ $(document).ready(function(){
 		$('#title').html(name);
 		$('head title', window.parent.document).text(name);
 		$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
+		$('#open-in-game').attr('data-typeid', type);
 	});
 
 	// setup the history buttons' click handlers
@@ -141,7 +142,6 @@ $(document).ready(function(){
 	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
 	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
 	$('#refresh-data').click(function() { reloadData(); });
-	$('#open-in-game').click(function() { myAjax('market/open-in-game/' + type, null); });
 
 	// capture history events
 	$(window).bind('popstate', function(event) {
@@ -184,6 +184,7 @@ function reloadData() {
 	$('#title').text(name);
 	$('head title', window.parent.document).text(name);
 	$('#title-img').attr('src', 'https://imageserver.eveonline.com/Type/' + type + '_64.png');
+	$('#open-in-game').attr('data-typeid', type);
 	// expand menu to current item
 	menu.expandTo(type);
 
@@ -298,8 +299,13 @@ function loadDepthTab() {
 		}
 
 		// set the final bounds
-		var xmin = 0.8*b[0].x - 5; if(xmin<0){xmin=0};
+		var xmin = 0.8*b[0].x - 5;
 		var xmax = 1.2*s[0].x + 5;
+		if (b[0].x > s[0].x) {
+			xmin = 0.8*s[0].x - 5;
+			xmax = 1.2*b[1].x + 5;
+		}
+		if(xmin < 0){ xmin = 0 };
 
 		// calculate the parameters for axis labels
 		distributionKMBTx = getKMBTParams([{y:xmin},{y:xmax}]);

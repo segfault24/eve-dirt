@@ -24,14 +24,15 @@ public class Utils {
 
 	public static final String PROPERTY_NUM_THREADS = "threads";
 	public static final String PROPERTY_MARKET_ORDERS_REGIONS = "marketorders.regions";
-	public static final String PROPERTY_MARKET_ORDERS_STRUCTURES = "marketorders.structures";
-	public static final String PROPERTY_MARKET_ORDERS_PERIOD = "marketorders.period";
+	public static final String PROPERTY_MARKET_REGION_ORDERS_PERIOD = "marketorders.region.period";
+	public static final String PROPERTY_MARKET_STRUCTURE_ORDERS_PERIOD = "marketorders.structure.period";
 	public static final String PROPERTY_MARKET_ORDERS_MAX_AGE = "marketorders.maxage";
 	public static final String PROPERTY_MARKET_HISTORY_REGIONS = "markethistory.regions";
 	public static final String PROPERTY_MARKET_HISTORY_PERIOD = "markethistory.period";
 	public static final String PROPERTY_PUBLIC_STRUCTURES_PERIOD = "publicstructures.period";
 	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
 	public static final String PROPERTY_WALLET_PERIOD = "wallet.period";
+	public static final String PROPERTY_CHARACTER_ORDERS_PERIOD = "characterorders.period";
 
 	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
 	public static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
@@ -54,6 +55,14 @@ public class Utils {
 			} catch (IOException e) {
 				// do nothing
 			}
+		}
+	}
+
+	public static void sleep(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch(InterruptedException e) {
+			// do nothing
 		}
 	}
 
