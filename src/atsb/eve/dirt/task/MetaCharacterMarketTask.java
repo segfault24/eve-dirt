@@ -9,17 +9,17 @@ import org.apache.logging.log4j.Logger;
 import atsb.eve.dirt.db.ApiAuthTable;
 
 /**
- * Meta-task that enqueues tasks for character order data
+ * Meta-task that enqueues tasks for character order and contract data
  * 
  * @author austin
  */
-public class MetaCharacterOrdersTask extends DirtTask {
+public class MetaCharacterMarketTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
 	@Override
 	public String getTaskName() {
-		return "meta-character-orders";
+		return "meta-character-market";
 	}
 
 	@Override
@@ -33,6 +33,7 @@ public class MetaCharacterOrdersTask extends DirtTask {
 		}
 		for (Integer charId : charIds) {
 			getDaemon().addTask(new CharacterOrdersTask(charId));
+			getDaemon().addTask(new CharacterContractsTask(charId));
 		}
 	}
 

@@ -162,13 +162,17 @@ $app->get('/api/trade/structs-by-region/{region}/', function ($request, $respons
 $app->get('/api/trade/sell-sell/{source}/{destination}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT o.typeId, i.typeName, o.price AS source, o.volumeRemain AS qt, d.best AS dest, i.volume';
-    $sql .= ' FROM marketOrder AS o';
-    $sql .= ' JOIN (';
-    $sql .= '  SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=0 GROUP BY typeId, locationId';
-    $sql .= ' ) AS d ON o.typeId=d.typeId';
-    $sql .= ' JOIN invTypes AS i ON o.typeId=i.typeID';
-    $sql .= ' WHERE o.locationId=:source';
+    $sql  = 'SELECT o.typeId, i.typeName, o.price AS source, o.volumeRemain AS qt, d.best AS dest, i.volume
+             FROM marketOrder AS o
+             JOIN (
+               SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=0 GROUP BY typeId, locationId
+             ) AS d ON o.typeId=d.typeId
+             JOIN invTypes AS i ON o.typeId=i.typeID';
+    if (intval($args['source']) > 20000000) {
+        $sql .= ' WHERE o.locationId=:source';
+    } else {
+        $sql .= ' WHERE o.regionId=:source';
+    }
     $sql .= ' AND o.isBuyOrder=0';
     $sql .= ' AND o.price < d.best';
 
@@ -191,7 +195,11 @@ $app->get('/api/trade/sell-buy/{source}/{destination}', function ($request, $res
     $sql .= '  SELECT typeId, MAX(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=1 GROUP BY typeId, locationId';
     $sql .= ' ) AS d ON o.typeId=d.typeId';
     $sql .= ' JOIN invTypes AS i ON o.typeId=i.typeID';
-    $sql .= ' WHERE o.locationId=:source';
+    if (intval($args['source']) > 20000000) {
+        $sql .= ' WHERE o.locationId=:source';
+    } else {
+        $sql .= ' WHERE o.regionId=:source';
+    }
     $sql .= ' AND o.isBuyOrder=0';
     $sql .= ' AND o.price < d.best';
 

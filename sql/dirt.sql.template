@@ -226,6 +226,20 @@ CREATE TABLE `walletTransaction` (
 	KEY `ix_walletTransaction_charId` (`charId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `contract` (
+	`contractId` INT NOT NULL,
+	`issuerId` INT NOT NULL,
+	`issuerCorpId` INT NOT NULL,
+	`assigneeId` INT NOT NULL,
+	`acceptorId` INT NOT NULL,
+	`availability` VARCHAR(255),
+	`dateIssued` TIMESTAMP NOT NULL,
+	`dateExpired` TIMESTAMP NOT NULL,
+	`status` VARCHAR(255),
+	`type` VARCHAR(255),
+	PRIMARY KEY (`contractId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- -----------------------------------------------------------------------------
 
 DROP TABLE IF EXISTS `marketHistory`;
@@ -399,7 +413,8 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructure
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("insuranceprices.period","240");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.period","15");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.expires","60");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("killstream.enabled","0");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketpublic","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("maintenancemode","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("useragent","DIRT/0.1 (webmaster@DOMAINNAME)");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope","esi-wallet.read_character_wallet.v1 esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-ui.open_window.v1 esi-markets.structure_markets.v1 esi-markets.read_character_orders.v1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope","esi-wallet.read_character_wallet.v1 esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-ui.open_window.v1 esi-markets.structure_markets.v1 esi-markets.read_character_orders.v1 esi-contracts.read_character_contracts.v1");

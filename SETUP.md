@@ -53,6 +53,7 @@ tar xzf eve-dirt.tar.gz -C <install_dir>
     esi-assets.read_assets.v1
     esi-universe.read_structures.v1
     esi-markets.structure_markets.v1
+    esi-contracts.read_character_contracts.v1
     esi-ui.open_window.v1
     ```
     6. Enter the call back URL (ex. https://localhost/sso-auth/callback)

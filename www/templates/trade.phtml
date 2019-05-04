@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 <div class="row">
-	<div class="col-sm-12">
+	<div class="col-sm-9">
 		<h3 class="page-header"><i class="fa fa-sign-out fa-fw"></i> Trade Opportunities</h3>
 		<hr>
 	</div>
@@ -112,20 +112,26 @@
 			<div class="card-body">
 				<div class="input-group">
 					<div class="input-group-prepend">
-						<div class="input-group-text">&#x01B5; Profit &gt;</div>
+						<div class="input-group-text">Profit &gt;</div>
 					</div>
-					<input id="filter-profit-isk" type="text" class="form-control" placeholder="isk">
+					<input id="filter-profit-isk" type="text" class="form-control" placeholder="&#x01B5;">
 				</div>
 				<div class="input-group">
 					<div class="input-group-prepend">
-						<div class="input-group-text">&percnt; Profit &gt;</div>
+						<div class="input-group-text">ROI &gt;</div>
 					</div>
 					<input id="filter-profit-percent" type="text" class="form-control" placeholder="&percnt;">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Profit/m3 &gt;</div>
+					</div>
+					<input id="filter-roipervol-isk" type="text" class="form-control" placeholder="&#x01B5;">
 				</div>
 			</div>
 		</div>
 		<div class="btn-group mt-3">
-			<button id="filter-btn" type="button" class="btn btn-primary">Filter</button>
+			<button id="apply-btn" type="button" class="btn btn-primary">Apply</button>
 			<button id="reset-btn" type="button" class="btn btn-primary">Reset</button>
 		</div>
 	</div>

@@ -75,3 +75,46 @@ $app->get('/api/wallet/journal', function ($request, $response, $args) {
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
+$app->get('/api/wallet/returns', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT s.date, i.typeID, i.typeName, b.buy, s.sell
+            FROM (
+              SELECT t.typeId, t.unitPrice AS buy
+              FROM walletTransaction AS t
+              JOIN (
+                SELECT typeId, MAX(date) as maxDate
+                FROM walletTransaction
+                WHERE isBuy=1
+                AND charId IN (SELECT charId FROM dirtApiAuth WHERE userId=:userida)
+                GROUP BY typeId
+              ) AS lbuy ON t.typeId=lbuy.typeId AND t.date=lbuy.maxDate
+            ) AS b
+            INNER JOIN (
+              SELECT t.date, t.typeId, t.unitPrice AS sell
+              FROM walletTransaction AS t
+              JOIN (
+                SELECT typeId, MAX(date) as maxDate
+                FROM walletTransaction
+                WHERE isBuy=0
+                AND charId IN (SELECT charId FROM dirtApiAuth WHERE userId=:useridb)
+                GROUP BY typeId
+              ) AS lsell ON t.typeId=lsell.typeId AND t.date=lsell.maxDate
+            ) AS s ON b.typeId=s.typeId
+            JOIN invTypes AS i ON i.typeID=b.typeId
+           ';
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array(
+        ':userida' => $u->getUserId(),
+        ':useridb' => $u->getUserId()
+    ));
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+
+

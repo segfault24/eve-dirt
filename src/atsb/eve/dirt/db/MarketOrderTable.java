@@ -11,9 +11,11 @@ import atsb.eve.dirt.model.MarketOrder.Source;
 
 public class MarketOrderTable {
 
-	private static final String INSERT_SQL = "INSERT INTO marketOrder (" + "`issued`,`range`,`isBuyOrder`,`duration`,"
+	private static final String INSERT_SQL = "INSERT INTO marketOrder ("
+			+ "`issued`,`range`,`isBuyOrder`,`duration`,"
 			+ "`orderId`,`volumeRemain`,`minVolume`,`typeId`,"
-			+ "`volumeTotal`,`locationId`,`price`,`regionId`,`retrieved`,`source`,`charId`" + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE "
+			+ "`volumeTotal`,`locationId`,`price`,`regionId`,`retrieved`,`source`,`charId`"
+			+ ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE "
 			+ "`volumeRemain`=VALUES(`volumeRemain`), `price`=VALUES(`price`)";
 	private static final String DELETE_REGION_SQL = "DELETE FROM marketOrder WHERE `regionId`=? AND `retrieved`<? AND `source`=" + Source.PUBLIC.getValue();
 	private static final String DELETE_STRUCTURE_SQL = "DELETE FROM marketOrder WHERE `locationId`=? AND `retrieved`<? AND `source`=" + Source.STRUCTURE.getValue();

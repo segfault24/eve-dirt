@@ -16,7 +16,7 @@ import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.MarketHistoryTask;
 import atsb.eve.dirt.task.MarketRegionOrdersTask;
-import atsb.eve.dirt.task.MetaCharacterOrdersTask;
+import atsb.eve.dirt.task.MetaCharacterMarketTask;
 import atsb.eve.dirt.task.MetaStructureOrdersTask;
 import atsb.eve.dirt.task.MetaWalletTask;
 import atsb.eve.dirt.task.OrderReaperTask;
@@ -36,7 +36,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 	private static Logger log = LogManager.getLogger();
 
 	private final DbPool dbPool;
-	private HashMap<String, ScheduledFuture<?>> futures;
+	private HashMap<String, ScheduledFuture<?>> futures = new HashMap<String, ScheduledFuture<?>>();
 
 	public DirtTaskDaemon() {
 		super(1);
@@ -59,8 +59,24 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		dbPool.setMinPoolSize(threads);
 		log.info("Starting with " + threads + " worker threads");
 
-		futures = new HashMap<String, ScheduledFuture<?>>();
+		addTasks(db);
 
+		// release connection to pool
+		dbPool.release(db);
+
+		// start the killstream
+		if(Utils.getBoolProperty(db, Utils.PROPERTY_KILLSTREAM_ENABLED)) {
+			new Thread(new KillstreamWorker(this)).start();
+		}
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				dbPool.closeAll();
+			}
+		});
+	}
+
+	private void addTasks(Connection db) {
 		// public market orders for specific regions
 		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_REGIONS));
 		int period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_REGION_ORDERS_PERIOD);
@@ -94,18 +110,9 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		period = Utils.getIntProperty(db, Utils.PROPERTY_WALLET_PERIOD);
 		addPeriodicTask(db, new MetaWalletTask(), period);
 
-		// character orders
+		// character orders and contracts
 		period = Utils.getIntProperty(db, Utils.PROPERTY_CHARACTER_ORDERS_PERIOD);
-		addPeriodicTask(db, new MetaCharacterOrdersTask(), period);
-
-		// release connection to pool
-		dbPool.release(db);
-
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-				dbPool.closeAll();
-			}
-		});
+		addPeriodicTask(db, new MetaCharacterMarketTask(), period);
 	}
 
 	/**

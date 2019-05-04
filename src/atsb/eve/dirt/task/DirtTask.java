@@ -21,6 +21,7 @@ public abstract class DirtTask implements Runnable {
 	private DirtTaskDaemon daemon;
 	private DbPool dbPool;
 	private Connection db;
+	private boolean saveStatus = true;
 
 	public abstract String getTaskName();
 
@@ -42,11 +43,19 @@ public abstract class DirtTask implements Runnable {
 		return db;
 	}
 
+	public void setSaveStatus(boolean save) {
+		saveStatus = save;
+	}
+
+	protected boolean isSavingStatus() {
+		return saveStatus;
+	}
+
 	@Override
 	public void run() {
-		log.info("Started task " + getTaskName());
+		log.debug("Started task " + getTaskName());
 
-		log.debug("Acquiring database connection from pool");
+		log.trace("Acquiring database connection from pool");
 		try {
 			db = dbPool.acquire();
 		} catch (SQLException e) {
@@ -59,18 +68,20 @@ public abstract class DirtTask implements Runnable {
 		long endTime = Calendar.getInstance().getTimeInMillis();
 
 		int duration = (int) ((endTime - startTime) / 1000 / 60);
-		TaskStatus ts = new TaskStatus(getTaskName(), new Timestamp(startTime), duration);
-		try {
-			TaskUtils.upsertTaskStatus(db, ts);
-		} catch (SQLException e) {
-			log.warn("Failed to update TaskStatus for " + getTaskName(), e);
+		if (saveStatus) {
+			TaskStatus ts = new TaskStatus(getTaskName(), new Timestamp(startTime), duration);
+			try {
+				TaskUtils.upsertTaskStatus(db, ts);
+			} catch (SQLException e) {
+				log.warn("Failed to update TaskStatus for " + getTaskName(), e);
+			}
 		}
 
-		log.debug("Releasing database connection to pool");
+		log.trace("Releasing database connection to pool");
 		Utils.resetConnection(db);
 		dbPool.release(db);
 
-		log.info("Completed task " + getTaskName() + " in " + duration + " minutes");
+		log.debug("Completed task " + getTaskName() + " in " + duration + " minutes");
 	}
 
 }

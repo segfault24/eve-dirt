@@ -33,6 +33,7 @@ public class Utils {
 	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
 	public static final String PROPERTY_WALLET_PERIOD = "wallet.period";
 	public static final String PROPERTY_CHARACTER_ORDERS_PERIOD = "characterorders.period";
+	public static final String PROPERTY_KILLSTREAM_ENABLED = "killstream.enabled";
 
 	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
 	public static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
@@ -109,6 +110,18 @@ public class Utils {
 
 	public static long getLongProperty(Connection db, String propertyName) {
 		return Long.parseLong(getProperty(db, propertyName));
+	}
+
+	public static boolean getBoolProperty(Connection db, String propertyName) {
+		String s = getProperty(db, propertyName);
+		// try parsing as an int first
+		try {
+			int i = Integer.parseInt(s);
+			return i == 0 ? false : true;
+		} catch(NumberFormatException e) {
+		}
+		// if the int parse failed, try bool parse (defaults to false)
+		return Boolean.parseBoolean(s);
 	}
 
 	public static String getApiDatasource() {
