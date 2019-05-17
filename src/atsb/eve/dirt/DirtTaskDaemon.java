@@ -111,7 +111,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		addPeriodicTask(db, new MetaWalletTask(), period);
 
 		// character orders and contracts
-		period = Utils.getIntProperty(db, Utils.PROPERTY_CHARACTER_ORDERS_PERIOD);
+		period = Utils.getIntProperty(db, Utils.PROPERTY_CHARACTER_MARKET_PERIOD);
 		addPeriodicTask(db, new MetaCharacterMarketTask(), period);
 	}
 
@@ -162,6 +162,6 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
 	public static void main(String[] args) {
 		DirtTaskDaemon d = new DirtTaskDaemon();
-		new TaskCli(d).loop();
+		//new TaskCli(d).loop();
 	}
 }

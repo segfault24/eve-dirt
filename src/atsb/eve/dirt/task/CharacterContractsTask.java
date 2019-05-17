@@ -58,7 +58,7 @@ public class CharacterContractsTask extends DirtTask {
 		do {
 			page++;
 			try {
-				capiw.getCharacterContracts(charId, page, auth.getAuthToken());
+				contracts = capiw.getCharacterContracts(charId, page, auth.getAuthToken());
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
 					continue;

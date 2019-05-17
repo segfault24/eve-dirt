@@ -32,7 +32,7 @@ public class Utils {
 	public static final String PROPERTY_PUBLIC_STRUCTURES_PERIOD = "publicstructures.period";
 	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
 	public static final String PROPERTY_WALLET_PERIOD = "wallet.period";
-	public static final String PROPERTY_CHARACTER_ORDERS_PERIOD = "characterorders.period";
+	public static final String PROPERTY_CHARACTER_MARKET_PERIOD = "charactermarket.period";
 	public static final String PROPERTY_KILLSTREAM_ENABLED = "killstream.enabled";
 
 	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";

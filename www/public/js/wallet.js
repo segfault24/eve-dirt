@@ -177,7 +177,7 @@ $(document).ready(function(){
 					buySell,
 					formatInt(result[i].quantity),
 					formatIsk(result[i].unitPrice),
-					formatInt(result[i].quantity*result[i].unitPrice)
+					formatIsk(result[i].quantity*result[i].unitPrice)
 				]);
 			}
 			transactionsTable.draw();

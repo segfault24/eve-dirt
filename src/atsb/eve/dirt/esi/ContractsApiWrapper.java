@@ -26,7 +26,7 @@ public class ContractsApiWrapper {
 
 	public List<GetCharactersCharacterIdContracts200Ok> getCharacterContracts(int charId, int page, String token) throws ApiException {
 		String etag = Utils.getEtag(db, "char-contract-" + charId + "-" + page);
-		log.trace("Executing API query getCharacterContracts()");
+		log.trace("Executing API query getCharacterContracts(" + charId + ", " + page + ")");
 		ApiResponse<List<GetCharactersCharacterIdContracts200Ok>> resp = capi.getCharactersCharacterIdContractsWithHttpInfo(charId, Utils.getApiDatasource(), etag, page, token);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "char-contract-" + charId + "-" + page, etag);
