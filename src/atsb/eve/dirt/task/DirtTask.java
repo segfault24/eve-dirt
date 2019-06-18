@@ -53,7 +53,7 @@ public abstract class DirtTask implements Runnable {
 
 	@Override
 	public void run() {
-		log.debug("Started task " + getTaskName());
+		log.info("Started task " + getTaskName());
 
 		log.trace("Acquiring database connection from pool");
 		try {
@@ -81,7 +81,7 @@ public abstract class DirtTask implements Runnable {
 		Utils.resetConnection(db);
 		dbPool.release(db);
 
-		log.debug("Completed task " + getTaskName() + " in " + duration + " minutes");
+		log.info("Completed task " + getTaskName() + " in " + duration + " minutes");
 	}
 
 }

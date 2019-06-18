@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import atsb.eve.dirt.model.TaskStatus;
 import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
+import atsb.eve.dirt.task.InvMarketGroupsTask;
+import atsb.eve.dirt.task.InvTypesTask;
 import atsb.eve.dirt.task.MarketHistoryTask;
 import atsb.eve.dirt.task.MarketRegionOrdersTask;
 import atsb.eve.dirt.task.MetaCharacterMarketTask;
@@ -106,6 +108,11 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		period = Utils.getIntProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD);
 		addPeriodicTask(db, new InsurancePricesTask(), period);
 
+		// type & group info
+		period = Utils.getIntProperty(db, Utils.PROPERTY_TYPE_INFO_PERIOD);
+		addPeriodicTask(db, new InvTypesTask(), period);
+		addPeriodicTask(db, new InvMarketGroupsTask(), period);
+
 		// character wallet
 		period = Utils.getIntProperty(db, Utils.PROPERTY_WALLET_PERIOD);
 		addPeriodicTask(db, new MetaWalletTask(), period);
@@ -121,7 +128,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 	public void addTask(DirtTask t) {
 		t.setDaemon(this);
 		t.setDbPool(dbPool);
-		futures.put(t.getTaskName(), schedule(t, 0, TimeUnit.MINUTES));
+		//futures.put(t.getTaskName(), schedule(t, 0, TimeUnit.MINUTES));
 		log.debug("Queued " + t.getTaskName());
 	}
 
@@ -162,6 +169,10 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
 	public static void main(String[] args) {
 		DirtTaskDaemon d = new DirtTaskDaemon();
-		//new TaskCli(d).loop();
+		if (args.length > 0 && args[0].equalsIgnoreCase("--cli")) {
+			TaskCli cli = new TaskCli(d);
+			cli.loop();
+		}
 	}
+
 }

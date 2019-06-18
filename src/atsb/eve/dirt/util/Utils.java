@@ -31,6 +31,7 @@ public class Utils {
 	public static final String PROPERTY_MARKET_HISTORY_PERIOD = "markethistory.period";
 	public static final String PROPERTY_PUBLIC_STRUCTURES_PERIOD = "publicstructures.period";
 	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
+	public static final String PROPERTY_TYPE_INFO_PERIOD = "typeinfo.period";
 	public static final String PROPERTY_WALLET_PERIOD = "wallet.period";
 	public static final String PROPERTY_CHARACTER_MARKET_PERIOD = "charactermarket.period";
 	public static final String PROPERTY_KILLSTREAM_ENABLED = "killstream.enabled";

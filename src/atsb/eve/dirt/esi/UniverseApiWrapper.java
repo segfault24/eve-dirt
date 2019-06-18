@@ -11,6 +11,7 @@ import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.UniverseApi;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
+import net.evetech.esi.models.GetUniverseTypesTypeIdOk;
 
 public class UniverseApiWrapper {
 
@@ -43,6 +44,26 @@ public class UniverseApiWrapper {
 				structId, Utils.getApiDatasource(), etag, token);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "universe-structures-" + structId, Utils.getEtag(resp));
+		return resp.getData();
+	}
+
+	public List<Integer> getUniverseTypes(int page) throws ApiException {
+		String etag = Utils.getEtag(db, "inv-types-" + page);
+		log.trace("Executing API query getUniverseTypes(" + page + ")");
+		ApiResponse<List<Integer>> resp = uapi.getUniverseTypesWithHttpInfo(Utils.getApiDatasource(), etag, page);
+		log.trace("API query returned status code " + resp.getStatusCode());
+		if (!resp.getData().isEmpty()) {
+			Utils.upsertEtag(db, "inv-types-" + page, etag);
+		}
+		return resp.getData();
+	}
+
+	public GetUniverseTypesTypeIdOk getUniverseType(int typeId) throws ApiException {
+		String etag = Utils.getEtag(db, "inv-type-" + typeId);
+		log.trace("Executing API query getUniverseType(" + typeId + ")");
+		ApiResponse<GetUniverseTypesTypeIdOk> resp = uapi.getUniverseTypesTypeIdWithHttpInfo(typeId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
+		log.trace("API query returned status code " + resp.getStatusCode());
+		Utils.upsertEtag(db, "inv-type-" + typeId, Utils.getEtag(resp));
 		return resp.getData();
 	}
 

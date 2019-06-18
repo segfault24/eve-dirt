@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.Level;
 
 import atsb.eve.dirt.db.StructAuthTable;
 import atsb.eve.dirt.model.TaskStatus;
@@ -41,6 +44,7 @@ public class TaskCli {
 		System.out.println("cleartask <taskname>");
 		System.out.println("removeall");
 		System.out.println("addstruct <structid>");
+		System.out.println("loglevel <level>");
 		System.out.println("status");
 		System.out.println("help");
 		System.out.println("exit");
@@ -86,7 +90,7 @@ public class TaskCli {
 				log.debug("could not find task " + parts[1]);
 				System.err.println("could not find task '" + parts[1] + "'");
 			}
-			
+
 		} else {
 			log.debug("no task name specified");
 			System.err.println("no task name specified");
@@ -120,10 +124,31 @@ public class TaskCli {
 		}
 	}
 
+	private void logLevel(String[] parts) {
+		log.debug("loglevel command invoked");
+		if (parts.length > 1) {
+			try {
+				Level l = Level.valueOf(parts[1]);
+				Configurator.setRootLevel(l);
+			} catch(IllegalArgumentException e) {
+				log.error("invalid loglevel requested '" + parts[0] +"'");
+			}
+		}
+		System.out.println("logging at " + LogManager.getRootLogger().getLevel().toString());
+	}
+
 	private void exit() {
 		log.debug("exit command invoked");
 		log.warn("received exit command from task cli");
 		dbPool.release(db);
+		d.shutdown();
+		try {
+			log.warn("awaiting completion of tasks (timeout 5 min)");
+			System.out.println("awaiting completion of tasks (timeout 5 min)...");
+			d.awaitTermination(5, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+		}
+		System.out.flush();
 		System.exit(0);
 	}
 
@@ -158,6 +183,9 @@ public class TaskCli {
 				break;
 			case "status":
 				status();
+				break;
+			case "loglevel":
+				logLevel(parts);
 				break;
 			case "exit":
 				exit();

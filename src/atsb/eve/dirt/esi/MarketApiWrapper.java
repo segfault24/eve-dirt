@@ -12,6 +12,7 @@ import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.MarketApi;
 import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
+import net.evetech.esi.models.GetMarketsGroupsMarketGroupIdOk;
 import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
 import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
 import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
@@ -116,6 +117,24 @@ public class MarketApiWrapper {
 		if (!resp.getData().isEmpty()) {
 			Utils.upsertEtag(db, "character-orders-" + charId, Utils.getEtag(resp));
 		}
+		return resp.getData();
+	}
+
+	public List<Integer> getMarketGroupIds() throws ApiException {
+		String etag = Utils.getEtag(db, "market-groups");
+		log.trace("Executing API query getMarketGroupIds()");
+		ApiResponse<List<Integer>> resp = mapi.getMarketsGroupsWithHttpInfo(Utils.getApiDatasource(), etag);
+		log.trace("API query returned status code " + resp.getStatusCode());
+		Utils.upsertEtag(db, "market-groups", Utils.getEtag(resp));
+		return resp.getData();
+	}
+
+	public GetMarketsGroupsMarketGroupIdOk getMarketGroup(int marketGroupId) throws ApiException {
+		String etag = Utils.getEtag(db, "market-group-" + marketGroupId);
+		log.trace("Executing API query getMarketGroup(" + marketGroupId + ")");
+		ApiResponse<GetMarketsGroupsMarketGroupIdOk> resp = mapi.getMarketsGroupsMarketGroupIdWithHttpInfo(marketGroupId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
+		log.trace("API query returned status code " + resp.getStatusCode());
+		Utils.upsertEtag(db, "market-group-" + marketGroupId, Utils.getEtag(resp));
 		return resp.getData();
 	}
 
