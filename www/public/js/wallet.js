@@ -5,6 +5,7 @@ $(document).ready(function(){
 	var ordersLoaded = false;
 	var transactionsLoaded = false;
 	var journalLoaded = false;
+	var contractsLoaded = false;
 	var roiLoaded = false;
 
 	// initialize tables
@@ -84,6 +85,22 @@ $(document).ready(function(){
 		responsive: true,
 		select: true
 	});
+	var contractsTable = $('#contracts-table').DataTable({
+		columns: [
+			{title:'Issuer', responsivePriority: 1},
+			{title:'Type', responsivePriority: 2},
+			{title:'Status', responsivePriority: 3},
+			{title:'Date Issued', responsivePriority: 4}
+		],
+		order: [[0, "desc"]],
+		searching: true,
+		paging: true,
+		pageLength: 40,
+		bLengthChange: false,
+		bInfo: false,
+		responsive: true,
+		select: true
+	});
 	var roiTable = $('#roi-table').DataTable({
 		columns: [
 			{title:'Date', responsivePriority: 4},
@@ -128,6 +145,11 @@ $(document).ready(function(){
 			loadOrders();
 		}
 	});
+	$('#contracts-label').click(function() {
+		if(!contractsLoaded) {
+			loadContracts();
+		}
+	});
 	$('#roi-label').click(function() {
 		if(!roiLoaded) {
 			loadRoi();
@@ -139,10 +161,12 @@ $(document).ready(function(){
 		journalTable.clear().draw()
 		buyOrdersTable.clear().draw();
 		sellOrdersTable.clear().draw();
+		contractsTable.clear().draw();
 		roiTable.clear().draw();
 		ordersLoaded = false;
 		transactionsLoaded = false;
 		journalLoaded = false;
+		contractsLoaded = false;
 		roiLoaded = false;
 
 		// find the active tab and load its data
@@ -156,6 +180,9 @@ $(document).ready(function(){
 			case ' Sell Orders':
 			case ' Buy Orders':
 				loadOrders();
+				break;
+			case ' Contracts':
+				loadContracts();
 				break;
 			case ' Item ROI':
 				loadRoi();
@@ -235,6 +262,22 @@ $(document).ready(function(){
 			$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 			ordersLoaded = true;
 		});
+	}
+
+	function loadContracts() {
+		myAjax('wallet/contracts', function(result) {
+			for(var i=0; i<result.length; i++) {
+				contractsTable.row.add([
+					result[i].issuerId,
+					result[i].type,
+					result[i].status,
+					result[i].dateIssued
+				]);
+			}
+			contractsTable.draw();
+			$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+			contractsLoaded = true;
+		})
 	}
 
 	function loadRoi() {
