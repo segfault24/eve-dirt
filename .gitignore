@@ -2,6 +2,8 @@
 build
 deploy
 lib/eve-dirt.jar
+lib/eve-tools.jar
+lib/esi-client*
 
 # runtime artifacts
 log

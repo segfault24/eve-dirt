@@ -3,8 +3,8 @@
 cd $(dirname "$0")/../
 
 cp="lib/eve-dirt.jar"
-cp="$cp;lib/esi-client-20190330.jar"
-cp="$cp;lib/esi-client-20190330-javadoc.jar"
+cp="$cp;lib/esi-client.jar"
+cp="$cp;lib/eve-tools.jar"
 cp="$cp;lib/eve-dirt.jar"
 cp="$cp;lib/gson-2.6.2.jar"
 cp="$cp;lib/hamcrest-core-1.3.jar"
