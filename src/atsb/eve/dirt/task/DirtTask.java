@@ -8,11 +8,10 @@ import java.util.Calendar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.db.TaskStatusTable;
 import atsb.eve.dirt.DirtTaskDaemon;
-import atsb.eve.dirt.model.TaskStatus;
-import atsb.eve.dirt.util.DbPool;
-import atsb.eve.dirt.util.TaskUtils;
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.model.TaskStatus;
+import atsb.eve.util.DbPool;
 
 public abstract class DirtTask implements Runnable {
 
@@ -71,14 +70,14 @@ public abstract class DirtTask implements Runnable {
 		if (saveStatus) {
 			TaskStatus ts = new TaskStatus(getTaskName(), new Timestamp(startTime), duration);
 			try {
-				TaskUtils.upsertTaskStatus(db, ts);
+				TaskStatusTable.upsertTaskStatus(db, ts);
 			} catch (SQLException e) {
 				log.warn("Failed to update TaskStatus for " + getTaskName(), e);
 			}
 		}
 
 		log.trace("Releasing database connection to pool");
-		Utils.resetConnection(db);
+		DbPool.resetConnection(db);
 		dbPool.release(db);
 
 		log.info("Completed task " + getTaskName() + " in " + duration + " minutes");

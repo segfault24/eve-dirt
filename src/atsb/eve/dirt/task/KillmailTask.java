@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 
-import atsb.eve.dirt.model.zkill.Zkillmail;
+import atsb.eve.dirt.zkill.Zkillmail;
 
 public class KillmailTask extends DirtTask {
 

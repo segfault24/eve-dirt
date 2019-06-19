@@ -7,13 +7,15 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
-import atsb.eve.dirt.db.WalletJournalTable;
-import atsb.eve.dirt.db.WalletTransactionTable;
+import atsb.eve.db.ApiAuthTable;
+import atsb.eve.db.WalletJournalTable;
+import atsb.eve.db.WalletTransactionTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.WalletApiWrapper;
-import atsb.eve.dirt.model.OAuthUser;
-import atsb.eve.dirt.model.WalletJournalEntry;
-import atsb.eve.dirt.model.WalletTransaction;
+import atsb.eve.dirt.esi.auth.OAuthUtil;
+import atsb.eve.model.OAuthUser;
+import atsb.eve.model.WalletJournalEntry;
+import atsb.eve.model.WalletTransaction;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletJournal200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletTransactions200Ok;
@@ -67,7 +69,7 @@ public class WalletTask extends DirtTask {
 		do {
 			List<GetCharactersCharacterIdWalletTransactions200Ok> ats;
 			try {
-				ats = wapiw.getWalletTransactions(charId, beforeTrans, oau.getAuthToken());
+				ats = wapiw.getWalletTransactions(charId, beforeTrans, OAuthUtil.getAuthToken(getDb(), oau));
 				log.debug("Retrieved " + ats.size() + " wallet transactions");
 			} catch (ApiException e) {
 				log.fatal("Failed to query wallet transactions", e);
@@ -78,7 +80,7 @@ public class WalletTask extends DirtTask {
 			}
 			List<WalletTransaction> ts = new ArrayList<WalletTransaction>(ats.size());
 			for (GetCharactersCharacterIdWalletTransactions200Ok at : ats) {
-				WalletTransaction t = new WalletTransaction(at);
+				WalletTransaction t = TypeUtil.convert(at);
 				t.setCharId(charId);
 				ts.add(t);
 			}
@@ -93,7 +95,7 @@ public class WalletTask extends DirtTask {
 		do {
 			List<GetCharactersCharacterIdWalletJournal200Ok> ajs;
 			try {
-				ajs = wapiw.getWalletJournal(charId, page, oau.getAuthToken());
+				ajs = wapiw.getWalletJournal(charId, page, OAuthUtil.getAuthToken(getDb(), oau));
 				log.debug("Retrieved " + ajs.size() + " wallet journal entries");
 			} catch (ApiException e) {
 				log.error("Failed to retrieve page " + page + " of wallet journal for character " + charId, e);
@@ -104,7 +106,7 @@ public class WalletTask extends DirtTask {
 			}
 			List<WalletJournalEntry> js = new ArrayList<WalletJournalEntry>(ajs.size());
 			for (GetCharactersCharacterIdWalletJournal200Ok aj : ajs) {
-				WalletJournalEntry j = new WalletJournalEntry(aj);
+				WalletJournalEntry j = TypeUtil.convert(aj);
 				j.setCharId(charId);
 				js.add(j);
 			}

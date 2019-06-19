@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.ContractsApi;

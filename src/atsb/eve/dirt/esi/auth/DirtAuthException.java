@@ -1,4 +1,4 @@
-package atsb.eve.dirt;
+package atsb.eve.dirt.esi.auth;
 
 public class DirtAuthException extends Exception {
 

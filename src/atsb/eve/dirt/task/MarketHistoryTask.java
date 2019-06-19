@@ -7,11 +7,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.InvTypesTable;
-import atsb.eve.dirt.db.MarketHistoryTable;
+import atsb.eve.db.InvTypesTable;
+import atsb.eve.db.MarketHistoryTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
-import atsb.eve.dirt.model.MarketHistoryEntry;
-
+import atsb.eve.model.MarketHistoryEntry;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
 
@@ -108,7 +108,7 @@ public class MarketHistoryTask extends DirtTask {
 			}
 			List<MarketHistoryEntry> entries = new ArrayList<MarketHistoryEntry>(history.size());
 			for (GetMarketsRegionIdHistory200Ok h : history) {
-				MarketHistoryEntry e = new MarketHistoryEntry(h);
+				MarketHistoryEntry e = TypeUtil.convert(h);
 				e.setTypeId(typeId);
 				e.setRegionId(regionId);
 				entries.add(e);

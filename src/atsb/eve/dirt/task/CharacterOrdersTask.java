@@ -8,11 +8,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
-import atsb.eve.dirt.db.MarketOrderTable;
+import atsb.eve.db.ApiAuthTable;
+import atsb.eve.db.MarketOrderTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
-import atsb.eve.dirt.model.MarketOrder;
-import atsb.eve.dirt.model.OAuthUser;
+import atsb.eve.dirt.esi.auth.OAuthUtil;
+import atsb.eve.model.MarketOrder;
+import atsb.eve.model.OAuthUser;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
 
@@ -56,7 +58,7 @@ public class CharacterOrdersTask extends DirtTask {
 		MarketApiWrapper mapiw = new MarketApiWrapper(getDb());
 		List<GetCharactersCharacterIdOrders200Ok> aos;
 		try {
-			aos = mapiw.getMarketsCharacterIdOrders(charId, auth.getAuthToken());
+			aos = mapiw.getMarketsCharacterIdOrders(charId, OAuthUtil.getAuthToken(getDb(), auth));
 			log.debug("Retrieved " + aos.size() + " character orders");
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
@@ -69,7 +71,7 @@ public class CharacterOrdersTask extends DirtTask {
 		}
 		List<MarketOrder> os = new ArrayList<MarketOrder>(aos.size());
 		for (GetCharactersCharacterIdOrders200Ok ao : aos) {
-			MarketOrder o = new MarketOrder(ao);
+			MarketOrder o = TypeUtil.convert(ao);
 			o.setRetrieved(now);
 			o.setCharId(charId);
 			os.add(o);

@@ -1,4 +1,4 @@
-package atsb.eve.dirt.model.zkill;
+package atsb.eve.dirt.zkill;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

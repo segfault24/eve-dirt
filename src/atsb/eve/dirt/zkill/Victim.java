@@ -1,9 +1,10 @@
-package atsb.eve.dirt.model.zkill;
+package atsb.eve.dirt.zkill;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Attacker {
+public class Victim {
 
 	@SerializedName("alliance_id")
 	@Expose
@@ -14,21 +15,18 @@ public class Attacker {
 	@SerializedName("corporation_id")
 	@Expose
 	private int corporationId;
-	@SerializedName("damage_done")
+	@SerializedName("damage_taken")
 	@Expose
-	private int damageDone;
-	@SerializedName("final_blow")
+	private int damageTaken;
+	@SerializedName("items")
 	@Expose
-	private boolean finalBlow;
-	@SerializedName("security_status")
+	private List<Item> items = null;
+	@SerializedName("position")
 	@Expose
-	private double securityStatus;
+	private Position position;
 	@SerializedName("ship_type_id")
 	@Expose
 	private int shipTypeId;
-	@SerializedName("weapon_type_id")
-	@Expose
-	private int weaponTypeId;
 
 	public int getAllianceId() {
 		return allianceId;
@@ -54,28 +52,28 @@ public class Attacker {
 		this.corporationId = corporationId;
 	}
 
-	public int getDamageDone() {
-		return damageDone;
+	public int getDamageTaken() {
+		return damageTaken;
 	}
 
-	public void setDamageDone(int damageDone) {
-		this.damageDone = damageDone;
+	public void setDamageTaken(int damageTaken) {
+		this.damageTaken = damageTaken;
 	}
 
-	public boolean isFinalBlow() {
-		return finalBlow;
+	public List<Item> getItems() {
+		return items;
 	}
 
-	public void setFinalBlow(boolean finalBlow) {
-		this.finalBlow = finalBlow;
+	public void setItems(List<Item> items) {
+		this.items = items;
 	}
 
-	public double getSecurityStatus() {
-		return securityStatus;
+	public Position getPosition() {
+		return position;
 	}
 
-	public void setSecurityStatus(double securityStatus) {
-		this.securityStatus = securityStatus;
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 	public int getShipTypeId() {
@@ -84,14 +82,6 @@ public class Attacker {
 
 	public void setShipTypeId(int shipTypeId) {
 		this.shipTypeId = shipTypeId;
-	}
-
-	public int getWeaponTypeId() {
-		return weaponTypeId;
-	}
-
-	public void setWeaponTypeId(int weaponTypeId) {
-		this.weaponTypeId = weaponTypeId;
 	}
 
 }

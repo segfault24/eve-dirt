@@ -5,9 +5,10 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.CorporationTable;
+import atsb.eve.db.CorporationTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.CorporationApiWrapper;
-import atsb.eve.dirt.model.Corporation;
+import atsb.eve.model.Corporation;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetCorporationsCorporationIdOk;
 
@@ -37,7 +38,7 @@ public class CorporationTask extends DirtTask {
 		log.debug("Querying corporation information for corporation " + corpId);
 		try {
 			GetCorporationsCorporationIdOk info = capiw.getCorporation(corpId);
-			Corporation c = new Corporation(info);
+			Corporation c = TypeUtil.convert(info);
 			c.setCorpId(corpId);
 			CorporationTable.insert(getDb(), c);
 		} catch (ApiException e) {

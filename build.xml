@@ -34,7 +34,9 @@
     <delete dir="www/vendor"/>
   </target>
 
-  <target name="build" depends="build-frontend,build-backend" description="build entire project"/>
-  <target name="clean" depends="clean-frontend,clean-backend" description="clean entire project"/>
+  <target name="build" depends="build-backend"/>
+  <target name="build-all" depends="build-backend,build-frontend" description="build entire project"/>
+  <target name="clean" depends="clean-backend"/>
+  <target name="clean-all" depends="clean-frontend,clean-backend" description="clean entire project"/>
 
 </project>

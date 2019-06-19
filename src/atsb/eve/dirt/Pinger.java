@@ -1,4 +1,4 @@
-package atsb.eve.dirt.util;
+package atsb.eve.dirt;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

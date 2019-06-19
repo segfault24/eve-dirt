@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.MarketApi;
@@ -59,7 +59,7 @@ public class MarketApiWrapper {
 		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
-			Utils.upsertEtag(db, "orders-" + regionId + "-" + page, Utils.getEtag(resp));
+			Utils.upsertEtag(db, "orders-" + regionId + "-" + page, Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}
@@ -72,7 +72,7 @@ public class MarketApiWrapper {
 				typeId, Utils.getApiDatasource(), etag);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
-			Utils.upsertEtag(db, "history-" + regionId + "-" + typeId, Utils.getEtag(resp));
+			Utils.upsertEtag(db, "history-" + regionId + "-" + typeId, Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}
@@ -104,7 +104,7 @@ public class MarketApiWrapper {
 		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
-			Utils.upsertEtag(db, "orders-" + structId + "-" + page, Utils.getEtag(resp));
+			Utils.upsertEtag(db, "orders-" + structId + "-" + page, Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}
@@ -115,7 +115,7 @@ public class MarketApiWrapper {
 		ApiResponse<List<GetCharactersCharacterIdOrders200Ok>> resp = mapi.getCharactersCharacterIdOrdersWithHttpInfo(charId, Utils.getApiDatasource(), etag, token);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
-			Utils.upsertEtag(db, "character-orders-" + charId, Utils.getEtag(resp));
+			Utils.upsertEtag(db, "character-orders-" + charId, Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}
@@ -125,7 +125,7 @@ public class MarketApiWrapper {
 		log.trace("Executing API query getMarketGroupIds()");
 		ApiResponse<List<Integer>> resp = mapi.getMarketsGroupsWithHttpInfo(Utils.getApiDatasource(), etag);
 		log.trace("API query returned status code " + resp.getStatusCode());
-		Utils.upsertEtag(db, "market-groups", Utils.getEtag(resp));
+		Utils.upsertEtag(db, "market-groups", Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 
@@ -134,7 +134,7 @@ public class MarketApiWrapper {
 		log.trace("Executing API query getMarketGroup(" + marketGroupId + ")");
 		ApiResponse<GetMarketsGroupsMarketGroupIdOk> resp = mapi.getMarketsGroupsMarketGroupIdWithHttpInfo(marketGroupId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
 		log.trace("API query returned status code " + resp.getStatusCode());
-		Utils.upsertEtag(db, "market-group-" + marketGroupId, Utils.getEtag(resp));
+		Utils.upsertEtag(db, "market-group-" + marketGroupId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 

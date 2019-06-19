@@ -7,11 +7,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
-import atsb.eve.dirt.db.ContractTable;
+import atsb.eve.db.ApiAuthTable;
+import atsb.eve.db.ContractTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.ContractsApiWrapper;
-import atsb.eve.dirt.model.Contract;
-import atsb.eve.dirt.model.OAuthUser;
+import atsb.eve.dirt.esi.auth.OAuthUtil;
+import atsb.eve.model.Contract;
+import atsb.eve.model.OAuthUser;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetCharactersCharacterIdContracts200Ok;
 
@@ -58,7 +60,7 @@ public class CharacterContractsTask extends DirtTask {
 		do {
 			page++;
 			try {
-				contracts = capiw.getCharacterContracts(charId, page, auth.getAuthToken());
+				contracts = capiw.getCharacterContracts(charId, page, OAuthUtil.getAuthToken(getDb(), auth));
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
 					continue;
@@ -75,7 +77,7 @@ public class CharacterContractsTask extends DirtTask {
 			totalContracts += contracts.size();
 			List<Contract> l = new ArrayList<Contract>(contracts.size());
 			for (GetCharactersCharacterIdContracts200Ok gc : contracts) {
-				Contract c = new Contract(gc);
+				Contract c = TypeUtil.convert(gc);
 				l.add(c);
 			}
 			try {

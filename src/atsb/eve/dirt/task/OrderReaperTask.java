@@ -6,8 +6,9 @@ import java.sql.Timestamp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.MarketOrderTable;
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.db.MarketOrderTable;
+import atsb.eve.dirt.DirtConstants;
+import atsb.eve.util.Utils;
 
 public class OrderReaperTask extends DirtTask {
 
@@ -21,7 +22,7 @@ public class OrderReaperTask extends DirtTask {
 	@Override
 	protected void runTask() {
 		try {
-			long maxAgeMinutes = Long.parseLong(Utils.getProperty(getDb(), Utils.PROPERTY_MARKET_ORDERS_MAX_AGE));
+			long maxAgeMinutes = Long.parseLong(Utils.getProperty(getDb(), DirtConstants.PROPERTY_MARKET_ORDERS_MAX_AGE));
 			Timestamp olderThan = new Timestamp(System.currentTimeMillis() - maxAgeMinutes*60*1000);
 			int count = MarketOrderTable.deleteOldOrders(getDb(), olderThan);
 			log.debug("Deleted " + count + " old market orders");

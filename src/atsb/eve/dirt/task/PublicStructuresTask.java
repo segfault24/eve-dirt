@@ -7,13 +7,16 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
-import atsb.eve.dirt.db.SolarSystemTable;
-import atsb.eve.dirt.db.StructureTable;
+import atsb.eve.db.ApiAuthTable;
+import atsb.eve.db.SolarSystemTable;
+import atsb.eve.db.StructureTable;
+import atsb.eve.dirt.DirtConstants;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
-import atsb.eve.dirt.model.OAuthUser;
-import atsb.eve.dirt.model.Structure;
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.dirt.esi.auth.OAuthUtil;
+import atsb.eve.model.OAuthUser;
+import atsb.eve.model.Structure;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
 
@@ -38,7 +41,7 @@ public class PublicStructuresTask extends DirtTask {
 	public void runTask() {
 		UniverseApiWrapper uapiw = new UniverseApiWrapper(getDb());
 
-		int keyId = Integer.parseInt(Utils.getProperty(getDb(), Utils.PROPERTY_SCRAPER_KEY_ID));
+		int keyId = Integer.parseInt(Utils.getProperty(getDb(), DirtConstants.PROPERTY_SCRAPER_KEY_ID));
 
 		OAuthUser auth;
 		try {
@@ -65,8 +68,8 @@ public class PublicStructuresTask extends DirtTask {
 
 		for (Long structId : structIds) {
 			try {
-				GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, auth.getAuthToken());
-				Structure s = new Structure(info);
+				GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, OAuthUtil.getAuthToken(getDb(), auth));
+				Structure s = TypeUtil.convert(info);
 				s.setStructId(structId);
 				s.setRegionId(SolarSystemTable.findRegionBySystem(getDb(), s.getSystemId()));
 				StructureTable.insert(getDb(), s);

@@ -6,13 +6,15 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
-import atsb.eve.dirt.db.SolarSystemTable;
-import atsb.eve.dirt.db.StructAuthTable;
-import atsb.eve.dirt.db.StructureTable;
+import atsb.eve.db.ApiAuthTable;
+import atsb.eve.db.SolarSystemTable;
+import atsb.eve.db.StructAuthTable;
+import atsb.eve.db.StructureTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
-import atsb.eve.dirt.model.OAuthUser;
-import atsb.eve.dirt.model.Structure;
+import atsb.eve.dirt.esi.auth.OAuthUtil;
+import atsb.eve.model.OAuthUser;
+import atsb.eve.model.Structure;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
 
@@ -77,8 +79,8 @@ public class StructureTask extends DirtTask {
 
 		log.debug("Querying structure information for structId=" + structId);
 		try {
-			GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, auth.getAuthToken());
-			Structure s = new Structure(info);
+			GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, OAuthUtil.getAuthToken(getDb(), auth));
+			Structure s = TypeUtil.convert(info);
 			s.setStructId(structId);
 			s.setRegionId(SolarSystemTable.findRegionBySystem(getDb(), s.getSystemId()));
 			StructureTable.insert(getDb(), s);

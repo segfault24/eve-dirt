@@ -11,13 +11,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.Level;
 
-import atsb.eve.dirt.db.StructAuthTable;
-import atsb.eve.dirt.model.TaskStatus;
+import atsb.eve.db.StructAuthTable;
+import atsb.eve.db.TaskStatusTable;
 import atsb.eve.dirt.task.StructureTask;
-import atsb.eve.dirt.util.DbInfo;
-import atsb.eve.dirt.util.DbPool;
-import atsb.eve.dirt.util.TaskUtils;
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.model.TaskStatus;
+import atsb.eve.util.DbInfo;
+import atsb.eve.util.DbPool;
+import atsb.eve.util.Utils;
 
 public class TaskCli {
 
@@ -77,11 +77,11 @@ public class TaskCli {
 	private void clearTask(String[] parts) {
 		log.debug("cleartask command invoked");
 		if (parts.length > 1) {
-			TaskStatus ts = TaskUtils.getTaskStatus(db, parts[1]);
+			TaskStatus ts = TaskStatusTable.getTaskStatus(db, parts[1]);
 			if (ts != null) {
 				ts.setLastRun(new Timestamp(1000));
 				try {
-					TaskUtils.upsertTaskStatus(db, ts);
+					TaskStatusTable.upsertTaskStatus(db, ts);
 				} catch (SQLException e) {
 					log.debug("failed to upsert TaskStatus", e);
 					System.err.println("failed to clear task status");
@@ -107,7 +107,7 @@ public class TaskCli {
 		if (parts.length > 1) {
 			Long structId = Long.parseLong(parts[1]);
 			if (structId != null) {
-				int keyId = Utils.getIntProperty(db, Utils.PROPERTY_SCRAPER_KEY_ID);
+				int keyId = Utils.getIntProperty(db, DirtConstants.PROPERTY_SCRAPER_KEY_ID);
 				StructureTask st = new StructureTask(structId, keyId);
 				st.setDaemon(d);
 				st.setDbPool(dbPool);
@@ -130,8 +130,8 @@ public class TaskCli {
 			try {
 				Level l = Level.valueOf(parts[1]);
 				Configurator.setRootLevel(l);
-			} catch(IllegalArgumentException e) {
-				log.error("invalid loglevel requested '" + parts[0] +"'");
+			} catch (IllegalArgumentException e) {
+				log.error("invalid loglevel requested '" + parts[0] + "'");
 			}
 		}
 		System.out.println("logging at " + LogManager.getRootLogger().getLevel().toString());

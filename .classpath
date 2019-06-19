@@ -18,5 +18,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/EveTools/lib/esi-client-20190330-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/eve-tools"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

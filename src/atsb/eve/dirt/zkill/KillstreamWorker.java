@@ -1,4 +1,4 @@
-package atsb.eve.dirt;
+package atsb.eve.dirt.zkill;
 
 import java.io.IOException;
 
@@ -6,6 +6,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import atsb.eve.dirt.DirtTaskDaemon;
 import atsb.eve.dirt.task.KillmailTask;
 
 /**

@@ -5,7 +5,7 @@ import java.sql.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.CorporationApi;
@@ -28,7 +28,7 @@ public class CorporationApiWrapper {
 		log.trace("Executing API query getCorporation()");
 		ApiResponse<GetCorporationsCorporationIdOk> resp = capi.getCorporationsCorporationIdWithHttpInfo(corpId, Utils.getApiDatasource(), etag);
 		log.trace("API query returned status code " + resp.getStatusCode());
-		Utils.upsertEtag(db, "corporation-" + corpId, Utils.getEtag(resp));
+		Utils.upsertEtag(db, "corporation-" + corpId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 

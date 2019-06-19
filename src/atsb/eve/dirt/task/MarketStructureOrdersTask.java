@@ -8,14 +8,16 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
-import atsb.eve.dirt.db.MarketOrderTable;
-import atsb.eve.dirt.db.StructAuthTable;
-import atsb.eve.dirt.db.StructureTable;
+import atsb.eve.db.ApiAuthTable;
+import atsb.eve.db.MarketOrderTable;
+import atsb.eve.db.StructAuthTable;
+import atsb.eve.db.StructureTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
-import atsb.eve.dirt.model.MarketOrder;
-import atsb.eve.dirt.model.OAuthUser;
-import atsb.eve.dirt.model.Structure;
+import atsb.eve.dirt.esi.auth.OAuthUtil;
+import atsb.eve.model.MarketOrder;
+import atsb.eve.model.OAuthUser;
+import atsb.eve.model.Structure;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
 
@@ -90,7 +92,7 @@ public class MarketStructureOrdersTask extends DirtTask {
 		do {
 			page++;
 			try {
-				orders = mapiw.getMarketsStructureIdOrders(structId, page, auth.getAuthToken());
+				orders = mapiw.getMarketsStructureIdOrders(structId, page, OAuthUtil.getAuthToken(getDb(), auth));
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
 					continue;
@@ -107,7 +109,7 @@ public class MarketStructureOrdersTask extends DirtTask {
 			totalOrders += orders.size();
 			List<MarketOrder> l = new ArrayList<MarketOrder>(orders.size());
 			for (GetMarketsStructuresStructureId200Ok o : orders) {
-				MarketOrder m = new MarketOrder(o);
+				MarketOrder m = TypeUtil.convert(o);
 				m.setRegion(regionId);
 				m.setRetrieved(now);
 				l.add(m);

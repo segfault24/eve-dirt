@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.InvMarketGroupsTable;
+import atsb.eve.db.InvMarketGroupsTable;
 import atsb.eve.dirt.esi.MarketApiWrapper;
 import net.evetech.ApiException;
 

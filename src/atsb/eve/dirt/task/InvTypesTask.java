@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.InvTypesTable;
+import atsb.eve.db.InvTypesTable;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
 import net.evetech.ApiException;
 

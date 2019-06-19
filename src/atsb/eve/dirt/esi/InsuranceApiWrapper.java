@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.InsuranceApi;
@@ -31,7 +31,7 @@ public class InsuranceApiWrapper {
 				Utils.getApiDatasource(), etag, Utils.getApiLanguage());
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
-			Utils.upsertEtag(db, "insurance-prices", Utils.getEtag(resp));
+			Utils.upsertEtag(db, "insurance-prices", Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.ApiAuthTable;
+import atsb.eve.db.ApiAuthTable;
 
 /**
  * Meta-task that enqueues tasks for character order and contract data

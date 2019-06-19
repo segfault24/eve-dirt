@@ -8,9 +8,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.MarketOrderTable;
+import atsb.eve.db.MarketOrderTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
-import atsb.eve.dirt.model.MarketOrder;
+import atsb.eve.model.MarketOrder;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
 
@@ -63,7 +64,7 @@ public class MarketRegionOrdersTask extends DirtTask {
 			totalOrders += orders.size();
 			List<MarketOrder> l = new ArrayList<MarketOrder>(orders.size());
 			for (GetMarketsRegionIdOrders200Ok o : orders) {
-				MarketOrder m = new MarketOrder(o);
+				MarketOrder m = TypeUtil.convert(o);
 				m.setRegion(region);
 				m.setRetrieved(now);
 				l.add(m);

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.StructAuthTable;
+import atsb.eve.db.StructAuthTable;
 
 /**
  * Meta-task that enqueues tasks for structure order data

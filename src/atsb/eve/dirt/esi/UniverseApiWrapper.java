@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.UniverseApi;
@@ -31,7 +31,7 @@ public class UniverseApiWrapper {
 		ApiResponse<List<Long>> resp = uapi.getUniverseStructuresWithHttpInfo(Utils.getApiDatasource(), null, etag);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
-			Utils.upsertEtag(db, "universe-structures", Utils.getEtag(resp));
+			Utils.upsertEtag(db, "universe-structures", Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}
@@ -43,7 +43,7 @@ public class UniverseApiWrapper {
 		ApiResponse<GetUniverseStructuresStructureIdOk> resp = uapi.getUniverseStructuresStructureIdWithHttpInfo(
 				structId, Utils.getApiDatasource(), etag, token);
 		log.trace("API query returned status code " + resp.getStatusCode());
-		Utils.upsertEtag(db, "universe-structures-" + structId, Utils.getEtag(resp));
+		Utils.upsertEtag(db, "universe-structures-" + structId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 
@@ -63,7 +63,7 @@ public class UniverseApiWrapper {
 		log.trace("Executing API query getUniverseType(" + typeId + ")");
 		ApiResponse<GetUniverseTypesTypeIdOk> resp = uapi.getUniverseTypesTypeIdWithHttpInfo(typeId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
 		log.trace("API query returned status code " + resp.getStatusCode());
-		Utils.upsertEtag(db, "inv-type-" + typeId, Utils.getEtag(resp));
+		Utils.upsertEtag(db, "inv-type-" + typeId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 

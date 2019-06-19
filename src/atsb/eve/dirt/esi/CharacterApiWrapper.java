@@ -5,7 +5,7 @@ import java.sql.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.CharacterApi;
@@ -28,7 +28,7 @@ public class CharacterApiWrapper {
 		log.trace("Executing API query getCharacter(" + charId + ")");
 		ApiResponse<GetCharactersCharacterIdOk> resp = capi.getCharactersCharacterIdWithHttpInfo(charId, Utils.getApiDatasource(), etag);
 		log.trace("API query returned status code " + resp.getStatusCode());
-		Utils.upsertEtag(db, "character-" + charId, Utils.getEtag(resp));
+		Utils.upsertEtag(db, "character-" + charId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 

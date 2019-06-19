@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.db.InvTypesTable;
+import atsb.eve.db.InvTypesTable;
+import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
-import atsb.eve.dirt.model.InvType;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetUniverseTypesTypeIdOk;
 
@@ -41,7 +41,7 @@ public class InvTypeTask extends DirtTask {
 			return;
 		}
 		try {
-			InvTypesTable.upsert(getDb(), new InvType(type));
+			InvTypesTable.upsert(getDb(), TypeUtil.convert(type));
 		} catch (SQLException e) {
 			log.fatal("Failed to upsert type info for typeId " + typeId, e);
 		}

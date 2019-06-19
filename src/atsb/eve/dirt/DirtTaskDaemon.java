@@ -11,7 +11,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.dirt.model.TaskStatus;
+import atsb.eve.db.TaskStatusTable;
 import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.InvMarketGroupsTask;
@@ -23,10 +23,11 @@ import atsb.eve.dirt.task.MetaStructureOrdersTask;
 import atsb.eve.dirt.task.MetaWalletTask;
 import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
-import atsb.eve.dirt.util.DbInfo;
-import atsb.eve.dirt.util.DbPool;
-import atsb.eve.dirt.util.TaskUtils;
-import atsb.eve.dirt.util.Utils;
+import atsb.eve.dirt.zkill.KillstreamWorker;
+import atsb.eve.model.TaskStatus;
+import atsb.eve.util.DbInfo;
+import atsb.eve.util.DbPool;
+import atsb.eve.util.Utils;
 
 /**
  * Main class to launch tasks
@@ -56,7 +57,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 			return;
 		}
 
-		int threads = Utils.getIntProperty(db, Utils.PROPERTY_NUM_THREADS);
+		int threads = Utils.getIntProperty(db, DirtConstants.PROPERTY_NUM_THREADS);
 		setCorePoolSize(threads);
 		dbPool.setMinPoolSize(threads);
 		log.info("Starting with " + threads + " worker threads");
@@ -67,7 +68,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 		dbPool.release(db);
 
 		// start the killstream
-		if(Utils.getBoolProperty(db, Utils.PROPERTY_KILLSTREAM_ENABLED)) {
+		if(Utils.getBoolProperty(db, DirtConstants.PROPERTY_KILLSTREAM_ENABLED)) {
 			new Thread(new KillstreamWorker(this)).start();
 		}
 
@@ -80,45 +81,45 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 
 	private void addTasks(Connection db) {
 		// public market orders for specific regions
-		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_ORDERS_REGIONS));
-		int period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_REGION_ORDERS_PERIOD);
+		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, DirtConstants.PROPERTY_MARKET_ORDERS_REGIONS));
+		int period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_REGION_ORDERS_PERIOD);
 		for (Integer regionId : regions) {
 			addPeriodicTask(db, new MarketRegionOrdersTask(regionId), period);
 		}
 
 		// structure market orders
-		period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_STRUCTURE_ORDERS_PERIOD);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_STRUCTURE_ORDERS_PERIOD);
 		addPeriodicTask(db, new MetaStructureOrdersTask(), period);
 
 		// auto-delete old market orders that might not be cleaned up elsewhere
 		addPeriodicTask(db, new OrderReaperTask(), 30);
 
 		// market history for specific regions
-		regions = Utils.parseIntList(Utils.getProperty(db, Utils.PROPERTY_MARKET_HISTORY_REGIONS));
-		period = Utils.getIntProperty(db, Utils.PROPERTY_MARKET_HISTORY_PERIOD);
+		regions = Utils.parseIntList(Utils.getProperty(db, DirtConstants.PROPERTY_MARKET_HISTORY_REGIONS));
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_HISTORY_PERIOD);
 		for (int regionId : regions) {
 			addPeriodicTask(db, new MarketHistoryTask(regionId), period);
 		}
 
 		// public structure info
-		period = Utils.getIntProperty(db, Utils.PROPERTY_PUBLIC_STRUCTURES_PERIOD);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_PUBLIC_STRUCTURES_PERIOD);
 		addPeriodicTask(db, new PublicStructuresTask(), period);
 
 		// insurance price info
-		period = Utils.getIntProperty(db, Utils.PROPERTY_INSURANCE_PRICES_PERIOD);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_INSURANCE_PRICES_PERIOD);
 		addPeriodicTask(db, new InsurancePricesTask(), period);
 
 		// type & group info
-		period = Utils.getIntProperty(db, Utils.PROPERTY_TYPE_INFO_PERIOD);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_TYPE_INFO_PERIOD);
 		addPeriodicTask(db, new InvTypesTask(), period);
 		addPeriodicTask(db, new InvMarketGroupsTask(), period);
 
 		// character wallet
-		period = Utils.getIntProperty(db, Utils.PROPERTY_WALLET_PERIOD);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_WALLET_PERIOD);
 		addPeriodicTask(db, new MetaWalletTask(), period);
 
 		// character orders and contracts
-		period = Utils.getIntProperty(db, Utils.PROPERTY_CHARACTER_MARKET_PERIOD);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_CHARACTER_MARKET_PERIOD);
 		addPeriodicTask(db, new MetaCharacterMarketTask(), period);
 	}
 
@@ -138,7 +139,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor {
 	 * @param period
 	 */
 	public void addPeriodicTask(Connection db, DirtTask t, long period) {
-		TaskStatus ts = TaskUtils.getTaskStatus(db, t.getTaskName());
+		TaskStatus ts = TaskStatusTable.getTaskStatus(db, t.getTaskName());
 		long initialDelay = 0;
 		if (ts != null) {
 			long lastRun = ts.getLastRun().getTime() / 1000 / 60;
