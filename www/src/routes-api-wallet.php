@@ -15,11 +15,11 @@ $app->get('/api/wallet/orders', function ($request, $response, $args) {
             a.`charName`, o.`orderId`, o.`typeId`, i.`typeName`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
             FROM marketOrder AS o
-            LEFT JOIN invTypes AS i ON o.`typeId`=i.`typeID`
-            LEFT JOIN mapRegions AS r ON o.`regionId`=r.`regionID`
+            LEFT JOIN invType AS i ON o.`typeId`=i.`typeId`
+            LEFT JOIN region AS r ON o.`regionId`=r.`regionId`
             LEFT JOIN dirtApiAuth AS a ON o.`charId`=a.`charId`
             LEFT JOIN (
-                SELECT `stationID` AS sId,`stationName` AS sName FROM staStations 
+                SELECT `stationId` AS sId,`stationName` AS sName FROM station
                 UNION ALL
                 SELECT `structId` AS sId,`structName` AS sName FROM structure
             ) locs ON o.`locationId`=locs.`sId`
@@ -41,8 +41,8 @@ $app->get('/api/wallet/transactions', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT t.`date`,a.`charName`,i.`typeID`,i.`typeName`,t.`isBuy`,t.`quantity`,t.`unitPrice` FROM walletTransaction AS t
-            JOIN invTypes AS i ON i.typeID=t.typeId
+    $sql = 'SELECT t.`date`,a.`charName`,i.`typeId`,i.`typeName`,t.`isBuy`,t.`quantity`,t.`unitPrice` FROM walletTransaction AS t
+            JOIN invType AS i ON i.typeId=t.typeId
             JOIN dirtApiAuth AS a ON a.charId=t.charId
             WHERE t.charId IN (
                 SELECT charId FROM dirtApiAuth WHERE userId=:userid
@@ -103,7 +103,7 @@ $app->get('/api/wallet/returns', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT s.date, i.typeID, i.typeName, b.buy, s.sell
+    $sql = 'SELECT s.date, i.typeId, i.typeName, b.buy, s.sell
             FROM (
               SELECT t.typeId, t.unitPrice AS buy
               FROM walletTransaction AS t
@@ -126,7 +126,7 @@ $app->get('/api/wallet/returns', function ($request, $response, $args) {
                 GROUP BY typeId
               ) AS lsell ON t.typeId=lsell.typeId AND t.date=lsell.maxDate
             ) AS s ON b.typeId=s.typeId
-            JOIN invTypes AS i ON i.typeID=b.typeId
+            JOIN invType AS i ON i.typeId=b.typeId
            ';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(

@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.InvTypesTable;
+import atsb.eve.db.InvTypeTable;
 import atsb.eve.db.MarketHistoryTable;
 import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
@@ -39,7 +39,7 @@ public class MarketHistoryTask extends DirtTask {
 	public void runTask() {
 		List<Integer> types;
 		try {
-			types = InvTypesTable.getMarketableTypeIds(getDb());
+			types = InvTypeTable.getMarketableTypeIds(getDb());
 		} catch (SQLException e) {
 			log.fatal("Failed to get list of marketable type ids from database", e);
 			return;

@@ -5,19 +5,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 
-import atsb.eve.util.DbInfo;
 import atsb.eve.util.Utils;
 
 /**
@@ -28,45 +27,29 @@ public class MERLoader {
 
 	private static Logger log = LogManager.getLogger();
 
-	private DbInfo dbInfo;
-
 	private Timestamp monthYear;
-	private String db;
+	private String table;
 	private ArrayList<FieldMapping> cols;
 	private String SQL_STATEMENT;
 
-	public MERLoader(String yrmo, String configFile) throws Exception, IOException {
-		dbInfo = new DbInfo();
-		parseYearMonth(yrmo);
+	public MERLoader(LocalDate d, String configFile) throws Exception, IOException {
+		monthYear = new Timestamp(d.atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
 		loadConfig(configFile);
 		genSqlStatement();
 		log.trace(SQL_STATEMENT);
 	}
 
-	private void parseYearMonth(String yrmo) {
-		DateTime begOfMonth = DateTime.parse(yrmo);
-		DateTime endOfMonth = begOfMonth.plusMonths(1).minusDays(1);
-		monthYear = new Timestamp(endOfMonth.getMillis());
-	}
-
 	private void loadConfig(String configFile) throws Exception, IOException {
-
 		Properties cfg = new Properties();
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(new File(configFile));
-			cfg.load(fis);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not read config file");
-		} finally {
-			Utils.closeQuietly(fis);
-		}
+		FileInputStream fis = new FileInputStream(new File(configFile));
+		cfg.load(fis);
+		Utils.closeQuietly(fis);
 
-		db = cfg.getProperty("db");
-		if (db == null || db.isEmpty()) {
-			throw new Exception("Property 'db' is required, but was not found.");
+		table = cfg.getProperty("table");
+		if (table == null || table.isEmpty()) {
+			throw new Exception("Property 'table' is required, but was not found.");
 		}
-		log.debug("db: " + db);
+		log.debug("table: " + table);
 
 		cols = new ArrayList<FieldMapping>();
 		Enumeration<?> e = cfg.propertyNames();
@@ -74,7 +57,7 @@ public class MERLoader {
 		while (e.hasMoreElements()) {
 			String sqlColumn = (String) e.nextElement();
 
-			if (sqlColumn.equalsIgnoreCase("db")) {
+			if (sqlColumn.equalsIgnoreCase("table")) {
 				continue;
 			}
 
@@ -92,7 +75,7 @@ public class MERLoader {
 	}
 
 	private void genSqlStatement() {
-		String cmd = "INSERT IGNORE INTO `" + db;
+		String cmd = "INSERT IGNORE INTO `" + table;
 		String keys = "";
 		String values = "";
 		int numCols = cols.size();
@@ -110,19 +93,11 @@ public class MERLoader {
 		SQL_STATEMENT = cmd + "` (" + keys + ") VALUES (" + values + ")";
 	}
 
-	public void doImport(String csvFilePath) throws FileNotFoundException, IOException, CSVException {
-		Connection con;
+	public void doImport(Connection db, File csvFile) throws FileNotFoundException, IOException, CSVException {
+		CSVParser csv = new CSVParser(csvFile, true);
 		try {
-			con = DriverManager.getConnection(dbInfo.getDbConnectionString(), dbInfo.getUser(), dbInfo.getPass());
-		} catch (SQLException e) {
-			log.fatal("Failed to open database connection: " + e.getLocalizedMessage());
-			return;
-		}
-
-		CSVParser csv = new CSVParser(new File(csvFilePath), true);
-		try {
-			con.setAutoCommit(false);
-			PreparedStatement stmt = con.prepareStatement(SQL_STATEMENT);
+			db.setAutoCommit(false);
+			PreparedStatement stmt = db.prepareStatement(SQL_STATEMENT);
 
 			// for every line in the csv file
 			int count = 0;
@@ -162,33 +137,12 @@ public class MERLoader {
 			}
 			stmt.executeBatch();
 
-			con.commit();
-			con.setAutoCommit(true);
+			db.commit();
+			db.setAutoCommit(true);
 			log.debug("Inserted " + count + " records");
 		} catch (SQLException e) {
 			log.warn("Unexpected failure while processing records", e);
 		}
-
-		Utils.closeQuietly(con);
 	}
 
-	public static void main(String[] args) {
-		if (args.length < 3) {
-			System.out.println("This program requires at least three arguments.");
-			System.out.println("  Usage:");
-			System.out.println("    ./load-mer.sh  <year-month>  <config>  <csv1>  ...");
-			System.out.println("  Example:");
-			System.out.println("    ./load-mer.sh  2017-07  regstat.config  RegionalStats.csv");
-			System.exit(1);
-		}
-
-		try {
-			MERLoader loader = new MERLoader(args[0], args[1]);
-			for (int i = 2; i < args.length; i++) {
-				loader.doImport(args[i]);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

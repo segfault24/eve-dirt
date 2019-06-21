@@ -200,7 +200,7 @@ $(document).ready(function(){
 				transactionsTable.row.add([
 					result[i].date,
 					result[i].charName,
-					'<a class="open-in-game" data-typeId="' + result[i].typeID + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeID + '" target="_blank">' + result[i].typeName + '</a>',
+					'<a class="open-in-game" data-typeId="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
 					buySell,
 					formatInt(result[i].quantity),
 					formatIsk(result[i].unitPrice),
@@ -287,7 +287,7 @@ $(document).ready(function(){
 				var roi = unitProfit/result[i].buy*100;
 				roiTable.row.add([
 					result[i].date,
-					'<a class="open-in-game" data-typeid="' + result[i].typeID + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeID + '" target="_blank">' + result[i].typeName + '</a>',
+					'<a class="open-in-game" data-typeid="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
 					formatIsk(result[i].buy),
 					formatIsk(result[i].sell),
 					formatIsk(unitProfit),

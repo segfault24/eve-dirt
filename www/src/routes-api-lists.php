@@ -162,7 +162,7 @@ $app->get('/api/lists/{listid}/types/', function ($request, $response, $args) {
     }
 
     // retrieve the items in the list
-    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invTypes AS i ON li.typeId=i.typeID WHERE li.listId=:listid;';
+    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invType AS i ON li.typeId=i.typeId WHERE li.listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -211,7 +211,7 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     }
 
     // retrieve the item from the list
-    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invTypes AS i ON li.typeId=i.typeID WHERE li.listId=:listid AND li.typeId=:typeid;';
+    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invType AS i ON li.typeId=i.typeId WHERE li.listId=:listid AND li.typeId=:typeid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid'],
@@ -256,7 +256,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
 
     // check for exact match first
     $typeName = $request->getParsedBody()['typeName'];
-    $sql = 'SELECT typeID FROM invTypes WHERE typeName=:typeName AND published=1;';
+    $sql = 'SELECT typeId FROM invType WHERE typeName=:typeName AND published=1;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':typeName' => $typeName
@@ -272,7 +272,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         // no exact matchs
         // check if there's something close enough that is unique
         $typeName = '%' . $typeName . '%';
-        $sql = 'SELECT typeID FROM invTypes WHERE typeName LIKE :typeName AND published=1;';
+        $sql = 'SELECT typeId FROM invType WHERE typeName LIKE :typeName AND published=1;';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(
             ':typeName' => $typeName
@@ -287,7 +287,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         }
     }
 
-    $typeid = $stmt->fetch(PDO::FETCH_ASSOC)['typeID'];
+    $typeid = $stmt->fetch(PDO::FETCH_ASSOC)['typeId'];
 
     // get the quantity
     $quantity = $request->getParsedBody()['quantity'];

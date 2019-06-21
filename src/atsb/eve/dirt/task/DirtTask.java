@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import atsb.eve.db.TaskStatusTable;
-import atsb.eve.dirt.DirtTaskDaemon;
+import atsb.eve.dirt.Taskable;
 import atsb.eve.model.TaskStatus;
 import atsb.eve.util.DbPool;
 
@@ -17,7 +17,7 @@ public abstract class DirtTask implements Runnable {
 
 	private static Logger log = LogManager.getLogger();
 
-	private DirtTaskDaemon daemon;
+	private Taskable daemon;
 	private DbPool dbPool;
 	private Connection db;
 	private boolean saveStatus = true;
@@ -26,11 +26,11 @@ public abstract class DirtTask implements Runnable {
 
 	protected abstract void runTask();
 
-	public void setDaemon(DirtTaskDaemon daemon) {
+	public void setDaemon(Taskable daemon) {
 		this.daemon = daemon;
 	}
 
-	protected DirtTaskDaemon getDaemon() {
+	protected Taskable getDaemon() {
 		return daemon;
 	}
 

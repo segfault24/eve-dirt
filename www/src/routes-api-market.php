@@ -28,9 +28,9 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
             o.`orderId`, o.`typeId`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
             FROM marketOrder AS o
-            LEFT JOIN mapRegions AS r ON o.`regionId`=r.`regionID`
+            LEFT JOIN region AS r ON o.`regionId`=r.`regionId`
             LEFT JOIN (
-                SELECT `stationID` AS sId,`stationName` AS sName FROM staStations 
+                SELECT `stationId` AS sId,`stationName` AS sName FROM station
                 UNION ALL
                 SELECT `structId` AS sId,`structName` AS sName FROM structure
             ) locs ON o.`locationId`=locs.`sId`
@@ -138,7 +138,7 @@ $app->get('/api/economic-reports/money-supply', function ($request, $response, $
 $app->get('/api/insurance-prices', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT t.typeID, t.typeName, i.name, i.cost, i.payout' . ' FROM insurancePrice AS i' . ' JOIN invTypes AS t ON i.typeId=t.typeID' . ' WHERE t.marketGroupID IS NOT NULL' . ' AND published=1';
+    $sql = 'SELECT t.typeId, t.typeName, i.name, i.cost, i.payout' . ' FROM insurancePrice AS i' . ' JOIN invType AS t ON i.typeId=t.typeId' . ' WHERE t.marketGroupId IS NOT NULL' . ' AND published=1';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':typeid' => $args['typeid']

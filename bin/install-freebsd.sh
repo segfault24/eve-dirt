@@ -93,13 +93,6 @@ sed -i '' "s/RUNUSER/${RUN_USER}/g"             cfg/evedirt.cron
 cp cfg/evedirt.conf ${APACHE}/sites-enabled/evedirt.conf
 
 # initialize db
-mysql -u root -e "DROP DATABASE IF EXISTS eve;"
-mysql -u root -e "CREATE DATABASE eve;"
-mysql -u root eve < sql/invTypes.sql
-mysql -u root eve < sql/invMarketGroups.sql
-mysql -u root eve < sql/mapRegions.sql
-mysql -u root eve < sql/mapSolarSystems.sql
-mysql -u root eve < sql/staStations.sql
 mysql -u root eve < sql/dirt.sql
 
 # install daemon service

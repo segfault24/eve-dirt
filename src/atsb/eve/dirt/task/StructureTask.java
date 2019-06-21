@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import atsb.eve.db.ApiAuthTable;
-import atsb.eve.db.SolarSystemTable;
+import atsb.eve.db.MapTables;
 import atsb.eve.db.StructAuthTable;
 import atsb.eve.db.StructureTable;
 import atsb.eve.dirt.TypeUtil;
@@ -82,7 +82,7 @@ public class StructureTask extends DirtTask {
 			GetUniverseStructuresStructureIdOk info = uapiw.getUniverseStructuresStructureId(structId, OAuthUtil.getAuthToken(getDb(), auth));
 			Structure s = TypeUtil.convert(info);
 			s.setStructId(structId);
-			s.setRegionId(SolarSystemTable.findRegionBySystem(getDb(), s.getSystemId()));
+			s.setRegionId(MapTables.findRegionBySystem(getDb(), s.getSystemId()).getReigonId());
 			StructureTable.insert(getDb(), s);
 			log.debug("Inserted structure information for structId=" + structId);
 		} catch (ApiException e) {

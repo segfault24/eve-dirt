@@ -133,8 +133,8 @@ $app->get('/search', function ($request, $response, $args) {
 
     $q = '%' . $request->getQueryParams()['q'] . '%';
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT `typeID`, `typeName`
-			FROM invTypes
+    $sql = 'SELECT `typeId`, `typeName`
+			FROM invType
 			WHERE `typeName` LIKE :query
 			AND `published`=1
 			ORDER BY `typeName`
@@ -152,7 +152,7 @@ $app->get('/search', function ($request, $response, $args) {
 
     if ($cnt == 1) {
         return $response->withStatus(302)
-            ->withHeader('Location', '/browse?type=' . htmlspecialchars($rows[0]['typeID']));
+            ->withHeader('Location', '/browse?type=' . htmlspecialchars($rows[0]['typeId']));
     } else {
         $args['query'] = $request->getQueryParams()['q'];
         $args['count'] = $cnt;

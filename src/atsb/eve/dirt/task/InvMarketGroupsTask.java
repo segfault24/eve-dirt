@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.InvMarketGroupsTable;
+import atsb.eve.db.MarketGroupTable;
 import atsb.eve.dirt.esi.MarketApiWrapper;
 import net.evetech.ApiException;
 
@@ -30,7 +30,7 @@ public class InvMarketGroupsTask extends DirtTask {
 
 		List<Integer> dbGroups;
 		try {
-			dbGroups = InvMarketGroupsTable.selectAllIds(getDb());
+			dbGroups = MarketGroupTable.selectAllIds(getDb());
 		} catch (SQLException e) {
 			log.fatal("Failed to get existing marketGroupIds from database", e);
 			return;

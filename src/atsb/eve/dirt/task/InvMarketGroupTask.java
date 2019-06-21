@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.InvMarketGroupsTable;
+import atsb.eve.db.MarketGroupTable;
 import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
 import net.evetech.ApiException;
@@ -41,7 +41,7 @@ public class InvMarketGroupTask extends DirtTask {
 			return;
 		}
 		try {
-			InvMarketGroupsTable.upsert(getDb(), TypeUtil.convert(group));
+			MarketGroupTable.upsert(getDb(), TypeUtil.convert(group));
 		} catch (SQLException e) {
 			log.fatal("Failed to upsert market group info for marketGroupId " + marketGroupId, e);
 		}

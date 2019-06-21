@@ -5,10 +5,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import atsb.eve.model.Constellation;
 import atsb.eve.model.Contract;
 import atsb.eve.model.Corporation;
 import atsb.eve.model.InsurancePrice;
-import atsb.eve.model.InvMarketGroup;
+import atsb.eve.model.MarketGroup;
 import atsb.eve.model.InvType;
 import atsb.eve.model.MarketHistoryEntry;
 import atsb.eve.model.MarketOrder;
@@ -16,6 +17,9 @@ import atsb.eve.model.Structure;
 import atsb.eve.model.WalletJournalEntry;
 import atsb.eve.model.WalletTransaction;
 import atsb.eve.model.MarketOrder.Source;
+import atsb.eve.model.Region;
+import atsb.eve.model.SolarSystem;
+import atsb.eve.model.Station;
 import net.evetech.esi.models.GetCharactersCharacterIdContracts200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletJournal200Ok;
@@ -27,7 +31,11 @@ import net.evetech.esi.models.GetMarketsGroupsMarketGroupIdOk;
 import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
 import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
 import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
+import net.evetech.esi.models.GetUniverseConstellationsConstellationIdOk;
+import net.evetech.esi.models.GetUniverseRegionsRegionIdOk;
+import net.evetech.esi.models.GetUniverseStationsStationIdOk;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
+import net.evetech.esi.models.GetUniverseSystemsSystemIdOk;
 import net.evetech.esi.models.GetUniverseTypesTypeIdOk;
 
 public interface TypeUtil {
@@ -61,23 +69,18 @@ public interface TypeUtil {
 			type.setMass(t.getMass());
 		if (t.getVolume() != null)
 			type.setVolume(t.getVolume());
-		if (t.getCapacity() != null)
-			type.setCapacity(t.getCapacity());
-		if (t.getPortionSize() != null)
-			type.setPortionSize(t.getPortionSize());
 		if (t.getPublished() != null)
 			type.setPublished(t.getPublished());
 		if (t.getMarketGroupId() != null)
 			type.setMarketGroupId(t.getMarketGroupId());
-		if (t.getIconId() != null)
-			type.setIconId(t.getIconId());
 		return type;
 	}
 
-	public static InvMarketGroup convert(GetMarketsGroupsMarketGroupIdOk g) {
-		InvMarketGroup group = new InvMarketGroup();
+	public static MarketGroup convert(GetMarketsGroupsMarketGroupIdOk g) {
+		MarketGroup group = new MarketGroup();
 		group.setMarketGroupId(g.getMarketGroupId());
-		group.setParentGroupId(g.getParentGroupId());
+		if (g.getParentGroupId() != null)
+			group.setParentGroupId(g.getParentGroupId());
 		group.setMarketGroupName(g.getName());
 		group.setDescription(g.getDescription());
 		group.setHasTypes(!g.getTypes().isEmpty());
@@ -237,6 +240,42 @@ public interface TypeUtil {
 		}
 		price.setLevels(levels);
 		return price;
+	}
+
+	public static Region convert(GetUniverseRegionsRegionIdOk r) {
+		Region region = new Region();
+		region.setReigonId(r.getRegionId());
+		region.setRegionName(r.getName());
+		region.setDescription(r.getDescription());
+		return region;
+	}
+
+	public static Constellation convert(GetUniverseConstellationsConstellationIdOk c) {
+		Constellation constellation = new Constellation();
+		constellation.setConstellationId(c.getConstellationId());
+		constellation.setConstellationName(c.getName());
+		constellation.setRegionId(c.getRegionId());
+		return constellation;
+	}
+
+	public static SolarSystem convert(GetUniverseSystemsSystemIdOk s) {
+		SolarSystem system = new SolarSystem();
+		system.setSolarSystemId(s.getSystemId());
+		system.setSolarSystemName(s.getName());
+		system.setConstellationId(s.getConstellationId());
+		system.setX(s.getPosition().getX());
+		system.setY(s.getPosition().getY());
+		system.setZ(s.getPosition().getZ());
+		system.setSecurity(s.getSecurityStatus());
+		return system;
+	}
+
+	public static Station convert(GetUniverseStationsStationIdOk s) {
+		Station station = new Station();
+		station.setStationId(s.getStationId());
+		station.setStationName(s.getName());
+		station.setSolarSystemId(s.getSystemId());
+		return station;
 	}
 
 }

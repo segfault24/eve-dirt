@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.InvTypesTable;
+import atsb.eve.db.InvTypeTable;
 import atsb.eve.dirt.esi.UniverseApiWrapper;
 import net.evetech.ApiException;
 
@@ -31,7 +31,7 @@ public class InvTypesTask extends DirtTask {
 
 		List<Integer> dbTypes;
 		try {
-			dbTypes = InvTypesTable.selectAllIds(getDb());
+			dbTypes = InvTypeTable.selectAllIds(getDb());
 		} catch(SQLException e) {
 			log.fatal("Failed to get existing typeIds from database", e);
 			return;

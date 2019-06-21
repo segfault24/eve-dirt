@@ -68,13 +68,3 @@ sudo ./install_freebsd.sh
 ```
 
 5. Update session.gc_maxlifetime in your php.ini to 86400
-
-## Maintenance Tasks
-### Updating static data
-1. run *bin/fetchLatestSde.sh*
-2. run new SQL scripts
-3. run *bin/genTopTypes.sh*
-
-### New Monthly Economic Reports (MER)
-1. 
-

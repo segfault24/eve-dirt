@@ -26,14 +26,11 @@ function BrowserMenu() {
 		if(groups == null) {
 			return [];
 		}
-		if(id == 0) {
-			id = null;
-		}
 
 		var g = [];
 		var len = groups.length;
 		for(var i=0; i<len; i++) {
-			if(groups[i].parentGroupID == id) {
+			if(groups[i].parentGroupId == id) {
 				g.push(groups[i]);
 			}
 		}
@@ -51,7 +48,7 @@ function BrowserMenu() {
 		var t = [];
 		var len = types.length;
 		for(var i=0; i<len; i++) {
-			if(types[i].marketGroupID == id) {
+			if(types[i].marketGroupId == id) {
 				t.push(types[i]);
 			}
 		}
@@ -68,14 +65,14 @@ function BrowserMenu() {
 
 		var g = getGroupsInGroup(id);
 		for(var i=0; i<g.length; i++) {
-			var mg_hdr = 'g' + g[i].marketGroupID + 'h';
-			var mg_col = 'g' + g[i].marketGroupID + 'l';
-			var mg_crd = 'g' + g[i].marketGroupID + 'b';
+			var mg_hdr = 'g' + g[i].marketGroupId + 'h';
+			var mg_col = 'g' + g[i].marketGroupId + 'l';
+			var mg_crd = 'g' + g[i].marketGroupId + 'b';
 			blah += '<div class="card no-border">';
 			blah += '	<div class="card-header browse-card-header" id="' + mg_hdr + '">';
 			blah += '		<button class="btn btn-link browse-btn" type="button" data-toggle="collapse" data-target="#' + mg_col + '" aria-expanded="true" aria-controls="#' + mg_col + '">' + g[i].marketGroupName + '</button>';
 			blah += '	</div>';
-			blah += '	<div class="collapse browse-collapse" id="' + mg_col + '" name="' + g[i].marketGroupID + '" aria-labelledby="' + mg_hdr + '" data-parent="#g' + id + 'b">';
+			blah += '	<div class="collapse browse-collapse" id="' + mg_col + '" name="' + g[i].marketGroupId + '" aria-labelledby="' + mg_hdr + '" data-parent="#g' + id + 'b">';
 			blah += '		<div class="card-body browse-card-body">';
 			blah += '			<div class="accordian" id="' + mg_crd + '">';
 			blah += '			</div>';
@@ -88,7 +85,7 @@ function BrowserMenu() {
 		for(var i=0; i<t.length; i++) {
 			blah += '<div class="card no-border">'
 			blah += '	<div class="card-body browse-card-body">';
-			blah += '		<a class="market-item" name="' + t[i].typeID + '" href="/browse?type=' + t[i].typeID + '">' + t[i].typeName + '</a>';
+			blah += '		<a class="market-item" name="' + t[i].typeId + '" href="/browse?type=' + t[i].typeId + '">' + t[i].typeName + '</a>';
 			blah += '	</div>';
 			blah += '</div>';
 			//blah += '<hr class="no-margin">';

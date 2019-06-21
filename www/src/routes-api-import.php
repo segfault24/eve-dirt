@@ -144,7 +144,7 @@ $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
 $app->get('/api/trade/structs-by-region/{region}/', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT `stationID` AS sId,`stationName` AS sName FROM staStations where regionId=:regiona';
+    $sql  = 'SELECT `stationId` AS sId,`stationName` AS sName FROM station where regionId=:regiona';
     $sql .= ' UNION ALL';
     $sql .= ' SELECT `structId` AS sId,`structName` AS sName FROM structure where regionId=:regionb';
     $sql .= ' ORDER BY sName';
@@ -167,7 +167,7 @@ $app->get('/api/trade/sell-sell/{source}/{destination}', function ($request, $re
              JOIN (
                SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=0 GROUP BY typeId, locationId
              ) AS d ON o.typeId=d.typeId
-             JOIN invTypes AS i ON o.typeId=i.typeID';
+             JOIN invType AS i ON o.typeId=i.typeId';
     if (intval($args['source']) > 20000000) {
         $sql .= ' WHERE o.locationId=:source';
     } else {
@@ -194,7 +194,7 @@ $app->get('/api/trade/sell-buy/{source}/{destination}', function ($request, $res
     $sql .= ' JOIN (';
     $sql .= '  SELECT typeId, MAX(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=1 GROUP BY typeId, locationId';
     $sql .= ' ) AS d ON o.typeId=d.typeId';
-    $sql .= ' JOIN invTypes AS i ON o.typeId=i.typeID';
+    $sql .= ' JOIN invType AS i ON o.typeId=i.typeId';
     if (intval($args['source']) > 20000000) {
         $sql .= ' WHERE o.locationId=:source';
     } else {
