@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import atsb.eve.db.TaskStatusTable;
+import atsb.eve.dirt.cli.TaskCli;
 import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.InvMarketGroupsTask;
@@ -166,7 +167,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	/**
 	 * 
 	 */
-	protected void removeAllTasks() {
+	public void removeAllTasks() {
 		for (ScheduledFuture<?> f : futures.values()) {
 			f.cancel(false);
 		}
