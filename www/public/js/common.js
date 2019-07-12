@@ -216,10 +216,16 @@ function myAjax(endpoint, callback) {
 }
 
 $(function() {
-	// click handler for opening types in game
+	// click handler for opening types in game market
 	$(document).on('click', '.open-in-game', function(e) {
 		e.preventDefault();
 		myAjax('market/open-in-game/' + $(this).attr('data-typeid'), null);
+	});
+
+	// click handler for opening types in game contract
+	$(document).on('click', '.open-in-game-contract', function(e) {
+		e.preventDefault();
+		myAjax('market/open-in-game-contract/' + $(this).attr('data-contractid'), null);
 	});
 
 	$.getJSON('/api/search-types', function(data) {

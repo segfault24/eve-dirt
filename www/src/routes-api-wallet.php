@@ -82,7 +82,7 @@ $app->get('/api/wallet/contracts', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, ach.`name` AS acceptorName
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, ach.`name` AS acceptorName
             FROM contract AS co
             LEFT JOIN (
                 SELECT charId AS id, charName AS name FROM `character`

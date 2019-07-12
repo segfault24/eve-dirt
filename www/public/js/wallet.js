@@ -87,8 +87,8 @@ $(document).ready(function(){
 	});
 	var contractsTable = $('#contracts-table').DataTable({
 		columns: [
-			{title:'Issuer', responsivePriority: 1},
 			{title:'Type', responsivePriority: 2},
+			{title:'Issuer', responsivePriority: 1},
 			{title:'Status', responsivePriority: 3},
 			{title:'Acceptor', responsivePriority: 5},
 			{title:'Date Issued', responsivePriority: 4}
@@ -269,8 +269,8 @@ $(document).ready(function(){
 		myAjax('wallet/contracts', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
+					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i> ' + result[i].type + '</a>',
 					result[i].issuerName,
-					result[i].type,
 					result[i].status,
 					result[i].acceptorName,
 					result[i].dateIssued
