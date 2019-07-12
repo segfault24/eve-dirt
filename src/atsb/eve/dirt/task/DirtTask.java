@@ -51,7 +51,7 @@ public abstract class DirtTask implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public final void run() {
 		log.info("Started task " + getTaskName());
 
 		log.trace("Acquiring database connection from pool");

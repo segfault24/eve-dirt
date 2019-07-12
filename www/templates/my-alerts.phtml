@@ -1,0 +1,24 @@
+{% extends "base.phtml" %}
+{% block title %}My Alerts{% endblock %}
+{% block extrahead %}
+{% include 'table-libs.phtml' %}
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<h3><i class="fa fa-bell-o fa-fw"></i> My Alerts</h3>
+		<hr>
+		<table id="list-table" class="table responsive table-striped table-hover table-condensed border" style="width:100%">
+			<thead>
+				<tr>
+					<th>Col1</th>
+					<th>Col2</th>
+					<th>Col3</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}

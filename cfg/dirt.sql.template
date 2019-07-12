@@ -43,6 +43,7 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("typeinfo.period
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.period","15");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.expires","60");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("mer.period","720");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("unknownids.period","120");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("killstream.enabled","0");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketpublic","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("maintenancemode","false");

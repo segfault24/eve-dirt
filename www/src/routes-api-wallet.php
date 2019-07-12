@@ -80,14 +80,25 @@ $app->get('/api/wallet/contracts', function ($request, $response, $args) {
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
-    
+
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT `issuerId`, `type`, `status`, `dateIssued`
-        FROM contract
-        WHERE `issuerId` in (
+    $sql = 'SELECT ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, ach.`name` AS acceptorName
+            FROM contract AS co
+            LEFT JOIN (
+                SELECT charId AS id, charName AS name FROM `character`
+                UNION
+                SELECT corpId AS id, corpName AS name FROM `corporation`
+            ) AS ich ON co.issuerId=ich.id
+            LEFT JOIN (
+                SELECT charId AS id, charName AS name FROM `character`
+                UNION
+                SELECT corpId AS id, corpName AS name FROM `corporation`
+            ) AS ach ON co.acceptorId=ach.id
+            WHERE co.`issuerId` in (
             SELECT charId FROM dirtApiAuth WHERE userId=:userid
-        )
-        AND status NOT IN ("finished", "deleted", "failed")';
+            )
+            ORDER BY co.dateIssued DESC';
+
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':userid' => $u->getUserId()

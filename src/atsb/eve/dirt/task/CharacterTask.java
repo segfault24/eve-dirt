@@ -1,7 +1,16 @@
 package atsb.eve.dirt.task;
 
+import java.sql.SQLException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import atsb.eve.db.CharacterTable;
+import atsb.eve.dirt.TypeUtil;
+import atsb.eve.dirt.esi.CharacterApiWrapper;
+import atsb.eve.model.Character;
+import net.evetech.ApiException;
+import net.evetech.esi.models.GetCharactersCharacterIdOk;
 
 /**
  * Task to retrieve information about a character.
@@ -16,6 +25,7 @@ public class CharacterTask extends DirtTask {
 
 	public CharacterTask(int charId) {
 		this.charId = charId;
+		setSaveStatus(false);
 	}
 
 	@Override
@@ -25,14 +35,20 @@ public class CharacterTask extends DirtTask {
 
 	@Override
 	public void runTask() {
-		// do work here
+		CharacterApiWrapper capiw = new CharacterApiWrapper(getDb());
+		log.debug("Querying character information for character " + charId);
 
-		// info
-		// contracts
-		// wallet
-		// orders
-		// assets
-		// industry?
+		try {
+			GetCharactersCharacterIdOk info = capiw.getCharacter(charId);
+			Character c = TypeUtil.convert(info);
+			c.setCharId(charId);
+			CharacterTable.upsert(getDb(), c);
+		} catch (ApiException e) {
+			log.error("Failed to retrieve info for character " + charId, e);
+		} catch (SQLException e) {
+			log.error("Failed to insert info for character " + charId, e);
+		}
+		log.debug("Inserted information for character " + charId);
 	}
 
 }

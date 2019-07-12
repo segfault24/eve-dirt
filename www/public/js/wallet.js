@@ -90,9 +90,10 @@ $(document).ready(function(){
 			{title:'Issuer', responsivePriority: 1},
 			{title:'Type', responsivePriority: 2},
 			{title:'Status', responsivePriority: 3},
+			{title:'Acceptor', responsivePriority: 5},
 			{title:'Date Issued', responsivePriority: 4}
 		],
-		order: [[0, "desc"]],
+		order: [[4, "desc"]],
 		searching: true,
 		paging: true,
 		pageLength: 40,
@@ -268,9 +269,10 @@ $(document).ready(function(){
 		myAjax('wallet/contracts', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
-					result[i].issuerId,
+					result[i].issuerName,
 					result[i].type,
 					result[i].status,
+					result[i].acceptorName,
 					result[i].dateIssued
 				]);
 			}

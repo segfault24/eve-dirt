@@ -25,6 +25,7 @@ import atsb.eve.dirt.task.MetaStructureOrdersTask;
 import atsb.eve.dirt.task.MetaWalletTask;
 import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
+import atsb.eve.dirt.task.UnknownIdsTask;
 import atsb.eve.dirt.zkill.KillstreamWorker;
 import atsb.eve.model.TaskStatus;
 import atsb.eve.util.DbInfo;
@@ -127,6 +128,10 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		// character orders and contracts
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_CHARACTER_MARKET_PERIOD);
 		addPeriodicTask(db, new MetaCharacterMarketTask(), period);
+
+		// unknown ids resolution
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_UNKNOWN_IDS_PERIOD);
+		addPeriodicTask(db, new UnknownIdsTask(), period);
 	}
 
 	/**

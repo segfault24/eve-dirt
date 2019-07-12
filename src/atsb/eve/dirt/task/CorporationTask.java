@@ -25,6 +25,7 @@ public class CorporationTask extends DirtTask {
 
 	public CorporationTask(int corpId) {
 		this.corpId = corpId;
+		setSaveStatus(false);
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class CorporationTask extends DirtTask {
 			GetCorporationsCorporationIdOk info = capiw.getCorporation(corpId);
 			Corporation c = TypeUtil.convert(info);
 			c.setCorpId(corpId);
-			CorporationTable.insert(getDb(), c);
+			CorporationTable.upsert(getDb(), c);
 		} catch (ApiException e) {
 			log.error("Failed to retrieve info for corporation " + corpId, e);
 		} catch (SQLException e) {

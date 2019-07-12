@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import atsb.eve.model.Character;
 import atsb.eve.model.Constellation;
 import atsb.eve.model.Contract;
 import atsb.eve.model.Corporation;
@@ -21,6 +22,7 @@ import atsb.eve.model.Region;
 import atsb.eve.model.SolarSystem;
 import atsb.eve.model.Station;
 import net.evetech.esi.models.GetCharactersCharacterIdContracts200Ok;
+import net.evetech.esi.models.GetCharactersCharacterIdOk;
 import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletJournal200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletTransactions200Ok;
@@ -87,14 +89,26 @@ public interface TypeUtil {
 		return group;
 	}
 
+	public static Character convert(GetCharactersCharacterIdOk c) {
+		Character character = new Character();
+		character.setCharName(c.getName());
+		character.setCorpId(c.getCorporationId());
+		if (c.getAllianceId() != null)
+			character.setAllianceId(c.getAllianceId());
+		character.setBirthday(new Date(c.getBirthday().getMillis()));
+		return character;
+	}
+
 	public static Corporation convert(GetCorporationsCorporationIdOk c) {
 		Corporation corp = new Corporation();
 		corp.setCorpName(c.getName());
 		corp.setTicker(c.getTicker());
-		corp.setAllianceId(c.getAllianceId());
+		if (c.getAllianceId() != null)
+			corp.setAllianceId(c.getAllianceId());
 		corp.setCeoId(c.getCeoId());
 		corp.setCreatorId(c.getCreatorId());
-		corp.setCreationDate(Date.valueOf(c.getDateFounded().toString()));
+		if (c.getDateFounded() != null)
+			corp.setCreationDate(new Date(c.getDateFounded().getMillis()));
 		corp.setMemberCount(c.getMemberCount());
 		corp.setTaxRate(c.getTaxRate());
 		corp.setUrl(c.getUrl());

@@ -16,6 +16,7 @@ import net.evetech.esi.models.GetUniverseStationsStationIdOk;
 import net.evetech.esi.models.GetUniverseStructuresStructureIdOk;
 import net.evetech.esi.models.GetUniverseSystemsSystemIdOk;
 import net.evetech.esi.models.GetUniverseTypesTypeIdOk;
+import net.evetech.esi.models.PostUniverseNames200Ok;
 
 public class UniverseApiWrapper {
 
@@ -136,6 +137,13 @@ public class UniverseApiWrapper {
 		ApiResponse<GetUniverseStationsStationIdOk> resp = uapi.getUniverseStationsStationIdWithHttpInfo(stationId, Utils.getApiDatasource(),  etag);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "station-" + stationId, Utils.getEtag(resp.getHeaders()));
+		return resp.getData();
+	}
+
+	public List<PostUniverseNames200Ok> postUniverseNames(List<Integer> ids) throws ApiException {
+		log.trace("Executing API query postUniverseNames(...various...)");
+		ApiResponse<List<PostUniverseNames200Ok>> resp = uapi.postUniverseNamesWithHttpInfo(ids, Utils.getApiDatasource());
+		log.trace("API query returned status code " + resp.getStatusCode());
 		return resp.getData();
 	}
 

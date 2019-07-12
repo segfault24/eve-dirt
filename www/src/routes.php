@@ -228,6 +228,17 @@ $app->get('/list-detail', function ($request, $response, $args) {
     return $this->renderer->render($response, 'list-detail.phtml', $args);
 });
 
+$app->get('/my-alerts', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
+    return $this->renderer->render($response, 'my-alerts.phtml', $args);
+});
+
 // //////////////////////////////////////////////
 // // Market Pages ////
 // //////////////////////////////////////////////
