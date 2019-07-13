@@ -1,0 +1,58 @@
+{% extends "base.phtml" %}
+{% block title %}Economic Reports{% endblock %}
+{% block extrahead %}
+{% include 'chart-libs.phtml' %}
+<script type="text/javascript" src="/js/mer.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header"><i class="fa fa-line-chart fa-fw"></i> Economic Reports</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-9">
+		<div class="panel panel-default no-border">
+			<div class="panel-body no-padding">
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="pdmtablabel" href="#mined-produced-destroyed" data-toggle="tab" role="tab" aria-controls="mined-produced-destroyed" aria-selected="true">Mined, Produced, Destroyed</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="iskvoltablabel" href="#velocity-of-isk" data-toggle="tab" role="tab" aria-controls="velocity-of-isk" aria-selected="false">Velocity of Isk</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="monsuptablabel" href="#money-supply" data-toggle="tab" role="tab" aria-controls="money-supply" aria-selected="false">Money Supply</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="faucetsinktablabel" href="#faucets-sinks" data-toggle="tab" role="tab" aria-controls="faucets-sinks" aria-selected="false">Faucets & Sinks</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="regstattablabel" href="#regional-stats" data-toggle="tab" role="tab" aria-controls="regional-stats" aria-selected="false">Regional Stats</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane fade tab-border mb-3 show active" id="mined-produced-destroyed" aria-labelledby="pdmtablabel">
+						<div id="pdmchart" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
+					</div>
+					<div class="tab-pane fade tab-border mb-3" id="velocity-of-isk" aria-labelledby="iskvoltablabel">
+						<div id="iskvolchart" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
+					</div>
+					<div class="tab-pane fade tab-border mb-3" id="money-supply" aria-labelledby="monsuptablabel">
+						<div id="monsupchart" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
+					</div>
+					<div class="tab-pane fade tab-border mb-3" id="faucets-sinks" aria-labelledby="faucetsinktablabel">
+						
+					</div>
+					<div class="tab-pane fade tab-border mb-3" id="regional-stats" aria-labelledby="regstattablabel">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3 no-padding-left">
+	</div>
+</div>
+{% endblock %}

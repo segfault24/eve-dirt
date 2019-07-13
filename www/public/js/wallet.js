@@ -2,6 +2,34 @@
 
 $(document).ready(function(){
 
+	// url navigation for tabs
+	if (document.location.hash) {
+		$('.nav-tabs a[href="' + document.location.hash + '"]').tab('show');
+		switch (document.location.hash) {
+			case '#transactions':
+				loadTransactions();
+				break;
+			case '#journal':
+				loadJournal();
+				break;
+			case '#sell-orders':
+			case '#buy-orders':
+				loadOrders();
+				break;
+			case '#contracts':
+				loadContracts();
+				break;
+			case '#roi':
+				loadRoi();
+				break;
+		}
+	} else {
+		loadTransactions();
+	}
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		history.pushState({}, '', e.target.hash);
+	});
+
 	var ordersLoaded = false;
 	var transactionsLoaded = false;
 	var journalLoaded = false;
@@ -301,9 +329,6 @@ $(document).ready(function(){
 			roiLoaded = true;
 		});
 	}
-
-	// do the initial load
-	loadTransactions();
 
 });
 
