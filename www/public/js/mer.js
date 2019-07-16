@@ -25,15 +25,9 @@ $(document).ready(function(){
 	var pdmLoaded = false;
 	var iskvolLoaded = false;
 	var monsupLoaded = false;
-	$('#pdmtablabel').click(function() {
-		loadPDM();
-	});
-	$('#iskvoltablabel').click(function() {
-		loadIskVelocity();
-	});
-	$('#monsuptablabel').click(function() {
-		loadMoneySupply();
-	});
+	$('#pdmtablabel').click(function() { loadPDM(); });
+	$('#iskvoltablabel').click(function() { loadIskVelocity(); });
+	$('#monsuptablabel').click(function() { loadMoneySupply(); });
 
 	function loadPDM() {
 		if(pdmLoaded) {
@@ -55,10 +49,10 @@ $(document).ready(function(){
 				{ name: 'Produced', data: prodData },
 				{ name: 'Destroyed', data: destData }
 			];
-	
+
 			Highcharts.stockChart('pdmchart', {
 				rangeSelector: {
-					selected: 4
+					selected: 2
 				},
 				yAxis: {
 					labels: {
@@ -80,10 +74,16 @@ $(document).ready(function(){
 				},
 				tooltip: {
 					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-					valueDecimals: 2,
+					valueDecimals: 0,
 					split: true
 				},
-				series: seriesOptions
+				series: seriesOptions,
+				legend: {
+					enabled: true
+				},
+				exporting: {
+					enabled: false
+				}
 			});
 
 			pdmLoaded = true;
@@ -101,9 +101,24 @@ $(document).ready(function(){
 				iskData.push([Date.parse(data[i].date), parseInt(data[i].volume)]);
 			}
 			var seriesOptions = [
-				{ name: 'Velocity', data: iskData }
+				{
+					name: 'Velocity',
+					id: 'velocity',
+					data: iskData
+				},
+				{
+					type: 'sma',
+					linkedTo: 'velocity',
+					zIndex: 1,
+					marker: {
+						enabled: false
+					},
+					params: {
+						period: 30
+					}
+				}
 			];
-	
+
 			Highcharts.stockChart('iskvolchart', {
 				rangeSelector: {
 					selected: 4
@@ -128,10 +143,13 @@ $(document).ready(function(){
 				},
 				tooltip: {
 					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-					valueDecimals: 2,
+					valueDecimals: 0,
 					split: true
 				},
-				series: seriesOptions
+				series: seriesOptions,
+				exporting: {
+					enabled: false
+				}
 			});
 
 			iskvolLoaded = true;
@@ -158,7 +176,7 @@ $(document).ready(function(){
 				{ name: 'Corporation', data: corpData },
 				{ name: 'Total', data: totalData }
 			];
-	
+
 			Highcharts.stockChart('monsupchart', {
 				rangeSelector: {
 					selected: 4
@@ -183,10 +201,16 @@ $(document).ready(function(){
 				},
 				tooltip: {
 					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-					valueDecimals: 2,
+					valueDecimals: 0,
 					split: true
 				},
-				series: seriesOptions
+				series: seriesOptions,
+				legend: {
+					enabled: true
+				},
+				exporting: {
+					enabled: false
+				}
 			});
 
 			monsupLoaded = true;

@@ -39,7 +39,7 @@ $(document).ready(function() {
 	];
 
 	function fillStructs(region, select) {
-		myAjax('trade/structs-by-region/' + region + '/', function(result) {
+		$.getJSON('/api/trade/structs-by-region/' + region + '/', function(result) {
 			$('#' + select).empty();
 			$('#' + select).append('<option value="' + region + '">All Structures</option>');
 			for(var i=0; i<result.length; i++) {
@@ -79,7 +79,7 @@ $(document).ready(function() {
 
 	function reloadData(callback) {
 		tradeTable.clear().draw();
-		myAjax('trade/' + tradeType + '/' + srcStruct + '/' + dstStruct, function(result) {
+		$.getJSON('/api/trade/' + tradeType + '/' + srcStruct + '/' + dstStruct, function(result) {
 			data = result;
 			reloadTable();
 		});
@@ -99,31 +99,31 @@ $(document).ready(function() {
 		populateTable(tradeTable, data, freightRouteRate, freightCollateralRate, salesTax, brokerFee, filterIsk, filterPercent, filterRoiPerVol);
 	}
 
-});
-
-// shipping_rate = isk/m3
-function populateTable(table, result, shipping_rate, shipping_collat, sales_tax, broker_fee, filterIsk, filterPercent, filterRoiPerVol) {
-	table.clear();
-	for(var i=0; i<result.length; i++) {
-		var freight = result[i].volume*shipping_rate + result[i].source*shipping_collat;
-		var tax = (sales_tax + broker_fee)*result[i].dest;
-		var margin = result[i].dest - result[i].source - freight - tax;
-		var marginPercent = parseInt((margin/result[i].source*100).toFixed(0));
-		var roiPerVol = margin/result[i].volume;
-		if (margin > 0 && margin > filterIsk && marginPercent > filterPercent && roiPerVol > filterRoiPerVol) {
-			table.row.add([
-				'<a class="open-in-game" data-typeId="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
-				result[i].qt,
-				formatIsk(result[i].source),
-				formatIsk(result[i].dest),
-				formatIsk(freight + tax),
-				formatIsk(margin),
-				marginPercent,
-				formatIsk(roiPerVol),
-				formatIsk(result[i].qt*margin)
-			]);
+	// shipping_rate = isk/m3
+	function populateTable(table, result, shipping_rate, shipping_collat, sales_tax, broker_fee, filterIsk, filterPercent, filterRoiPerVol) {
+		table.clear();
+		for(var i=0; i<result.length; i++) {
+			var freight = result[i].volume*shipping_rate + result[i].source*shipping_collat;
+			var tax = (sales_tax + broker_fee)*result[i].dest;
+			var margin = result[i].dest - result[i].source - freight - tax;
+			var marginPercent = parseInt((margin/result[i].source*100).toFixed(0));
+			var roiPerVol = margin/result[i].volume;
+			if (margin > 0 && margin > filterIsk && marginPercent > filterPercent && roiPerVol > filterRoiPerVol) {
+				table.row.add([
+					'<a class="open-in-game" data-typeId="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
+					result[i].qt,
+					formatIsk(result[i].source),
+					formatIsk(result[i].dest),
+					formatIsk(freight + tax),
+					formatIsk(margin),
+					marginPercent,
+					formatIsk(roiPerVol),
+					formatIsk(result[i].qt*margin)
+				]);
+			}
 		}
+		table.draw();
+		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 	}
-	table.draw();
-	$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
-}
+
+});

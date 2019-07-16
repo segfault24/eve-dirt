@@ -1,43 +1,5 @@
 "use strict";
 
-// global chart formatting information
-var myColors = {
-	data: [
-		{border: "rgba(255,153,102,0.6)", fill: "rgba(255,153,102,0.4)"},
-		{border: "rgba(51,153,255,0.6)", fill: "rgba(51,153,255,0.4)"},
-		{border: "rgba(255,0,0,0.4)", fill: "rgba(255,0,0,0.2)"}
-	],
-	stat: [
-		{border: "rgba(20,20,20,0.4)", fill: "rgba(20,20,20,0.2)"},
-		{border: "rgba(100,100,100,0.4)", fill: "rgba(100,100,100,0.2)"},
-	]
-};
-var myBorderWidth = 2;
-var myPointRadius = 3;
-
-var myDisplayFormatYr = {
-	'millisecond': 'MMM DD',
-	'second': 'MMM DD',
-	'minute': 'MMM DD',
-	'hour': 'MMM DD',
-	'day': 'MMM DD',
-	'week': 'MMM DD',
-	'month': 'MMM DD',
-	'quarter': 'MMM DD',
-	'year': 'MMM DD'
-};
-var myDisplayFormatAll = {
-	'millisecond': 'MMM DD YYYY',
-	'second': 'MMM DD YYYY',
-	'minute': 'MMM DD YYYY',
-	'hour': 'MMM DD YYYY',
-	'day': 'MMM DD YYYY',
-	'week': 'MMM DD YYYY',
-	'month': 'MMM DD YYYY',
-	'quarter': 'MMM DD YYYY',
-	'year': 'MMM DD YYYY'
-};
-
 // https://stackoverflow.com/questions/149055/how-can-i-format-numbers-as-money-in-javascript
 
 function formatInt(n) {
@@ -137,11 +99,6 @@ function getUrlParam(key) {
 	return '';
 }
 
-function dateSqlToJs(sqldate) {
-	var t = sqldate.split(/[- :]/);
-	return new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
-}
-
 // for tukey's test
 function getOutlierBounds(arr) {
 	var k = 2;
@@ -203,29 +160,17 @@ function removeOutliers(arr, bounds) {
 	return narr;
 }
 
-function myAjax(endpoint, callback) {
-	$.ajax({
-		url: '/api/' + endpoint,
-		async: true,
-		success: function(result) {
-			if(callback != null) {
-				callback(result);
-			}
-		}
-	});
-}
-
 $(function() {
 	// click handler for opening types in game market
 	$(document).on('click', '.open-in-game', function(e) {
 		e.preventDefault();
-		myAjax('market/open-in-game/' + $(this).attr('data-typeid'), null);
+		$.getJSON('/api/market/open-in-game/' + $(this).attr('data-typeid'), null);
 	});
 
 	// click handler for opening types in game contract
 	$(document).on('click', '.open-in-game-contract', function(e) {
 		e.preventDefault();
-		myAjax('market/open-in-game-contract/' + $(this).attr('data-contractid'), null);
+		$.getJSON('/api/market/open-in-game-contract/' + $(this).attr('data-contractid'), null);
 	});
 
 	$.getJSON('/api/search-types', function(data) {

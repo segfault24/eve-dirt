@@ -90,7 +90,7 @@ function reloadData() {
 
 function loadItemInfo(typeId) {
 	if(itemData == null) {
-		myAjax('types/' + typeId, function(result) {
+		$.getJSON('/api/types/' + typeId, function(result) {
 			itemData = result;
 
 			// update page title
@@ -112,14 +112,14 @@ function loadAnalysisTab() {
 function loadHistoryChart() {
 	// fetch history data for source region
 	if(srcHistoryData == null) {
-		myAjax('market/history/' + srcRegion+ '/type/' + type, function(result) {
+		$.getJSON('/api/market/history/' + srcRegion+ '/type/' + type, function(result) {
 			srcHistoryData = result;
 		});
 	}
 
 	// fetch history data for destination region
 	if(dstHistoryData == null) {
-		myAjax('market/history/' + dstRegion+ '/type/' + type, function(result) {
+		$.getJSON('/api/market/history/' + dstRegion+ '/type/' + type, function(result) {
 			dstHistoryData = result;
 		});
 		ajaxDst(loadHistoryChart);

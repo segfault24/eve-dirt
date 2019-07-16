@@ -154,36 +154,12 @@ $(document).ready(function(){
 		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 	});
 
-	$('#transactions-label').click(function() {
-		if(!transactionsLoaded) {
-			loadTransactions();
-		}
-	});
-	$('#journal-label').click(function() {
-		if(!journalLoaded) {
-			loadJournal();
-		}
-	});
-	$('#sell-orders-label').click(function() {
-		if(!ordersLoaded) {
-			loadOrders();
-		}
-	});
-	$('#buy-orders-label').click(function() {
-		if(!ordersLoaded) {
-			loadOrders();
-		}
-	});
-	$('#contracts-label').click(function() {
-		if(!contractsLoaded) {
-			loadContracts();
-		}
-	});
-	$('#roi-label').click(function() {
-		if(!roiLoaded) {
-			loadRoi();
-		}
-	});
+	$('#transactions-label').click(function() { loadTransactions(); });
+	$('#journal-label').click(function() { loadJournal(); });
+	$('#sell-orders-label').click(function() { loadOrders(); });
+	$('#buy-orders-label').click(function() { loadOrders(); });
+	$('#contracts-label').click(function() { loadContracts(); });
+	$('#roi-label').click(function() { loadRoi(); });
 
 	$('#refresh-data').click(function() {
 		transactionsTable.clear().draw();
@@ -220,7 +196,10 @@ $(document).ready(function(){
 	});
 
 	function loadTransactions() {
-		myAjax('wallet/transactions', function(result) {
+		if(transactionsLoaded) {
+			return;
+		}
+		$.getJSON('/api/wallet/transactions', function(result) {
 			for(var i=0; i<result.length; i++) {
 				var buySell = 'sell';
 				if (result[i].isBuy==1) {
@@ -243,7 +222,10 @@ $(document).ready(function(){
 	}
 
 	function loadJournal() {
-		myAjax('wallet/journal', function(result) {
+		if(journalLoaded) {
+			return;
+		}
+		$.getJSON('/api/wallet/journal', function(result) {
 			for(var i=0; i<result.length; i++) {
 				journalTable.row.add([
 					result[i].date,
@@ -261,7 +243,10 @@ $(document).ready(function(){
 	}
 
 	function loadOrders() {
-		myAjax('wallet/orders', function(result) {
+		if(ordersLoaded) {
+			return;
+		}
+		$.getJSON('/api/wallet/orders', function(result) {
 			for(var i=0; i<result.length; i++) {
 				if(result[i].isBuyOrder==1) {
 					buyOrdersTable.row.add([
@@ -294,7 +279,10 @@ $(document).ready(function(){
 	}
 
 	function loadContracts() {
-		myAjax('wallet/contracts', function(result) {
+		if(contractsLoaded) {
+			return;
+		}
+		$.getJSON('/api/wallet/contracts', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
 					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i> ' + result[i].type + '</a>',
@@ -311,7 +299,10 @@ $(document).ready(function(){
 	}
 
 	function loadRoi() {
-		myAjax('wallet/returns', function(result) {
+		if(roiLoaded) {
+			return;
+		}
+		$.getJSON('/api/wallet/returns', function(result) {
 			for(var i=0; i<result.length; i++) {
 				var unitProfit = result[i].sell - result[i].buy;
 				var roi = unitProfit/result[i].buy*100;
