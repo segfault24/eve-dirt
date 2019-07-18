@@ -1,6 +1,12 @@
 "use strict";
 
 $(document).ready(function(){
+	var months = [
+		'January', 'February', 'March', 'April',
+		'May', 'June', 'July', 'August',
+		'September', 'October', 'November', 'December'
+	];
+
 	// url navigation for tabs
 	if (document.location.hash) {
 		$('.nav-tabs a[href="' + document.location.hash + '"]').tab('show');
@@ -14,6 +20,9 @@ $(document).ready(function(){
 			case '#velocity-of-isk':
 				loadIskVelocity();
 				break;
+			case '#faucets-sinks':
+				loadFaucetsSinks();
+				break;
 		}
 	} else {
 		loadPDM();
@@ -25,9 +34,17 @@ $(document).ready(function(){
 	var pdmLoaded = false;
 	var iskvolLoaded = false;
 	var monsupLoaded = false;
+	var sinksFaucetsLoaded = false;
+	var sinksFaucetsMonthsLoaded = false;
 	$('#pdmtablabel').click(function() { loadPDM(); });
 	$('#iskvoltablabel').click(function() { loadIskVelocity(); });
 	$('#monsuptablabel').click(function() { loadMoneySupply(); });
+	$('#faucetsinktablabel').click(function() { loadFaucetsSinks(); });
+
+	$('#faucet-sink-months').change(function() {
+		sinksFaucetsLoaded = false;
+		loadFaucetsSinks();
+	});
 
 	function loadPDM() {
 		if(pdmLoaded) {
@@ -160,7 +177,7 @@ $(document).ready(function(){
 		if(monsupLoaded) {
 			return;
 		}
-		console.log("loading money supply");
+		console.log('loading money supply');
 		$.getJSON('/api/economic-reports/money-supply', function (data) {
 			var charData = [];
 			var corpData = [];
@@ -216,5 +233,99 @@ $(document).ready(function(){
 			monsupLoaded = true;
 		});
 	}
+
+	function loadFaucetsSinks() {
+		if (!sinksFaucetsMonthsLoaded) {
+			console.log('loading faucets & sinks months');
+			$.getJSON('/api/economic-reports/faucets-sinks', function (data) {
+				$('#faucet-sink-months').empty();
+				for(var i=0; i<data.length; i++) {
+					var yr = data[i].date.split('-')[0];
+					var mo = parseInt(data[i].date.split('-')[1]);
+					$('#faucet-sink-months').append('<option value="' + data[i].date + '">' + yr + ' ' + months[mo] + '</option>');
+				}
+				if (data.length > 0) {
+					year = parseInt(data[0].date.split('-')[0]);
+					month = parseInt(data[0].date.split('-')[1]);
+				}
+				sinksFaucetsMonthsLoaded = true;
+			});
+		}
+		if(sinksFaucetsLoaded) {
+			return;
+		}
+
+		var d = new Date();
+		d.setDate(d.getDate() - 45);
+		var year = d.getFullYear();
+		var month = d.getMonth();
+		if($('#faucet-sink-months').val() != null) {
+			var p = $('#faucet-sink-months').val().split('-');
+			year = p[0];
+			month = p[1];
+		}
+
+		console.log('loading faucets & sinks ' + year + ' ' + month);
+		$.getJSON('/api/economic-reports/faucets-sinks/' + year + '/' + month, function (data) {
+			var categories = [];
+			var faucets = [];
+			var sinks = [];
+			for(var i=0; i<data.length; i++) {
+				categories.push(data[i].keyText);
+				faucets.push(parseInt(data[i].faucet));
+				sinks.push(parseInt(data[i].sink));
+			}
+
+			Highcharts.chart('faucetsinkchart', {
+				chart: {
+					type: 'bar'
+				},
+				title: {
+					text: ''
+				},
+				xAxis: {
+					categories: categories,
+					reversed: false,
+					labels: {
+						step: 1
+					}
+				},
+				yAxis: {
+					title: {
+						text: null
+					},
+					labels: {
+						formatter: function () {
+							return this.value/1000000000000 + ' T';
+						}
+					}
+				},
+				plotOptions: {
+					series: {
+						stacking: 'normal'
+					}
+				},
+				tooltip: {
+					formatter: function () {
+						return '<b>' + this.point.category + '</b><br/>' +
+							Highcharts.numberFormat(this.point.y/1000000000, 0) + ' billion';
+					}
+				},
+				series: [{
+					name: 'Faucets',
+					data: faucets
+				}, {
+					name: 'Sinks',
+					data: sinks
+				}],
+				exporting: {
+					enabled: false
+				}
+			});
+
+			sinksFaucetsLoaded = true;
+		});
+	}
+
 });
 

@@ -38,8 +38,8 @@ public class MERTask extends DirtTask {
 		String targetMer = Integer.toString(d.getYear() * 100 + d.getMonthValue());
 		if (merLastSuccess != null && targetMer.equalsIgnoreCase(merLastSuccess)) {
 			// quit if we already got this one
-			//log.debug("Skipped execution, already got this MER");
-			//return;
+			log.debug("Skipped execution, already got this MER");
+			return;
 		}
 
 		// try to get the zip
