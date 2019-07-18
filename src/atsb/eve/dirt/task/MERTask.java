@@ -38,8 +38,8 @@ public class MERTask extends DirtTask {
 		String targetMer = Integer.toString(d.getYear() * 100 + d.getMonthValue());
 		if (merLastSuccess != null && targetMer.equalsIgnoreCase(merLastSuccess)) {
 			// quit if we already got this one
-			log.debug("Skipped execution, already got this MER");
-			return;
+			//log.debug("Skipped execution, already got this MER");
+			//return;
 		}
 
 		// try to get the zip
@@ -168,8 +168,13 @@ public class MERTask extends DirtTask {
 			cfg = "cfg/mer/iskvolume.config";
 		} else if (fname.contains("moneysupply")) {
 			cfg = "cfg/mer/moneysupply.config";
+		} else if (fname.contains("sinksfaucets.csv")) {
+			cfg = "cfg/mer/sinksfaucets.config";
+		} else if (fname.contains("topsinksfaucets")) {
+			cfg = "cfg/mer/topsinksfaucets.config";
 		} else {
 			// unrecognized
+			log.debug("Unsupported CSV file: " + fname);
 			return;
 		}
 		try {

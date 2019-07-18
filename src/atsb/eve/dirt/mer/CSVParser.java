@@ -137,4 +137,13 @@ class CSVParser {
 	public boolean getBool(String colTitle) throws CSVException {
 		return getBool(getColumnIndex(colTitle));
 	}
+
+	public String getString(int i) throws CSVException {
+		return idx(i);
+	}
+
+	public String getString(String colTitle) throws CSVException {
+		return getString(getColumnIndex(colTitle));
+	}
+
 }

@@ -118,8 +118,8 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		addPeriodicTask(db, new InvMarketGroupsTask(), period);
 
 		// monthly econ report
-		//period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MER_PERIOD);
-		//addPeriodicTask(db, new MERTask(), period);
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MER_PERIOD);
+		addPeriodicTask(db, new MERTask(), period);
 
 		// character wallet
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_WALLET_PERIOD);

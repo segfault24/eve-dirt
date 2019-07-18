@@ -17,6 +17,8 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.db.MapTables;
+import atsb.eve.model.Region;
 import atsb.eve.util.Utils;
 
 /**
@@ -33,7 +35,7 @@ public class MERLoader {
 	private String SQL_STATEMENT;
 
 	public MERLoader(LocalDate d, String configFile) throws Exception, IOException {
-		monthYear = new Timestamp(d.atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
+		monthYear = new Timestamp(d.withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000);
 		loadConfig(configFile);
 		genSqlStatement();
 		log.trace(SQL_STATEMENT);
@@ -117,12 +119,22 @@ public class MERLoader {
 									stmt.setDouble(i + 1, csv.getDouble(col.csvColumn()));
 								} else if (col.type() == MappingType.TIMESTAMP) {
 									stmt.setTimestamp(i + 1, new Timestamp(csv.getDate(col.csvColumn()).getMillis()));
+								} else if (col.type() == MappingType.STRING) {
+									stmt.setString(i + 1, csv.getString(col.csvColumn()));
 								} else {
 									log.warn("How are you seeing this message... oh god what did you do");
 								}
 							} catch (NumberFormatException e) {
 								log.warn("Failed to parse as type '" + col.type().type().toString()
 										+ "': " + e.getLocalizedMessage());
+							} catch (CSVException e) {
+								// regstat only has region names, not ids for some dumb reason
+								if (col.sqlColumn().equalsIgnoreCase("regionid")) {
+									Region r = MapTables.findRegionByName(db, csv.getString("regionName"));
+									stmt.setLong(i + 1, r.getReigonId());
+								} else {
+									throw e;
+								}
 							}
 						}
 					}

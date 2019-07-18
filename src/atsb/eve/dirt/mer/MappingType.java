@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  */
 public enum MappingType {
 	LONG("long", Long.class), DOUBLE("double", Double.class), TIMESTAMP(
-			"timestamp", Timestamp.class);
+			"timestamp", Timestamp.class), STRING("string", String.class);
 
 	private final String spec;
 	private final Class<?> type;
@@ -35,6 +35,8 @@ public enum MappingType {
 			return DOUBLE;
 		} else if (spec.equalsIgnoreCase(TIMESTAMP.spec)) {
 			return TIMESTAMP;
+		} else if (spec.equalsIgnoreCase(STRING.spec)) {
+			return STRING;
 		} else {
 			return null;
 		}
