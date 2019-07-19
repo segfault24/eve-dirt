@@ -52,7 +52,10 @@ public class InsurancePricesTask extends DirtTask {
 		try {
 			items = iapiw.getInsurancePrices();
 		} catch (ApiException e) {
-			log.error("Failed to retrieve list of insurance prices", e);
+			if (e.getCode() == 304) {
+			} else {
+				log.error("Failed to retrieve list of insurance prices", e);
+			}
 		}
 		List<InsurancePrice> mine = new ArrayList<InsurancePrice>();
 		for (GetInsurancePrices200Ok api : items) {
