@@ -32,6 +32,7 @@ require __DIR__ . '/../src/routes-api-import.php';
 require __DIR__ . '/../src/routes-api-lists.php';
 require __DIR__ . '/../src/routes-api-wallet.php';
 require __DIR__ . '/../src/routes-api-mer.php';
+require __DIR__ . '/../src/routes-api-notifications.php';
 
 // Run app
 $app->run();

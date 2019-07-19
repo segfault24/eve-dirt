@@ -9,9 +9,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.db.InvTypeTable;
 import atsb.eve.db.NotificationTable;
 import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.model.Alert;
+import atsb.eve.model.InvType;
 import atsb.eve.model.Notification;
 
 // When [param1=sell price/buy price/sell volume/buy volume]
@@ -22,6 +24,10 @@ public class PriceVolumeAlert extends DirtTask {
 	private static Logger log = LogManager.getLogger();
 
 	private Alert alert;
+	private int typeId;
+	private double value;
+	private boolean price;
+	private boolean gte;
 
 	public PriceVolumeAlert(Alert a) {
 		setSaveStatus(false);
@@ -67,13 +73,37 @@ public class PriceVolumeAlert extends DirtTask {
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next() && rs.getInt(1) == 1) {
 				log.info("Generating notification for alert " + alert.getAlertId());
+				InvType t = InvTypeTable.getById(getDb(), typeId);
+				String title = "";
+				String text = "The ";
+				if (price) {
+					title += "Price ";
+					text += "price ";
+				} else {
+					title += "Volume ";
+					text += "volume ";
+				}
+				if (t != null) {
+					title += "Alert: " + t.getTypeName();
+					text += "of " + t.getTypeName() + " has ";
+				} else {
+					title += "Alert: (" + typeId + ")";
+					text += "of (" + typeId + ") has ";
+				}
+				if (gte) {
+					text += "risen above ";
+				} else {
+					text += "fallen under ";
+				}
+				text += value;
+				
 				Notification n = new Notification();
 				n.setAlertId(alert.getAlertId());
 				n.setUserId(alert.getUserId());
 				n.setTime(new Timestamp(System.currentTimeMillis()));
-				n.setTitle("testtitle");
-				n.setText("testtext 123");
-				n.setAcknowledged(false);
+				n.setTitle(title);
+				n.setText(text);
+				n.setTypeId(typeId);
 				NotificationTable.insert(getDb(), n);
 			}
 		} catch (SQLException e) {
@@ -88,15 +118,18 @@ public class PriceVolumeAlert extends DirtTask {
 		switch (alert.getParam1()) {
 		case "sell price":
 			sql += "MIN(`price`) ";
+			price = true;
 			break;
 		case "buy price":
 			sql += "MAX(`price`) ";
 			buy = true;
+			price = true;
 			break;
 		case "sell volume":
 		case "buy volume":
 			sql += "SUM(`volumeRemain`) ";
 			buy = true;
+			price = false;
 			break;
 		default:
 			throw new IllegalArgumentException();
@@ -104,9 +137,11 @@ public class PriceVolumeAlert extends DirtTask {
 		switch (alert.getParam4()) {
 		case "gte":
 			sql += ">= ? ";
+			gte = true;
 			break;
 		case "lte":
 			sql += "<= ? ";
+			gte = false;
 			break;
 		default:
 			throw new IllegalArgumentException();
@@ -114,9 +149,12 @@ public class PriceVolumeAlert extends DirtTask {
 		sql += "FROM `marketOrder` WHERE `typeId`=? AND `isBuyOrder`=? ";
 		sql += "AND (`locationId`=? OR `regionId`=?)";
 
+		value = Double.parseDouble(alert.getParam5());
+		typeId = Integer.parseInt(alert.getParam2());
+
 		PreparedStatement stmt = getDb().prepareStatement(sql);
-		stmt.setDouble(1, Double.parseDouble(alert.getParam5()));
-		stmt.setInt(2, Integer.parseInt(alert.getParam2()));
+		stmt.setDouble(1, value);
+		stmt.setInt(2, typeId);
 		stmt.setBoolean(3, buy);
 		long loc = Long.parseLong(alert.getParam3());
 		stmt.setLong(4, loc);

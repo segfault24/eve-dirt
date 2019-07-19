@@ -180,9 +180,35 @@ $(function() {
 			select: function(e, ui) {
 				e.preventDefault();
 				$('#search').val(ui.item.label);
-
 				window.location = '/browse?type=' + ui.item.value;
 			}
 		});
 	});
+
+	Notification.requestPermission().then(function(result) {
+		if (Notification.permission === "granted") {
+			pollNotifications();
+		}
+	});
+
+	let audio = new Audio('/res/notif.mp3');
+	function pollNotifications() {
+		$.getJSON('/api/notifications/new', function(data) {
+			if (data.length == 1) {
+				var options = { body: data[0].text };
+				if (data[0].typeId != null) {
+					options.icon = 'https://imageserver.eveonline.com/Type/' + data[0].typeId + '_64.png';
+				}
+				var notif = new Notification(data[0].title, options);
+				audio.play();
+				//setTimeout(notif.close.bind(notif), 6000);
+			} else if (data.length > 1) {
+				var notif = new Notification("Multiple New Notifications");
+				audio.play();
+				//setTimeout(notif.close.bind(notif), 6000);
+			}
+		});
+		setTimeout(pollNotifications, 60000);
+	}
+
 });
