@@ -14,7 +14,7 @@ $app->get('/api/wallet/orders', function ($request, $response, $args) {
     $sql = 'SELECT
             a.`charName`, o.`orderId`, o.`typeId`, i.`typeName`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
-            FROM marketOrder AS o
+            FROM charOrder AS o
             LEFT JOIN invType AS i ON o.`typeId`=i.`typeId`
             LEFT JOIN region AS r ON o.`regionId`=r.`regionId`
             LEFT JOIN dirtApiAuth AS a ON o.`charId`=a.`charId`
@@ -23,7 +23,7 @@ $app->get('/api/wallet/orders', function ($request, $response, $args) {
                 UNION ALL
                 SELECT `structId` AS sId,`structName` AS sName FROM structure
             ) locs ON o.`locationId`=locs.`sId`
-            WHERE o.`source`=2 AND o.`charId` IN (
+            WHERE o.`charId` IN (
                 SELECT charId FROM dirtApiAuth WHERE userId=:userid
             )';
     $stmt = $db->prepare($sql);

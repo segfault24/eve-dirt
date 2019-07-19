@@ -30,8 +30,7 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoclientid","A
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssosecretkey","APPSECRETKEY");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("threads","4");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.regions","10000002,10000043");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.region.period","20");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.structure.period","10");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.period","20");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketorders.maxage","2880");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.regions","10000002");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.period","1440");

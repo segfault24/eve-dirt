@@ -21,7 +21,6 @@ import atsb.eve.dirt.task.MERTask;
 import atsb.eve.dirt.task.MarketHistoryTask;
 import atsb.eve.dirt.task.MarketRegionOrdersTask;
 import atsb.eve.dirt.task.MetaCharacterMarketTask;
-import atsb.eve.dirt.task.MetaStructureOrdersTask;
 import atsb.eve.dirt.task.MetaWalletTask;
 import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
@@ -85,14 +84,10 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	private void addTasks(Connection db) {
 		// public market orders for specific regions
 		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, DirtConstants.PROPERTY_MARKET_ORDERS_REGIONS));
-		int period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_REGION_ORDERS_PERIOD);
+		int period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_ORDERS_PERIOD);
 		for (Integer regionId : regions) {
 			addPeriodicTask(db, new MarketRegionOrdersTask(regionId), period);
 		}
-
-		// structure market orders
-		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_STRUCTURE_ORDERS_PERIOD);
-		addPeriodicTask(db, new MetaStructureOrdersTask(), period);
 
 		// auto-delete old market orders that might not be cleaned up elsewhere
 		addPeriodicTask(db, new OrderReaperTask(), 30);

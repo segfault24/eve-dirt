@@ -7,8 +7,7 @@ public interface DirtConstants {
 	public static final String PROPERTY_NUM_THREADS = "threads";
 
 	public static final String PROPERTY_MARKET_ORDERS_REGIONS = "marketorders.regions";
-	public static final String PROPERTY_MARKET_REGION_ORDERS_PERIOD = "marketorders.region.period";
-	public static final String PROPERTY_MARKET_STRUCTURE_ORDERS_PERIOD = "marketorders.structure.period";
+	public static final String PROPERTY_MARKET_ORDERS_PERIOD = "marketorders.period";
 	public static final String PROPERTY_MARKET_ORDERS_MAX_AGE = "marketorders.maxage";
 	public static final String PROPERTY_MARKET_HISTORY_REGIONS = "markethistory.regions";
 	public static final String PROPERTY_MARKET_HISTORY_PERIOD = "markethistory.period";

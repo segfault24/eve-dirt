@@ -9,11 +9,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import atsb.eve.db.ApiAuthTable;
-import atsb.eve.db.MarketOrderTable;
+import atsb.eve.db.CharOrderTable;
 import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
 import atsb.eve.dirt.esi.auth.OAuthUtil;
-import atsb.eve.model.MarketOrder;
+import atsb.eve.model.CharOrder;
 import atsb.eve.model.OAuthUser;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
@@ -69,16 +69,16 @@ public class CharacterOrdersTask extends DirtTask {
 		if (aos.isEmpty()) {
 			return;
 		}
-		List<MarketOrder> os = new ArrayList<MarketOrder>(aos.size());
+		List<CharOrder> os = new ArrayList<CharOrder>(aos.size());
 		for (GetCharactersCharacterIdOrders200Ok ao : aos) {
-			MarketOrder o = TypeUtil.convert(ao);
+			CharOrder o = TypeUtil.convert(ao);
 			o.setRetrieved(now);
 			o.setCharId(charId);
 			os.add(o);
 		}
 		try {
 			getDb().setAutoCommit(false);
-			MarketOrderTable.insertMany(getDb(), os);
+			CharOrderTable.upsertMany(getDb(), os);
 			getDb().commit();
 			getDb().setAutoCommit(true);
 			log.debug("Inserted " + os.size() + " orders for character " + charId);
@@ -88,7 +88,7 @@ public class CharacterOrdersTask extends DirtTask {
 
 		// delete old orders (where 'retrieved' is older than 'now')
 		try {
-			int count = MarketOrderTable.deleteOldCharacterOrders(getDb(), charId, now);
+			int count = CharOrderTable.deleteOldOrdersByChar(getDb(), charId, now);
 			log.debug("Deleted " + count + " old market orders for character " + charId);
 		} catch (SQLException e) {
 			log.fatal("Failed to delete old market orders for character " + charId, e);

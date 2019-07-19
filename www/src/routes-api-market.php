@@ -34,7 +34,7 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
                 UNION ALL
                 SELECT `structId` AS sId,`structName` AS sName FROM structure
             ) locs ON o.`locationId`=locs.`sId`
-            WHERE o.`typeId`=:type AND o.`source`<=1';
+            WHERE o.`typeId`=:type';
     if ($args['location'] != 0) {
         $sql .= ' AND (o.`regionId`=:location OR o.`locationId`=:location);';
     }

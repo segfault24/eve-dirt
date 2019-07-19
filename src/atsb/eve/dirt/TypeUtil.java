@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import atsb.eve.model.CharOrder;
 import atsb.eve.model.Character;
 import atsb.eve.model.Constellation;
 import atsb.eve.model.Contract;
@@ -17,7 +18,6 @@ import atsb.eve.model.MarketOrder;
 import atsb.eve.model.Structure;
 import atsb.eve.model.WalletJournalEntry;
 import atsb.eve.model.WalletTransaction;
-import atsb.eve.model.MarketOrder.Source;
 import atsb.eve.model.Region;
 import atsb.eve.model.SolarSystem;
 import atsb.eve.model.Station;
@@ -137,7 +137,6 @@ public interface TypeUtil {
 		order.setVolumeTotal(o.getVolumeTotal());
 		order.setLocationId(o.getLocationId());
 		order.setPrice(o.getPrice());
-		order.setSource(Source.PUBLIC);
 		return order;
 	}
 
@@ -154,12 +153,11 @@ public interface TypeUtil {
 		order.setVolumeTotal(o.getVolumeTotal());
 		order.setLocationId(o.getLocationId());
 		order.setPrice(o.getPrice());
-		order.setSource(Source.STRUCTURE);
 		return order;
 	}
 
-	public static MarketOrder convert(GetCharactersCharacterIdOrders200Ok o) {
-		MarketOrder order = new MarketOrder();
+	public static CharOrder convert(GetCharactersCharacterIdOrders200Ok o) {
+		CharOrder order = new CharOrder();
 		if (o.getIssued() != null)
 			order.setIssued(new Timestamp(o.getIssued().getMillis()));
 		if (o.getRange() != null)
@@ -184,7 +182,6 @@ public interface TypeUtil {
 			order.setPrice(o.getPrice());
 		if (o.getRegionId() != null)
 			order.setRegion(o.getRegionId());
-		order.setSource(Source.CHARACTER);
 		return order;
 	}
 

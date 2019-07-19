@@ -52,7 +52,7 @@ public class StructureTask extends DirtTask {
 			// get auth keys that are authorized to read the structure's information
 			List<Integer> keys;
 			try {
-				keys = StructAuthTable.findAuthKeyByStruct(getDb(), structId);
+				keys = StructAuthTable.getAuthKeyByStruct(getDb(), structId);
 			} catch (SQLException e1) {
 				log.fatal("Failed to search for auth keys for structure " + structId);
 				return;
