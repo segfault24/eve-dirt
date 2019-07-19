@@ -69,6 +69,9 @@ Highcharts.theme = {
 		column: {
 			borderColor: 'none'
 		},
+		bar: {
+			borderColor: 'none'
+		},
 		boxplot: {
 			fillColor: '#505050'
 		},
