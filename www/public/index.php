@@ -28,7 +28,7 @@ require __DIR__ . '/../src/routes.php';
 require __DIR__ . '/../src/routes-sso.php';
 require __DIR__ . '/../src/routes-api-misc.php';
 require __DIR__ . '/../src/routes-api-market.php';
-require __DIR__ . '/../src/routes-api-import.php';
+require __DIR__ . '/../src/routes-api-trade.php';
 require __DIR__ . '/../src/routes-api-lists.php';
 require __DIR__ . '/../src/routes-api-wallet.php';
 require __DIR__ . '/../src/routes-api-mer.php';

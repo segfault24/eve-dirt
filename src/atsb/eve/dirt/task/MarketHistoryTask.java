@@ -1,5 +1,6 @@
 package atsb.eve.dirt.task;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,11 @@ import org.apache.logging.log4j.Logger;
 
 import atsb.eve.db.InvTypeTable;
 import atsb.eve.db.MarketHistoryTable;
+import atsb.eve.db.MarketStatTable;
 import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.MarketApiWrapper;
 import atsb.eve.model.MarketHistoryEntry;
+import atsb.eve.model.MarketStat;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetMarketsRegionIdHistory200Ok;
 
@@ -40,6 +43,7 @@ public class MarketHistoryTask extends DirtTask {
 		List<Integer> types;
 		try {
 			types = InvTypeTable.getMarketableTypeIds(getDb());
+			log.debug("Found " + types.size() + " marketable types");
 		} catch (SQLException e) {
 			log.fatal("Failed to get list of marketable type ids from database", e);
 			return;
@@ -73,6 +77,7 @@ public class MarketHistoryTask extends DirtTask {
 
 		@Override
 		protected void runTask() {
+			log.debug("Retrieving market history for " + types.size() + " types");
 			for (Integer type : types) {
 				List<MarketHistoryEntry> hs = getHistory(region, type);
 				try {
@@ -84,6 +89,7 @@ public class MarketHistoryTask extends DirtTask {
 				} catch (SQLException e) {
 					log.error("Failed to insert history for type " + type + " for region " + region);
 				}
+				calcStat(hs, type);
 			}
 			log.debug("Inserted history for " + types.size() + " types for region " + region);
 		}
@@ -114,6 +120,32 @@ public class MarketHistoryTask extends DirtTask {
 				entries.add(e);
 			}
 			return entries;
+		}
+
+		private void calcStat(List<MarketHistoryEntry> hs, int typeId) {
+			Date cutoff30 = new Date(System.currentTimeMillis() - 30L*24L*60L*60L*1000L);
+			Date cutoff90 = new Date(System.currentTimeMillis() - 90L*24L*60L*60L*1000L);
+			int sumVol30 = 0;
+			int sumVol90 = 0;
+			for (MarketHistoryEntry h : hs) {
+				if (h.getDate().after(cutoff30)) {
+					sumVol30 += h.getVolume();
+				}
+				if (h.getDate().after(cutoff90)) {
+					sumVol90 += h.getVolume();
+				}
+			}
+			MarketStat s = new MarketStat();
+			s.setRegionId(region);
+			s.setTypeId(typeId);
+			s.setMa30(sumVol30 / 30);
+			s.setMa90(sumVol90 / 90);
+			try {
+				MarketStatTable.upsert(getDb(), s);
+				log.debug("Inserted market stats for type " + typeId + " for region " + region);
+			} catch (SQLException e) {
+				log.error("Failed to insert market stats for region " + region);
+			}
 		}
 
 	}

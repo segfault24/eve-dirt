@@ -1,105 +1,125 @@
 {% extends "base.phtml" %}
 {% block title %}Import Analyzer{% endblock %}
 {% block extrahead %}
-{% include 'chart-libs.phtml' %}
+{% include 'table-libs.phtml' %}
 <script type="text/javascript" src="js/browser-menu.js"></script>
-<script type="text/javascript" src="js/import-analyzer.js"></script>
+<script type="text/javascript" src="js/import.js"></script>
 {% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
-		<h3 class="page-header" id="title"><img id="title-img"> Import Analysis</h3>
+		<h3 class="page-header"><i class="fa fa-sign-in fa-fw"></i> Import Analysis</h3>
 		<hr>
 	</div>
 </div>
 <div class="row">
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
-				<span class="input-group-text">Source</span>
+				<span class="input-group-text">Src</span>
 			</div>
-			<select class="form-control" id="srcregionselect">
-				<option value="10000002">The Forge</option>
-				<option value="10000043">Domain</option>
-				<option value="10000032">Sinq Liasion</option>
-				<option value="10000030">Heimatar</option>
+			<select class="form-control" id="src-region-select">
+{% include 'region-select-options.phtml' %}
+			</select>
+		</div>
+		<div class="input-group mb-3">
+			<select class="form-control" id="src-struct-select">
 			</select>
 		</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="input-group mb-3">
 			<div class="input-group-prepend">
-				<span class="input-group-text">Destination</span>
+				<span class="input-group-text">Dst</span>
 			</div>
-			<select class="form-control" id="dstregionselect">
-				<option value="10000002">The Forge</option>
-				<option value="10000043">Domain</option>
-				<option value="10000032">Sinq Liasion</option>
-				<option value="10000030">Heimatar</option>
+			<select class="form-control" id="dst-region-select">
+{% include 'region-select-options.phtml' %}
+			</select>
+		</div>
+		<div class="input-group mb-3">
+			<select class="form-control" id="dst-struct-select">
 			</select>
 		</div>
 	</div>
-	<div class="col-md-1">
+	<div class="col-md-3">
+		<div class="btn-group mb-3">
+			<button type="button" class="btn btn-primary" id="refresh-data"><i class="fa fa-refresh fa-fw"></i> Load / Refresh</button>
+		</div>
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="btn-group mb-3">
-			<button type="button" class="btn btn-primary" id="open-in-market-browser"><i class="fa fa-bar-chart-o fa-fw"></i></button>
-			<button type="button" class="btn btn-primary" id="open-in-station-trader"><i class="fa fa-exchange fa-rotate-90 fa-fw"></i></button>
-			<button type="button" class="btn btn-primary active" id="open-in-import-analyzer"><i class="fa fa-sign-in fa-fw"></i></button>
-		</div>
-		<div class="btn-group mb-3">
-			<button type="button" class="btn btn-primary" id="refresh-data"><i class="fa fa-refresh fa-fw"></i></button>
-		</div>
-		<div class="btn-group mb-3">
-			<button type="button" class="btn btn-primary open-in-game" id="open-in-game" data-typeid=""><i class="fa fa-magnet fa-fw"></i></button>
+		<div class="card">
+			<div class="card-body">
+			</div>
 		</div>
 	</div>
 </div>
 <div class="row">
 	<div class="col-md-9">
-		<div class="panel panel-default no-border">
-			<div class="panel-body no-padding">
-				<ul class="nav nav-tabs" role="tablist">
-					<li class="nav-item">
-						<a class="nav-link active" id="analysislabel" href="#analysis" data-toggle="tab" role="tab" aria-controls="analysis" aria-selected="true"><i class="fa fa-bolt fa-fw"></i> Analysis</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" id="historylabel" href="#history" data-toggle="tab" role="tab" aria-controls="history" aria-selected="false"><i class="fa fa-history fa-fw"></i> Historical</a>
-					</li>
-				</ul>
-				<div class="tab-content">
-					<div class="tab-pane fade tab-border mb-3 show active" id="analysis" aria-labelledby="analysislabel">
-						<div class="card">
-							<div class="card-body">
-								<p>Src Sell</p>
-								<p>Dst Sell</p>
-								<p>Src Buy</p>
-							</div>
-						</div>
-					</div>
-					<div class="tab-pane fade tab-border mb-3" id="history" aria-labelledby="historylabel">
-						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-secondary" id="by-isk">&#x01B5;</button>
-							<button type="button" class="btn btn-secondary" id="by-percent">%</button>
-						</div>
-						<div class="card chart-card">
-							<div class="card-body chart-card-body" style="position:relative">
-								<canvas id="analysis-graph" width="100%"></canvas>
-							</div>
-						</div>
-						<div class="card">
-							<div class="card-body">
-								<p>This chart shows the difference in price between the two regions over time. It can show the difference in isk, or by percentage of the source price.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div class="table-responsive mb-3">
+			<table id="import-table" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
 		</div>
 	</div>
 	<div class="col-md-3 no-padding-left">
-		<div class="panel panel-default browse-panel mb-3">
-			<div class="accordian" id="g0b"></div>
+		<div class="card">
+			<div class="card-header">
+				<a>Freight</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&#x01B5; / Jump</div>
+					</div>
+					<input id="freight-route" type="text" class="form-control" placeholder="isk" value="800">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">&percnt; Collateral</div>
+					</div>
+					<input id="freight-collat" type="text" class="form-control" placeholder="&percnt;" value="1">
+				</div>
+			</div>
+		</div>
+		<div class="card mt-3">
+			<div class="card-header">
+				<a>Taxes & Fees</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Sales Tax</div>
+					</div>
+					<input id="sales-tax" type="text" class="form-control" placeholder="&percnt;" value="1.2">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Broker Fee</div>
+					</div>
+					<input id="broker-fee" type="text" class="form-control" placeholder="&percnt;" value="2.6">
+				</div>
+			</div>
+		</div>
+		<div class="card mt-3">
+			<div class="card-header">
+				<a>Filters</a>
+			</div>
+			<div class="card-body">
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Profit &gt;</div>
+					</div>
+					<input id="filter-profit-isk" type="text" class="form-control" placeholder="&#x01B5;">
+				</div>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<div class="input-group-text">ROI &gt;</div>
+					</div>
+					<input id="filter-profit-percent" type="text" class="form-control" placeholder="&percnt;">
+				</div>
+			</div>
+		</div>
+		<div class="btn-group mt-3">
+			<button id="apply-btn" type="button" class="btn btn-primary">Apply</button>
+			<button id="reset-btn" type="button" class="btn btn-primary">Reset</button>
 		</div>
 	</div>
 </div>
