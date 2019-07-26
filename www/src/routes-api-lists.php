@@ -85,7 +85,55 @@ $app->get('/api/lists/{listid}', function ($request, $response, $args) {
     return $response->withJson($listinfo);
 });
 
-$app->put('/api/lists/{listid}', function ($request, $response, $args) { // TODO
+$app->put('/api/lists/{listid}', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+
+    $listid = $args['listid'];
+
+    // retrieve the list's info
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT listId, userId, name, public FROM dirtList WHERE listId=:listid;';
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array(
+        ':listid' => $args['listid']
+    ));
+
+    // 404 not found if the list doesn't exist
+    if ($stmt->rowCount() == 0) {
+        return $response->withStatus(404);
+    }
+
+    $listinfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // 403 forbidden if the user doesn't own the list
+    if ($listinfo['userId'] != $u->getUserId()) {
+        return $response->withStatus(403);
+    }
+
+    // set default parameters if necessary
+    $listname = $request->getParsedBody()['info']['name'];
+    if ($listname == '') {
+        $listname = $listinfo['name'];
+    }
+    $public = $request->getParsedBody()['info']['public'];
+    if ($public == '') {
+        $public = $listinfo['public'];
+    }
+
+    // create the new list
+    $db = Dirt\Database::getDb();
+    $sql = 'UPDATE dirtList SET name=:listname, public=:public WHERE listId=:listid';
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array(
+        ':listid' => $listid,
+        ':listname' => $listname,
+        ':public' => $public
+    ));
+
     return $response;
 });
 

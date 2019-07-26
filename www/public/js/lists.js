@@ -2,7 +2,7 @@
 
 function myListsLoad() {
 	var listTable = $('#list-table').DataTable({
-		order: [[0, "desc"]],
+		order: [[1, "desc"]],
 		searching: false,
 		paging: false,
 		bInfo: false,
@@ -12,6 +12,13 @@ function myListsLoad() {
 			emptyTable: "You have no lists"
 		},
 		dom: 'Bfrtip',
+		columns: [
+			{title:'', responsivePriority: 1},
+			{title:'Name', responsivePriority: 1, render: $.fn.dataTable.render.text()},
+			{title:'Types', responsivePriority: 2},
+			{title:'Visibility', responsivePriority: 3},
+			{title:'ID', responsivePriority: 4}
+		],
 		buttons: [
 			{
 				text: 'Add',
@@ -24,7 +31,23 @@ function myListsLoad() {
 				text: 'Edit',
 				className: 'btn btn-info',
 				action: function (e, dt, node, config) {
-					console.log('edit not implemented yet');
+					var count = listTable.rows({selected:true}).count();
+					if (count == 1) {
+						var listid = listTable.rows({selected:true}).data()[0][4];
+						var listnm = listTable.rows({selected:true}).data()[0][1];
+						var listvis = listTable.rows({selected:true}).data()[0][3];
+						if (listvis == "Public") {
+							listvis = 1;
+						} else {
+							listvis = 0;
+						}
+						$('#list-edit-id').val(listid);console.log(listid);
+						$('#list-edit-name').val(listnm);console.log(listnm);
+						$('#list-edit-visibility').val(listvis);console.log(listvis);
+						$('#editListModal').modal();
+					} else {
+						console.log('select only one list to edit');
+					}
 				}
 			},
 			{
@@ -41,7 +64,6 @@ function myListsLoad() {
 
 	$(document).on('click', '#list-add-button', function(e) {
 		e.preventDefault();
-
 		var listnm = $('#list-add-name').val();
 		var listvis = $('#list-add-visibility').val();
 		$.ajax({
@@ -58,9 +80,28 @@ function myListsLoad() {
 		});
 	});
 
+	$(document).on('click', '#list-edit-button', function(e) {
+		e.preventDefault();
+		var listid = $('#list-edit-id').val();
+		var listnm = $('#list-edit-name').val();
+		var listvis = $('#list-edit-visibility').val();
+		$.ajax({
+			url: '/api/lists/' + listid,
+			type: 'PUT',
+			data: {"info":{"name":listnm,"public":listvis}},
+			success: function(result) {
+				$('#list-edit-id').val(0);
+				$('#list-edit-name').val('');
+				$('#list-edit-visibility').val(0);
+				loadListTable(listTable);
+			},
+			error: function() {},
+			complete: function() {}
+		});
+	});
+
 	$(document).on('click', '#list-delete-button', function(e) {
 		e.preventDefault();
-		
 		$('#list-table').dataTable().$('tr.selected').each(function() {
 			var listid = $(this).attr('id');
 			$.ajax({
@@ -86,11 +127,13 @@ function loadListTable(listTable) {
 			listTable.clear();
 			var lists = result;
 			for(var i=0; i<lists.length; i++) {
-				var link = $('<a>', {className:'list-select', text:lists[i].name , href:'list-detail?listid='+lists[i].listId });
+				var link = $('<a>', {className:'list-select', text:'View', href:'list-detail?listid=' + lists[i].listId });
 				listTable.row.add([
 					link[0].outerHTML,
+					lists[i].name,
 					lists[i].typeCount,
-					lists[i].public==1?'Public':'Private'
+					lists[i].public==1?'Public':'Private',
+					lists[i].listId
 				]).node().id = lists[i].listId;
 			}
 			listTable.draw();

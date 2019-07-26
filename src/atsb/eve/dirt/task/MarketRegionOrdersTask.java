@@ -1,5 +1,6 @@
 package atsb.eve.dirt.task;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -43,6 +44,10 @@ public class MarketRegionOrdersTask extends DirtTask {
 
 	@Override
 	protected void runTask() {
+		
+		// when ESI returns 304 Not Modified, we touch the retrieved timestamp on orders
+		// for that region/structure so that the final delete query doesn't remove them
+		
 		start = new Timestamp(System.currentTimeMillis() - 15000); // 15 sec fudge factor
 		// get publicly available orders in this region
 		doPublicOrders();
@@ -65,7 +70,7 @@ public class MarketRegionOrdersTask extends DirtTask {
 				orders = mapiw.getMarketsRegionIdOrders(region, page);
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
-					continue;
+					break;
 				} else {
 					log.error("Failed to retrieve page " + page + " of orders for region " + region, e);
 					break;
@@ -86,6 +91,7 @@ public class MarketRegionOrdersTask extends DirtTask {
 			}
 			try {
 				getDb().setAutoCommit(false);
+				getDb().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 				MarketOrderTable.upsertMany(getDb(), l);
 				getDb().commit();
 				getDb().setAutoCommit(true);
@@ -153,7 +159,7 @@ public class MarketRegionOrdersTask extends DirtTask {
 					orders = mapiw.getMarketsStructureIdOrders(structId, page, OAuthUtil.getAuthToken(getDb(), auth));
 				} catch (ApiException e) {
 					if (e.getCode() == 304) {
-						continue;
+						break;
 					} else {
 						log.error("Failed to retrieve page " + page + " of orders for structure " + structId, e);
 						break;
@@ -174,6 +180,7 @@ public class MarketRegionOrdersTask extends DirtTask {
 				}
 				try {
 					getDb().setAutoCommit(false);
+					getDb().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 					MarketOrderTable.upsertMany(getDb(), l);
 					getDb().commit();
 					getDb().setAutoCommit(true);
@@ -189,7 +196,11 @@ public class MarketRegionOrdersTask extends DirtTask {
 
 	private void doDeleteOld() {
 		try {
+			getDb().setAutoCommit(false);
+			getDb().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 			int count = MarketOrderTable.deleteOldOrdersByRegion(getDb(), region, start);
+			getDb().commit();
+			getDb().setAutoCommit(true);
 			log.debug("Deleted " + count + " old market orders for region " + region);
 		} catch (SQLException e) {
 			log.fatal("Failed to delete old market orders for region " + region, e);
