@@ -93,9 +93,11 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     $result = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     $this->logger->debug('/open-in-game sent esi request for character ' . $u->getUserId() . ' type ' . $args['type']); 
+    $this->logger->debug('/open-in-game got response (' . $httpcode . ')');
     return $response->withJson(array(
         'success' => 'made esi call'
     ));
@@ -124,9 +126,11 @@ $app->get('/api/market/open-in-game-contract/{contract}', function ($request, $r
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     $result = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     $this->logger->debug('/open-in-game-contract sent esi request for user ' . $u->getUserId() . ' type ' . $args['contract']); 
+    $this->logger->debug('/open-in-game-contract got response (' . $httpcode . ')');
     return $response->withJson(array(
         'success' => 'made esi call'
     ));

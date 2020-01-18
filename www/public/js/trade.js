@@ -67,6 +67,7 @@ $(document).ready(function() {
 	});
 
 	$('#refresh-data').click(function() {
+		$("#refresh-data").attr("disabled", true);
 		srcStruct = $('#src-struct-select').val();
 		dstStruct = $('#dst-struct-select').val();
 		tradeType = $('#trade-type-select').val();
@@ -97,6 +98,7 @@ $(document).ready(function() {
 			brokerFee = 0;
 		}
 		populateTable(tradeTable, data, freightRouteRate, freightCollateralRate, salesTax, brokerFee, filterIsk, filterPercent, filterRoiPerVol);
+		$("#refresh-data").attr("disabled", false);
 	}
 
 	// shipping_rate = isk/m3

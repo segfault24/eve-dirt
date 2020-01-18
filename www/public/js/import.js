@@ -8,12 +8,12 @@ $(document).ready(function() {
 			{title:'Item', responsivePriority: 1},
 			{title:'Source', responsivePriority: 3},
 			{title:'Destination', responsivePriority: 3},
-			{title:'Dst Avg Vol', responsivePriority: 3},
-			{title:'Dst Stock', responsivePriority: 3},
+			{title:'Daily Vol', responsivePriority: 3},
+			{title:'Stock', responsivePriority: 3},
+			{title:'Exhausts', responsivePriority: 2},
 			{title:'Freight/Fees', responsivePriority: 4},
 			{title:'Profit', responsivePriority: 2},
 			{title:'ROI', responsivePriority: 2},
-			{title:'Exhausts', responsivePriority: 2},
 			{title:'Max Daily Profit', responsivePriority: 2}
 		],
 		order: [[9, "desc"]],
@@ -69,6 +69,7 @@ $(document).ready(function() {
 	});
 
 	$('#refresh-data').click(function() {
+		$("#refresh-data").attr("disabled", true);
 		srcStruct = $('#src-struct-select').val();
 		dstStruct = $('#dst-struct-select').val();
 		reloadData();
@@ -94,6 +95,7 @@ $(document).ready(function() {
 		var filterIsk = $('#filter-profit-isk').val();
 		var filterPercent = $('#filter-profit-percent').val();
 		populateTable(importTable, data, freightRouteRate, freightCollateralRate, salesTax, brokerFee, filterIsk, filterPercent);
+		$("#refresh-data").attr("disabled", false);
 	}
 
 	// shipping_rate = isk/m3
@@ -111,10 +113,10 @@ $(document).ready(function() {
 					formatIsk(result[i].dest),
 					result[i].ma30,
 					result[i].stock,
+					Math.ceil(result[i].stock / result[i].ma30),
 					formatIsk(freight + tax),
 					formatIsk(margin),
 					marginPercent,
-					Math.ceil(result[i].stock / result[i].ma30),
 					formatIsk(result[i].ma30*margin)
 				]);
 			}
