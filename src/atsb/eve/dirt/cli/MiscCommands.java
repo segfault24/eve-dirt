@@ -9,6 +9,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import atsb.eve.db.StructAuthTable;
 import atsb.eve.dirt.DirtConstants;
+import atsb.eve.dirt.Stats;
 import atsb.eve.dirt.task.StructureTask;
 import atsb.eve.util.Utils;
 
@@ -156,6 +157,32 @@ public class MiscCommands {
 			}
 		}
 
+	}
+
+	public static class PrintStats extends Command {
+
+		@Override
+		public String getCommandString() {
+			return "stats";
+		}
+
+		@Override
+		public String getOptionString() {
+			return "";
+		}
+
+		@Override
+		public String getHelpString() {
+			return "print statistics";
+		}
+
+		@Override
+		public void execute(String[] args) {
+			System.out.println("ESI Calls: " + Stats.esiCalls);
+			System.out.println("ESI Errors: " + Stats.esiErrors);
+			System.out.println("SSO Calls: " + Stats.ssoCalls);
+			System.out.println("SSO Errors: " + Stats.ssoErrors);
+		}
 	}
 
 }

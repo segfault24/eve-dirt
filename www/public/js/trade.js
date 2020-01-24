@@ -25,8 +25,8 @@ $(document).ready(function() {
 		select: true
 	});
 
-	var srcRegion = 10000025;
-	var srcStruct = 1028573403974;
+	var srcRegion = 10000039;
+	var srcStruct = 1024004680659;
 	var dstRegion = 10000002;
 	var dstStruct = 60003760;
 	var tradeType = 'sell-buy';

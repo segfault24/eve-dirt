@@ -84,10 +84,20 @@ public class MarketHistoryTask extends DirtTask {
 					getDb().setAutoCommit(false);
 					MarketHistoryTable.insertMany(getDb(), hs);
 					getDb().commit();
-					getDb().setAutoCommit(true);
 					log.debug("Inserted " + hs.size() + " history entries for region " + region + " type " + type);
 				} catch (SQLException e) {
 					log.error("Failed to insert history for type " + type + " for region " + region);
+					try {
+						getDb().rollback();
+					} catch (SQLException e1) {
+						log.error(e1);
+					}
+				} finally {
+					try {
+						getDb().setAutoCommit(true);
+					} catch (SQLException e) {
+						log.error(e);
+					}
 				}
 				calcStat(hs, type);
 			}

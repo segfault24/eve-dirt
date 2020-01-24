@@ -42,6 +42,55 @@ $app->get('/logout', function ($request, $response, $args) {
         ->withHeader('Location', '/');
 });
 
+$app->get('/notifications', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
+    $uid = $u->getUserId();
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT `notifId`, `time`, `title`, `text`, `acknowledged`
+            FROM dirtNotification
+            WHERE `userId`=:uid
+            ORDER BY `time` DESC LIMIT 1000';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':uid', $uid);
+    $stmt->execute();
+
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $args['notiflist'] = $rows;
+
+    return $this->renderer->render($response, 'notifications.phtml', $args);
+});
+
+$app->post('/notifications', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+            ->withHeader('Location', '/login');
+    }
+
+    $uid = $u->getUserId();
+    $db = Dirt\Database::getDb();
+    $sql = 'UPDATE dirtNotification SET acknowledged=1 WHERE userId=:uid';
+    $nid = $request->getParsedBody()['notifId'];
+    if ($nid != "all") {
+        $sql .= ' AND notifId=:nid';
+    }
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':uid', $uid);
+    if ($nid != "all") {
+        $stmt->bindParam(':nid', $nid);
+    }
+    $stmt->execute();
+
+    return $response->withStatus(302)
+        ->withHeader('Location', '/notifications');
+});
+
 $app->get('/characters', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
@@ -53,15 +102,14 @@ $app->get('/characters', function ($request, $response, $args) {
     $uid = $u->getUserId();
     $db = Dirt\Database::getDb();
     $sql = 'SELECT `charId`, `charName`
-			FROM dirtApiAuth
-			WHERE `userId`=:uid
-			ORDER BY `charName`';
+            FROM dirtApiAuth
+            WHERE `userId`=:uid
+            ORDER BY `charName`';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':uid', $uid);
     $stmt->execute();
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     $args['charlist'] = $rows;
 
     return $this->renderer->render($response, 'characters.phtml', $args);
