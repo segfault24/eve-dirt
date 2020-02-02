@@ -28,8 +28,8 @@ $(document).ready(function() {
 
 	var srcRegion = 10000002;
 	var srcStruct = 1028573403974;
-	var dstRegion = 10000025;
-	var dstStruct = 60003760;
+	var dstRegion = 10000039;
+	var dstStruct = 1024004680659;
 	var data;
 
 	var preferredStructs = [

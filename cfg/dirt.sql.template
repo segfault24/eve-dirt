@@ -26,6 +26,7 @@ INSERT INTO `dirtUser` (
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("domain","DOMAINNAME");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("adminemail","webmaster@DOMAINNAME");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("scraperkeyid","1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("scrapercorpid","1018389948");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoclientid","APPCLIENTID");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssosecretkey","APPSECRETKEY");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("threads","4");
@@ -36,6 +37,7 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.r
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("markethistory.period","1440");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("wallet.period","60");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("charactermarket.period","30");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("corpcontracts.period","20");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("publicstructures.period","2880");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("insuranceprices.period","240");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("typeinfo.period","10080");

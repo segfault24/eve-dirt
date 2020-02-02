@@ -26,6 +26,7 @@ import net.evetech.esi.models.GetCharactersCharacterIdOk;
 import net.evetech.esi.models.GetCharactersCharacterIdOrders200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletJournal200Ok;
 import net.evetech.esi.models.GetCharactersCharacterIdWalletTransactions200Ok;
+import net.evetech.esi.models.GetCorporationsCorporationIdContracts200Ok;
 import net.evetech.esi.models.GetCorporationsCorporationIdOk;
 import net.evetech.esi.models.GetInsurancePrices200Ok;
 import net.evetech.esi.models.GetInsurancePricesLevel;
@@ -43,6 +44,21 @@ import net.evetech.esi.models.GetUniverseTypesTypeIdOk;
 public interface TypeUtil {
 
 	public static Contract convert(GetCharactersCharacterIdContracts200Ok c) {
+		Contract contract = new Contract();
+		contract.setContractId(c.getContractId());
+		contract.setIssuerId(c.getIssuerId());
+		contract.setIssuerCorpId(c.getIssuerCorporationId());
+		contract.setAssigneeId(c.getAssigneeId());
+		contract.setAcceptorId(c.getAcceptorId());
+		contract.setAvailability(c.getAvailability().toString());
+		contract.setDateIssued(new Timestamp(c.getDateIssued().getMillis()));
+		contract.setDateExpired(new Timestamp(c.getDateExpired().getMillis()));
+		contract.setStatus(c.getStatus().toString());
+		contract.setType(c.getType().toString());
+		return contract;
+	}
+
+	public static Contract convert(GetCorporationsCorporationIdContracts200Ok c) {
 		Contract contract = new Contract();
 		contract.setContractId(c.getContractId());
 		contract.setIssuerId(c.getIssuerId());

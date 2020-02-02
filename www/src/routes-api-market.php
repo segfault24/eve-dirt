@@ -157,3 +157,32 @@ $app->get('/api/insurance-price/{typeid}', function ($request, $response, $args)
 
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
+
+$app->get('/api/market/contracts', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, ach.`name` AS acceptorName
+            FROM corpcontract AS co
+            LEFT JOIN (
+                SELECT charId AS id, charName AS name FROM `character`
+                UNION
+                SELECT corpId AS id, corpName AS name FROM `corporation`
+            ) AS ich ON co.issuerId=ich.id
+            LEFT JOIN (
+                SELECT charId AS id, charName AS name FROM `character`
+                UNION
+                SELECT corpId AS id, corpName AS name FROM `corporation`
+            ) AS ach ON co.acceptorId=ach.id
+            ORDER BY co.dateIssued DESC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array(
+        ':userid' => $u->getUserId()
+    ));
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});

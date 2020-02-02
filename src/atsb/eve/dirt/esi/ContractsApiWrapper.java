@@ -11,6 +11,7 @@ import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.ContractsApi;
 import net.evetech.esi.models.GetCharactersCharacterIdContracts200Ok;
+import net.evetech.esi.models.GetCorporationsCorporationIdContracts200Ok;
 
 public class ContractsApiWrapper {
 
@@ -30,6 +31,15 @@ public class ContractsApiWrapper {
 		ApiResponse<List<GetCharactersCharacterIdContracts200Ok>> resp = capi.getCharactersCharacterIdContractsWithHttpInfo(charId, Utils.getApiDatasource(), etag, page, token);
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "char-contract-" + charId + "-" + page, etag);
+		return resp.getData();
+	}
+
+	public List<GetCorporationsCorporationIdContracts200Ok> getCorporationContracts(int corpId, int page, String token) throws ApiException {
+		String etag = Utils.getEtag(db, "corp-contract-" + corpId + "-" + page);
+		log.trace("Executing API query getCorporationContracts(" + corpId + ", " + page + ")");
+		ApiResponse<List<GetCorporationsCorporationIdContracts200Ok>> resp = capi.getCorporationsCorporationIdContractsWithHttpInfo(corpId, Utils.getApiDatasource(), etag, page, token);
+		log.trace("API query returned status code " + resp.getStatusCode());
+		Utils.upsertEtag(db, "corp-contract-" + corpId + "-" + page, etag);
 		return resp.getData();
 	}
 

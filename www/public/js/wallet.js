@@ -285,9 +285,9 @@ $(document).ready(function(){
 		$.getJSON('/api/wallet/contracts', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
-					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i> ' + result[i].type + '</a>',
+					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i> ' + prettyType(result[i].type) + '</a>',
 					result[i].issuerName,
-					result[i].status,
+					prettyStatus(result[i].status),
 					result[i].acceptorName,
 					result[i].dateIssued
 				]);
@@ -319,6 +319,32 @@ $(document).ready(function(){
 			$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 			roiLoaded = true;
 		});
+	}
+
+	function prettyType(type) {
+		switch(type) {
+			case 'item_exchange':
+				return 'Item Exchange';
+			case 'courier':
+				return 'Courier';
+		}
+		return "Unknown";
+	}
+
+	function prettyStatus(status) {
+		switch(status) {
+			case 'outstanding':
+				return 'Outstanding';
+			case 'in_progress':
+				return 'In Progress';
+			case 'finished':
+				return 'Finished';
+			case 'deleted':
+				return 'Deleted';
+			case 'failed':
+				return 'Failed';
+		}
+		return "Unknown";
 	}
 
 });

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import atsb.eve.db.TaskStatusTable;
 import atsb.eve.dirt.cli.TaskCli;
+import atsb.eve.dirt.task.CorpContractsTask;
 import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.InvMarketGroupsTask;
@@ -123,6 +124,10 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		// character orders and contracts
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_CHARACTER_MARKET_PERIOD);
 		addPeriodicTask(db, new MetaCharacterMarketTask(), period);
+
+		// corporation contracts
+		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_CORP_CONTRACTS_PERIOD);
+		//addPeriodicTask(db, new CorpContractsTask(), period);
 
 		// unknown ids resolution
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_UNKNOWN_IDS_PERIOD);

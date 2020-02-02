@@ -13,6 +13,7 @@ public interface DirtConstants {
 	public static final String PROPERTY_MARKET_HISTORY_PERIOD = "markethistory.period";
 	public static final String PROPERTY_WALLET_PERIOD = "wallet.period";
 	public static final String PROPERTY_CHARACTER_MARKET_PERIOD = "charactermarket.period";
+	public static final String PROPERTY_CORP_CONTRACTS_PERIOD = "corpcontracts.period";
 	public static final String PROPERTY_PUBLIC_STRUCTURES_PERIOD = "publicstructures.period";
 	public static final String PROPERTY_INSURANCE_PRICES_PERIOD = "insuranceprices.period";
 	public static final String PROPERTY_TYPE_INFO_PERIOD = "typeinfo.period";
@@ -21,6 +22,7 @@ public interface DirtConstants {
 	public static final String PROPERTY_KILLSTREAM_ENABLED = "killstream.enabled";
 
 	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
+	public static final String PROPERTY_SCRAPER_CORP_ID = "scrapercorpid";
 	public static final String PROPERTY_SSO_CLIENT_ID = "ssoclientid";
 	public static final String PROPERTY_SSO_SECRET_KEY = "ssosecretkey";
 

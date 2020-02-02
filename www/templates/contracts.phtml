@@ -1,0 +1,27 @@
+{% extends "base.phtml" %}
+{% block title %}Contracts{% endblock %}
+{% block extrahead %}
+{% include 'table-libs.phtml' %}
+<script type="text/javascript" src="js/contracts.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header"><i class="fa fa-file-text fa-fw"></i> Contracts</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-9">
+		<div class="panel panel-default no-border">
+			<div class="panel-body no-padding">
+				<div class="table-responsive">
+					<table id="contracts-table" class="table responsive table-striped table-hover table-condensed" style="width:100%"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3 no-padding-left">
+	</div>
+</div>
+{% endblock %}
