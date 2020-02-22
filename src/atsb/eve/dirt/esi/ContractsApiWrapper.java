@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.Stats;
 import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
@@ -26,6 +27,7 @@ public class ContractsApiWrapper {
 	}
 
 	public List<GetCharactersCharacterIdContracts200Ok> getCharacterContracts(int charId, int page, String token) throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "char-contract-" + charId + "-" + page);
 		log.trace("Executing API query getCharacterContracts(" + charId + ", " + page + ")");
 		ApiResponse<List<GetCharactersCharacterIdContracts200Ok>> resp = capi.getCharactersCharacterIdContractsWithHttpInfo(charId, Utils.getApiDatasource(), etag, page, token);
@@ -35,6 +37,7 @@ public class ContractsApiWrapper {
 	}
 
 	public List<GetCorporationsCorporationIdContracts200Ok> getCorporationContracts(int corpId, int page, String token) throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "corp-contract-" + corpId + "-" + page);
 		log.trace("Executing API query getCorporationContracts(" + corpId + ", " + page + ")");
 		ApiResponse<List<GetCorporationsCorporationIdContracts200Ok>> resp = capi.getCorporationsCorporationIdContractsWithHttpInfo(corpId, Utils.getApiDatasource(), etag, page, token);

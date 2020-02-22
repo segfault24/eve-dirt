@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.Stats;
 import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
@@ -25,6 +26,7 @@ public class WalletApiWrapper {
 
 	public List<GetCharactersCharacterIdWalletTransactions200Ok> getWalletTransactions(int charId, Long beforeTrans,
 			String token) throws ApiException {
+		Stats.esiCalls++;
 		log.trace("Executing API query getWalletTransactions()");
 		ApiResponse<List<GetCharactersCharacterIdWalletTransactions200Ok>> resp;
 		resp = wapi.getCharactersCharacterIdWalletTransactionsWithHttpInfo(charId, Utils.getApiDatasource(),
@@ -35,6 +37,7 @@ public class WalletApiWrapper {
 
 	public List<GetCharactersCharacterIdWalletJournal200Ok> getWalletJournal(int charId, int page, String token)
 			throws ApiException {
+		Stats.esiCalls++;
 		log.trace("Executing API query getWalletJournal()");
 		ApiResponse<List<GetCharactersCharacterIdWalletJournal200Ok>> resp;
 		resp = wapi.getCharactersCharacterIdWalletJournalWithHttpInfo(charId, Utils.getApiDatasource(), null, page,

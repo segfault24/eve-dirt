@@ -38,10 +38,12 @@ public class TaskCli {
 		addCommand(new MiscCommands.PoolSize());
 		addCommand(new MiscCommands.LogLevel());
 		addCommand(new MiscCommands.Status());
-		addCommand(new MiscCommands.StructMarketAdd());
-		addCommand(new MiscCommands.PrintStats());
+		addCommand(new MiscCommands.StructAdd());
+		addCommand(new TaskCommands.TaskList());
 		addCommand(new TaskCommands.TaskClear());
-		addCommand(new TaskCommands.TaskCancelAll());
+		addCommand(new TaskCommands.TaskCancel());
+		addCommand(new TaskCommands.TaskAdd());
+		addCommand(new TaskCommands.TaskStatusCommand());
 	}
 
 	private void addCommand(Command c) {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.Stats;
 import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
@@ -25,6 +26,7 @@ public class InsuranceApiWrapper {
 	}
 
 	public List<GetInsurancePrices200Ok> getInsurancePrices() throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "insurance-prices");
 		log.trace("Executing API query getInsurancePrices()");
 		ApiResponse<List<GetInsurancePrices200Ok>> resp = iapi.getInsurancePricesWithHttpInfo(Utils.getApiLanguage(),

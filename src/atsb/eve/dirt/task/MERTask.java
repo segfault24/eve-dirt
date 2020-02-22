@@ -25,6 +25,19 @@ public class MERTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
+	private boolean manual = false;
+	private int year;
+	private int month;
+
+	public MERTask() {
+	}
+
+	public MERTask(int year, int month) {
+		this.manual = true;
+		this.year = year;
+		this.month = month;
+	}
+
 	@Override
 	public String getTaskName() {
 		return "mer";
@@ -32,14 +45,19 @@ public class MERTask extends DirtTask {
 
 	@Override
 	protected void runTask() {
-		LocalDate d = LocalDate.now().minusDays(35);
-
-		String merLastSuccess = Utils.getKV(getDb(), "mer-last");
-		String targetMer = Integer.toString(d.getYear() * 100 + d.getMonthValue());
-		if (merLastSuccess != null && targetMer.equalsIgnoreCase(merLastSuccess)) {
-			// quit if we already got this one
-			log.debug("Skipped execution, already got this MER");
-			return;
+		LocalDate d;
+		
+		if (manual) {
+			d = LocalDate.now().withYear(year).withMonth(month);
+		} else {
+			d = LocalDate.now().minusDays(35);
+			String merLastSuccess = Utils.getKV(getDb(), "mer-last");
+			String targetMer = Integer.toString(d.getYear() * 100 + d.getMonthValue());
+			if (merLastSuccess != null && targetMer.equalsIgnoreCase(merLastSuccess)) {
+				// quit if we already got this one
+				log.debug("Skipped execution, already got this MER");
+				return;
+			}
 		}
 
 		// try to get the zip
@@ -62,6 +80,7 @@ public class MERTask extends DirtTask {
 		}
 
 		// Set last retrieved mer
+		String targetMer = Integer.toString(d.getYear() * 100 + d.getMonthValue());
 		Utils.putKV(getDb(), "mer-last", targetMer);
 
 	}
@@ -70,8 +89,13 @@ public class MERTask extends DirtTask {
 		List<String> urls = new ArrayList<String>();
 
 		DateTimeFormatter MMMyyyy = DateTimeFormatter.ofPattern("MMMyyyy");
+		urls.add("https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_" + d.format(MMMyyyy) + "b.zip");
 		urls.add("https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_" + d.format(MMMyyyy) + ".zip");
+		urls.add("http://web.ccpgamescdn.com/newssystem/media/73619/1/EVEOnline_MER_" + d.format(MMMyyyy) + ".zip");
 		return urls;
+		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Jan2020.zip
+		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Dec2019b.zip
+		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Nov2019.zip
 		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_May2019.zip
 		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Apr2019.zip
 		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Mar2019.zip
@@ -83,7 +107,7 @@ public class MERTask extends DirtTask {
 		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Sep2018.zip
 		// https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_Aug2018.zip
 		// http://web.ccpgamescdn.com/newssystem/media/73619/1/EVEOnline_MER_Jul2018.zip
-		// https://www.eveonline.com/article/pa9fr1/web.ccpgamescdn.com/newssystem/media/73619/1/EVEOnline_MER_May2018.zip
+		// http://web.ccpgamescdn.com/newssystem/media/73619/1/EVEOnline_MER_May2018.zip
 		// http://content.eveonline.com/www/newssystem/media/73592/1/EVEOnline_MER_Apr2018.zip
 		// http://web.ccpgamescdn.com/newssystem/media/73619/1/EVEOnline_MER_Mar2018.zip
 		// http://web.ccpgamescdn.com/newssystem/media/73619/1/EVEOnline_MER_Feb2018.zip

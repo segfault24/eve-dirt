@@ -36,10 +36,12 @@ public class MiscCommands {
 
 		@Override
 		public void execute(String[] args) {
-			System.out.println("poolsize: " + daemon.getPoolSize());
-			System.out.println("complete: " + daemon.getCompletedTaskCount());
-			System.out.println("  queued: " + daemon.getQueue().size());
-			System.out.println("  active: " + daemon.getActiveCount());
+			System.out.println("esi calls: " + Stats.esiCalls + "  errors: " + Stats.esiErrors);
+			System.out.println("sso calls: " + Stats.ssoCalls + "  errors: " + Stats.ssoErrors);
+			System.out.println(" poolsize: " + daemon.getPoolSize());
+			System.out.println(" complete: " + daemon.getCompletedTaskCount());
+			System.out.println("   queued: " + daemon.getQueue().size());
+			System.out.println("   active: " + daemon.getActiveCount());
 		}
 
 	}
@@ -48,7 +50,7 @@ public class MiscCommands {
 
 		@Override
 		public String getCommandString() {
-			return "poolsize";
+			return "pool-size";
 		}
 
 		@Override
@@ -88,7 +90,7 @@ public class MiscCommands {
 
 		@Override
 		public String getCommandString() {
-			return "loglevel";
+			return "log-level";
 		}
 
 		@Override
@@ -118,7 +120,7 @@ public class MiscCommands {
 
 	}
 
-	public static class StructMarketAdd extends Command {
+	public static class StructAdd extends Command {
 
 		@Override
 		public String getCommandString() {
@@ -152,37 +154,11 @@ public class MiscCommands {
 					}
 				}
 			} else {
-				log.debug("no structure id specified");
+				log.error("no structure id specified");
 				System.err.println("no structure id specified");
 			}
 		}
 
-	}
-
-	public static class PrintStats extends Command {
-
-		@Override
-		public String getCommandString() {
-			return "stats";
-		}
-
-		@Override
-		public String getOptionString() {
-			return "";
-		}
-
-		@Override
-		public String getHelpString() {
-			return "print statistics";
-		}
-
-		@Override
-		public void execute(String[] args) {
-			System.out.println("ESI Calls: " + Stats.esiCalls);
-			System.out.println("ESI Errors: " + Stats.esiErrors);
-			System.out.println("SSO Calls: " + Stats.ssoCalls);
-			System.out.println("SSO Errors: " + Stats.ssoErrors);
-		}
 	}
 
 }

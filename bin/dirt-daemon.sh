@@ -18,4 +18,4 @@ cp="$cp;lib/okhttp-2.7.5.jar"
 cp="$cp;lib/okio-1.6.0.jar"
 cp="$cp;lib/swagger-annotations-1.5.12.jar"
 
-java -cp "$cp" -Dconfig="cfg/db.ini" -Dlog4j.configurationFile="cfg/log4j2.xml" atsb.eve.dirt.DirtTaskDaemon --cli
+java -cp "$cp" -Dconfig="cfg/db.ini" -Dlog4j.configurationFile="cfg/log4j2.xml" atsb.eve.dirt.DirtTaskDaemon $@

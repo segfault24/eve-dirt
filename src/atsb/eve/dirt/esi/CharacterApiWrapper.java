@@ -5,6 +5,7 @@ import java.sql.Connection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.Stats;
 import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
@@ -24,6 +25,7 @@ public class CharacterApiWrapper {
 	}
 
 	public GetCharactersCharacterIdOk getCharacter(int charId) throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "character-" + charId);
 		log.trace("Executing API query getCharacter(" + charId + ")");
 		ApiResponse<GetCharactersCharacterIdOk> resp = capi.getCharactersCharacterIdWithHttpInfo(charId, Utils.getApiDatasource(), etag);

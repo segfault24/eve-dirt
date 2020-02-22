@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 
 import atsb.eve.db.ApiAuthTable;
 import atsb.eve.dirt.DirtConstants;
+import atsb.eve.dirt.Stats;
 import atsb.eve.model.OAuthUser;
 import atsb.eve.util.Utils;
 
@@ -56,6 +57,7 @@ public class OAuthUtil {
 			try {
 				refresh(db, oau);
 			} catch (IOException | SQLException | DirtAuthException e) {
+				Stats.ssoErrors++;
 				log.error("Failed to refresh OAuth token for key=" + oau.getKeyId(), e);
 			}
 		}
@@ -72,6 +74,7 @@ public class OAuthUtil {
 		String auth = "Basic " + new String(Base64.getEncoder().encode(creds.getBytes()));
 		String data = "grant_type=refresh_token&refresh_token=" + oau.getRefreshToken();
 
+		Stats.ssoCalls++;
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setRequestMethod("POST");
 		con.setRequestProperty("Authorization", auth);

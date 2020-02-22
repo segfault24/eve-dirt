@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledFuture;
@@ -44,7 +45,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	private final DbPool dbPool;
 	private HashMap<String, ScheduledFuture<?>> futures = new HashMap<String, ScheduledFuture<?>>();
 
-	public DirtTaskDaemon() {
+	public DirtTaskDaemon(boolean startWithPeriodicTasks) {
 		super(1);
 
 		log.info("==================================");
@@ -65,7 +66,10 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		dbPool.setMinPoolSize(threads);
 		log.info("Starting with " + threads + " worker threads");
 
-		addTasks(db);
+		if (startWithPeriodicTasks) {
+			log.info("Initializing periodic tasks");
+			initPeriodicTasks(db);
+		}
 
 		// release connection to pool
 		dbPool.release(db);
@@ -82,7 +86,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		});
 	}
 
-	private void addTasks(Connection db) {
+	private void initPeriodicTasks(Connection db) {
 		// public market orders for specific regions
 		List<Integer> regions = Utils.parseIntList(Utils.getProperty(db, DirtConstants.PROPERTY_MARKET_ORDERS_REGIONS));
 		int period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_ORDERS_PERIOD);
@@ -170,9 +174,38 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	}
 
 	/**
+	 * @return
+	 */
+	public Set<String> getTaskNames() {
+		return futures.keySet();
+	}
+
+	/**
+	 * @param taskName
+	 * @return
+	 */
+	public boolean cancelTask(String taskName) {
+		return cancelTask(taskName, false);
+	}
+
+	/**
+	 * @param taskName
+	 * @param force
+	 * @return
+	 */
+	public boolean cancelTask(String taskName, boolean force) {
+		ScheduledFuture<?> future = futures.get(taskName);
+		if (future != null) {
+			return future.cancel(force);
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * 
 	 */
-	public void removeAllTasks() {
+	public void cancelAllTasks() {
 		for (ScheduledFuture<?> f : futures.values()) {
 			f.cancel(false);
 		}
@@ -181,10 +214,34 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	}
 
 	public static void main(String[] args) {
-		DirtTaskDaemon d = new DirtTaskDaemon();
-		if (args.length > 0 && args[0].equalsIgnoreCase("--cli")) {
-			TaskCli cli = new TaskCli(d);
-			cli.loop();
+		boolean cli = false;
+		boolean notasks = false;
+		boolean help = false;
+		for (String arg : args) {
+			if (arg.equalsIgnoreCase("--cli")) {
+				cli = true;
+			} else if (arg.equalsIgnoreCase("--notasks")) {
+				notasks = true;
+			} else if (arg.equalsIgnoreCase("--help")) {
+				help = true;
+			} else {
+				System.err.println("Unknown option \"" + arg + "\"");
+				help = true;
+			}
+		}
+
+		if (help) {
+			System.out.println("DirtTaskDaemon");
+			System.out.println("  --cli       drop to cli after startup");
+			System.out.println("  --notasks   start without initial tasks");
+			System.out.println("  --help      show this message");
+			return;
+		}
+
+		DirtTaskDaemon d = new DirtTaskDaemon(!notasks);
+		if (cli) {
+			TaskCli c = new TaskCli(d);
+			c.loop();
 		}
 	}
 

@@ -66,7 +66,7 @@ public abstract class DirtTask implements Runnable {
 		runTask();
 		long endTime = Calendar.getInstance().getTimeInMillis();
 
-		int duration = (int) ((endTime - startTime) / 1000 / 60);
+		int duration = (int) ((endTime - startTime) / 1000);
 		if (saveStatus) {
 			TaskStatus ts = new TaskStatus(getTaskName(), new Timestamp(startTime), duration);
 			try {
@@ -80,7 +80,7 @@ public abstract class DirtTask implements Runnable {
 		DbPool.resetConnection(db);
 		dbPool.release(db);
 
-		log.info("Completed task " + getTaskName() + " in " + duration + " minutes");
+		log.info("Completed task " + getTaskName() + " in " + duration + " seconds");
 	}
 
 }

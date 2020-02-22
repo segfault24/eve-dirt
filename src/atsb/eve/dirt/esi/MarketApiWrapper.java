@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import atsb.eve.dirt.Stats;
 import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.ApiResponse;
@@ -33,6 +34,7 @@ public class MarketApiWrapper {
 	}
 
 	public List<GetMarketsRegionIdOrders200Ok> getMarketsRegionIdOrders(int regionId, int page) throws ApiException {
+		Stats.esiCalls++;
 		//String etag = Utils.getEtag(db, "orders-" + regionId + "-" + page);
 		log.trace("Executing API query getMarketsRegionIdOrders(" + regionId + ", " + page + ")");
 		ApiResponse<List<GetMarketsRegionIdOrders200Ok>> resp = null;
@@ -66,6 +68,7 @@ public class MarketApiWrapper {
 
 	public List<GetMarketsRegionIdHistory200Ok> getMarketsRegionIdHistory(int regionId, int typeId)
 			throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "history-" + regionId + "-" + typeId);
 		log.trace("Executing API query getMarketsRegionIdHistory(" + regionId + ", " + typeId + ")");
 		ApiResponse<List<GetMarketsRegionIdHistory200Ok>> resp = mapi.getMarketsRegionIdHistoryWithHttpInfo(regionId,
@@ -78,6 +81,7 @@ public class MarketApiWrapper {
 	}
 
 	public List<GetMarketsStructuresStructureId200Ok> getMarketsStructureIdOrders(long structId, int page, String token) throws ApiException {
+		Stats.esiCalls++;
 		//String etag = Utils.getEtag(db, "orders-" + structId + "-" + page);
 		log.trace("Executing API query getMarketsStructureStructureId(" + structId + ", " + page + ")");
 		ApiResponse<List<GetMarketsStructuresStructureId200Ok>> resp = null;
@@ -110,6 +114,7 @@ public class MarketApiWrapper {
 	}
 	
 	public List<GetCharactersCharacterIdOrders200Ok> getMarketsCharacterIdOrders(int charId, String token) throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "character-orders-" + charId);
 		log.trace("Executing API query getCharactersCharacterIdOrders(" + charId + ")");
 		ApiResponse<List<GetCharactersCharacterIdOrders200Ok>> resp = mapi.getCharactersCharacterIdOrdersWithHttpInfo(charId, Utils.getApiDatasource(), etag, token);
@@ -121,6 +126,7 @@ public class MarketApiWrapper {
 	}
 
 	public List<Integer> getMarketGroupIds() throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "market-groups");
 		log.trace("Executing API query getMarketGroupIds()");
 		ApiResponse<List<Integer>> resp = mapi.getMarketsGroupsWithHttpInfo(Utils.getApiDatasource(), etag);
@@ -130,6 +136,7 @@ public class MarketApiWrapper {
 	}
 
 	public GetMarketsGroupsMarketGroupIdOk getMarketGroup(int marketGroupId) throws ApiException {
+		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "market-group-" + marketGroupId);
 		log.trace("Executing API query getMarketGroup(" + marketGroupId + ")");
 		ApiResponse<GetMarketsGroupsMarketGroupIdOk> resp = mapi.getMarketsGroupsMarketGroupIdWithHttpInfo(marketGroupId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
