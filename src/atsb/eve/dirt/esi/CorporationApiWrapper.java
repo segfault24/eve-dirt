@@ -25,10 +25,16 @@ public class CorporationApiWrapper {
 	}
 
 	public GetCorporationsCorporationIdOk getCorporation(int corpId) throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "corporation-" + corpId);
 		log.trace("Executing API query getCorporation()");
-		ApiResponse<GetCorporationsCorporationIdOk> resp = capi.getCorporationsCorporationIdWithHttpInfo(corpId, Utils.getApiDatasource(), etag);
+		ApiResponse<GetCorporationsCorporationIdOk> resp;
+		try {
+			Stats.esiCalls++;
+			resp = capi.getCorporationsCorporationIdWithHttpInfo(corpId, Utils.getApiDatasource(), etag);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "corporation-" + corpId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();

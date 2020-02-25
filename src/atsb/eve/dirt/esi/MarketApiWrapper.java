@@ -34,7 +34,6 @@ public class MarketApiWrapper {
 	}
 
 	public List<GetMarketsRegionIdOrders200Ok> getMarketsRegionIdOrders(int regionId, int page) throws ApiException {
-		Stats.esiCalls++;
 		//String etag = Utils.getEtag(db, "orders-" + regionId + "-" + page);
 		log.trace("Executing API query getMarketsRegionIdOrders(" + regionId + ", " + page + ")");
 		ApiResponse<List<GetMarketsRegionIdOrders200Ok>> resp = null;
@@ -42,9 +41,11 @@ public class MarketApiWrapper {
 		int attempt = 1;
 		while (!done && attempt <= MAX_ATTEMPTS) {
 			try {
+				Stats.esiCalls++;
 				resp = mapi.getMarketsRegionIdOrdersWithHttpInfo("all", regionId, Utils.getApiDatasource(), null, page, null);
 				done = true;
 			} catch (ApiException e) {
+				Stats.esiErrors++;
 				if (attempt == MAX_ATTEMPTS) {
 					// throw after reaching MAX_ATTEMPTS
 					throw e;
@@ -68,11 +69,16 @@ public class MarketApiWrapper {
 
 	public List<GetMarketsRegionIdHistory200Ok> getMarketsRegionIdHistory(int regionId, int typeId)
 			throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "history-" + regionId + "-" + typeId);
 		log.trace("Executing API query getMarketsRegionIdHistory(" + regionId + ", " + typeId + ")");
-		ApiResponse<List<GetMarketsRegionIdHistory200Ok>> resp = mapi.getMarketsRegionIdHistoryWithHttpInfo(regionId,
-				typeId, Utils.getApiDatasource(), etag);
+		ApiResponse<List<GetMarketsRegionIdHistory200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = mapi.getMarketsRegionIdHistoryWithHttpInfo(regionId, typeId, Utils.getApiDatasource(), etag);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
 			Utils.upsertEtag(db, "history-" + regionId + "-" + typeId, Utils.getEtag(resp.getHeaders()));
@@ -81,7 +87,6 @@ public class MarketApiWrapper {
 	}
 
 	public List<GetMarketsStructuresStructureId200Ok> getMarketsStructureIdOrders(long structId, int page, String token) throws ApiException {
-		Stats.esiCalls++;
 		//String etag = Utils.getEtag(db, "orders-" + structId + "-" + page);
 		log.trace("Executing API query getMarketsStructureStructureId(" + structId + ", " + page + ")");
 		ApiResponse<List<GetMarketsStructuresStructureId200Ok>> resp = null;
@@ -89,9 +94,11 @@ public class MarketApiWrapper {
 		int attempt = 1;
 		while (!done && attempt <= MAX_ATTEMPTS) {
 			try {
+				Stats.esiCalls++;
 				resp = mapi.getMarketsStructuresStructureIdWithHttpInfo(structId, Utils.getApiDatasource(), null, page, token);
 				done = true;
 			} catch (ApiException e) {
+				Stats.esiErrors++;
 				if (attempt == MAX_ATTEMPTS) {
 					// throw after reaching MAX_ATTEMPTS
 					throw e;
@@ -114,10 +121,16 @@ public class MarketApiWrapper {
 	}
 	
 	public List<GetCharactersCharacterIdOrders200Ok> getMarketsCharacterIdOrders(int charId, String token) throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "character-orders-" + charId);
 		log.trace("Executing API query getCharactersCharacterIdOrders(" + charId + ")");
-		ApiResponse<List<GetCharactersCharacterIdOrders200Ok>> resp = mapi.getCharactersCharacterIdOrdersWithHttpInfo(charId, Utils.getApiDatasource(), etag, token);
+		ApiResponse<List<GetCharactersCharacterIdOrders200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = mapi.getCharactersCharacterIdOrdersWithHttpInfo(charId, Utils.getApiDatasource(), etag, token);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
 			Utils.upsertEtag(db, "character-orders-" + charId, Utils.getEtag(resp.getHeaders()));
@@ -126,20 +139,32 @@ public class MarketApiWrapper {
 	}
 
 	public List<Integer> getMarketGroupIds() throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "market-groups");
 		log.trace("Executing API query getMarketGroupIds()");
-		ApiResponse<List<Integer>> resp = mapi.getMarketsGroupsWithHttpInfo(Utils.getApiDatasource(), etag);
+		ApiResponse<List<Integer>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = mapi.getMarketsGroupsWithHttpInfo(Utils.getApiDatasource(), etag);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "market-groups", Utils.getEtag(resp.getHeaders()));
 		return resp.getData();
 	}
 
 	public GetMarketsGroupsMarketGroupIdOk getMarketGroup(int marketGroupId) throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "market-group-" + marketGroupId);
 		log.trace("Executing API query getMarketGroup(" + marketGroupId + ")");
-		ApiResponse<GetMarketsGroupsMarketGroupIdOk> resp = mapi.getMarketsGroupsMarketGroupIdWithHttpInfo(marketGroupId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
+		ApiResponse<GetMarketsGroupsMarketGroupIdOk> resp;
+		try {
+			Stats.esiCalls++;
+			resp = mapi.getMarketsGroupsMarketGroupIdWithHttpInfo(marketGroupId, Utils.getApiLanguage(), Utils.getApiDatasource(), etag, Utils.getApiLanguage());
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "market-group-" + marketGroupId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();

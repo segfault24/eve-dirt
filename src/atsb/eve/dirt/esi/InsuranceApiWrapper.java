@@ -26,15 +26,22 @@ public class InsuranceApiWrapper {
 	}
 
 	public List<GetInsurancePrices200Ok> getInsurancePrices() throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "insurance-prices");
 		log.trace("Executing API query getInsurancePrices()");
-		ApiResponse<List<GetInsurancePrices200Ok>> resp = iapi.getInsurancePricesWithHttpInfo(Utils.getApiLanguage(),
-				Utils.getApiDatasource(), etag, Utils.getApiLanguage());
+		ApiResponse<List<GetInsurancePrices200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = iapi.getInsurancePricesWithHttpInfo(Utils.getApiLanguage(), Utils.getApiDatasource(), etag,
+					Utils.getApiLanguage());
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		if (!resp.getData().isEmpty()) {
 			Utils.upsertEtag(db, "insurance-prices", Utils.getEtag(resp.getHeaders()));
 		}
 		return resp.getData();
 	}
+
 }

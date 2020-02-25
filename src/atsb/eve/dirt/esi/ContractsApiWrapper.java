@@ -26,21 +26,37 @@ public class ContractsApiWrapper {
 		capi = new ContractsApi();
 	}
 
-	public List<GetCharactersCharacterIdContracts200Ok> getCharacterContracts(int charId, int page, String token) throws ApiException {
-		Stats.esiCalls++;
+	public List<GetCharactersCharacterIdContracts200Ok> getCharacterContracts(int charId, int page, String token)
+			throws ApiException {
 		String etag = Utils.getEtag(db, "char-contract-" + charId + "-" + page);
 		log.trace("Executing API query getCharacterContracts(" + charId + ", " + page + ")");
-		ApiResponse<List<GetCharactersCharacterIdContracts200Ok>> resp = capi.getCharactersCharacterIdContractsWithHttpInfo(charId, Utils.getApiDatasource(), etag, page, token);
+		ApiResponse<List<GetCharactersCharacterIdContracts200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = capi.getCharactersCharacterIdContractsWithHttpInfo(charId, Utils.getApiDatasource(), etag, page,
+					token);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "char-contract-" + charId + "-" + page, etag);
 		return resp.getData();
 	}
 
-	public List<GetCorporationsCorporationIdContracts200Ok> getCorporationContracts(int corpId, int page, String token) throws ApiException {
-		Stats.esiCalls++;
+	public List<GetCorporationsCorporationIdContracts200Ok> getCorporationContracts(int corpId, int page, String token)
+			throws ApiException {
 		String etag = Utils.getEtag(db, "corp-contract-" + corpId + "-" + page);
 		log.trace("Executing API query getCorporationContracts(" + corpId + ", " + page + ")");
-		ApiResponse<List<GetCorporationsCorporationIdContracts200Ok>> resp = capi.getCorporationsCorporationIdContractsWithHttpInfo(corpId, Utils.getApiDatasource(), etag, page, token);
+		ApiResponse<List<GetCorporationsCorporationIdContracts200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = capi.getCorporationsCorporationIdContractsWithHttpInfo(corpId, Utils.getApiDatasource(), etag, page,
+					token);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "corp-contract-" + corpId + "-" + page, etag);
 		return resp.getData();

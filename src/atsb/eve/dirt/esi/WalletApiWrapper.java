@@ -26,22 +26,32 @@ public class WalletApiWrapper {
 
 	public List<GetCharactersCharacterIdWalletTransactions200Ok> getWalletTransactions(int charId, Long beforeTrans,
 			String token) throws ApiException {
-		Stats.esiCalls++;
 		log.trace("Executing API query getWalletTransactions()");
 		ApiResponse<List<GetCharactersCharacterIdWalletTransactions200Ok>> resp;
-		resp = wapi.getCharactersCharacterIdWalletTransactionsWithHttpInfo(charId, Utils.getApiDatasource(),
-				beforeTrans, null, token);
+		try {
+			Stats.esiCalls++;
+			resp = wapi.getCharactersCharacterIdWalletTransactionsWithHttpInfo(charId, Utils.getApiDatasource(),
+					beforeTrans, null, token);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		return resp.getData();
 	}
 
 	public List<GetCharactersCharacterIdWalletJournal200Ok> getWalletJournal(int charId, int page, String token)
 			throws ApiException {
-		Stats.esiCalls++;
 		log.trace("Executing API query getWalletJournal()");
 		ApiResponse<List<GetCharactersCharacterIdWalletJournal200Ok>> resp;
-		resp = wapi.getCharactersCharacterIdWalletJournalWithHttpInfo(charId, Utils.getApiDatasource(), null, page,
-				token);
+		try {
+			Stats.esiCalls++;
+			resp = wapi.getCharactersCharacterIdWalletJournalWithHttpInfo(charId, Utils.getApiDatasource(), null, page,
+					token);
+		} catch (ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		return resp.getData();
 	}

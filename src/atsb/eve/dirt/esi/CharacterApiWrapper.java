@@ -25,10 +25,16 @@ public class CharacterApiWrapper {
 	}
 
 	public GetCharactersCharacterIdOk getCharacter(int charId) throws ApiException {
-		Stats.esiCalls++;
 		String etag = Utils.getEtag(db, "character-" + charId);
 		log.trace("Executing API query getCharacter(" + charId + ")");
-		ApiResponse<GetCharactersCharacterIdOk> resp = capi.getCharactersCharacterIdWithHttpInfo(charId, Utils.getApiDatasource(), etag);
+		ApiResponse<GetCharactersCharacterIdOk> resp;
+		try {
+			Stats.esiCalls++;
+			resp = capi.getCharactersCharacterIdWithHttpInfo(charId, Utils.getApiDatasource(), etag);
+		} catch(ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "character-" + charId, Utils.getEtag(resp.getHeaders()));
 		return resp.getData();

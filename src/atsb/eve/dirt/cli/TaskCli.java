@@ -118,6 +118,7 @@ public class TaskCli {
 				if (c != null) {
 					log.info("Executing command '" + c.getCommandString() + "'");
 					c.execute(parts);
+					continue;
 				} else {
 					System.out.println("unknown command");
 				}

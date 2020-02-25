@@ -36,6 +36,7 @@ public class MiscCommands {
 
 		@Override
 		public void execute(String[] args) {
+			System.out.println("   uptime: " + Stats.uptime());
 			System.out.println("esi calls: " + Stats.esiCalls + "  errors: " + Stats.esiErrors);
 			System.out.println("sso calls: " + Stats.ssoCalls + "  errors: " + Stats.ssoErrors);
 			System.out.println(" poolsize: " + daemon.getPoolSize());
