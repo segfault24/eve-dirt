@@ -179,3 +179,9 @@ table.dataTable thead .sorting_desc_disabled::after {
 .chart-card-body {
 	background: #545a60;
 }
+
+/* SBAdmin Overrides */
+
+#mainNav .navbar-collapse .navbar-sidenav > .nav-item > .nav-link {
+	padding: 0.5em 1em;
+}

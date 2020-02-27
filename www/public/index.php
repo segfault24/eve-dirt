@@ -24,8 +24,11 @@ require __DIR__ . '/../src/dependencies.php';
 require __DIR__ . '/../src/middleware.php';
 
 // Register routes
-require __DIR__ . '/../src/routes.php';
+require __DIR__ . '/../src/routes-misc.php';
+require __DIR__ . '/../src/routes-admin.php';
+require __DIR__ . '/../src/routes-user.php';
 require __DIR__ . '/../src/routes-sso.php';
+require __DIR__ . '/../src/routes-market.php';
 require __DIR__ . '/../src/routes-api-misc.php';
 require __DIR__ . '/../src/routes-api-market.php';
 require __DIR__ . '/../src/routes-api-trade.php';
