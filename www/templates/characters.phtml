@@ -12,7 +12,11 @@
 		<div class="table-responsive">
 			<table class="table responsive table-striped table-condensed">
 {% for result in charlist %}
+	{% if result.charId == charid %}
+				<tr class="highlight">
+	{% else %}
 				<tr>
+	{% endif %}
 					<td><img src="https://imageserver.eveonline.com/Character/{{result.charId}}_64.jpg"></td>
 					<td>{{result.charName}}</td>
 					<td>
