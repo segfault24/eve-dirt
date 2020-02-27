@@ -121,6 +121,14 @@ $(document).ready(function(){
 		}
 	});
 
+	// grab user's orderids
+	var myOrderIds = [];
+	$.getJSON('/api/wallet/orderids', function(result) {
+		for(const ido of result) {
+			myOrderIds.push(ido.orderId);
+		}
+	});
+
 	// this function is called when the type or region is changed
 	// it only loads the currently visible tab, to reduce the
 	// amount of work done initially
@@ -166,13 +174,6 @@ $(document).ready(function(){
 		if(ordersLoaded) {
 			return;
 		}
-
-		var myOrderIds = [];
-		$.getJSON('/api/wallet/orderids', function(result) {
-			for(const ido of result) {
-				myOrderIds.push(ido.orderId);
-			}
-		});
 
 		$.getJSON('/api/market/orders/' + region + '/type/' + type, function(result) {
 			var orderData = result;
