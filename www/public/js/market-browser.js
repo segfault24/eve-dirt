@@ -167,6 +167,13 @@ $(document).ready(function(){
 			return;
 		}
 
+		var myOrderIds = [];
+		$.getJSON('/api/wallet/orderids', function(result) {
+			for(const ido of result) {
+				myOrderIds.push(ido.orderId);
+			}
+		});
+
 		$.getJSON('/api/market/orders/' + region + '/type/' + type, function(result) {
 			var orderData = result;
 
@@ -177,8 +184,9 @@ $(document).ready(function(){
 
 			// build the order tables
 			for(var i=0; i<orderData.length; i++) {
+				var row;
 				if(orderData[i].isBuyOrder==1) {
-					buyTable.row.add([
+					row = buyTable.row.add([
 						orderData[i].regionName,
 						orderData[i].sName,
 						orderData[i].range,
@@ -187,12 +195,15 @@ $(document).ready(function(){
 						formatInt(orderData[i].minVolume)
 					]);
 				} else {
-					sellTable.row.add([
+					row = sellTable.row.add([
 						orderData[i].regionName,
 						orderData[i].sName,
 						formatIsk(orderData[i].price),
 						formatInt(orderData[i].volumeRemain)
 					]);
+				}
+				if (myOrderIds.includes(orderData[i].orderId)) {
+					row.node().classList.add('highlight');
 				}
 			}
 			buyTable.draw();

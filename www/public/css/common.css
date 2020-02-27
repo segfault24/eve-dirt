@@ -67,6 +67,14 @@ table.dataTable th {
 	border-top: 0;
 }
 
+tr.selected {
+	background-color: #007bff !important;
+}
+
+tr.highlight {
+	background-color: #6f42c1 !important;
+}
+
 table.dataTable thead .sorting::before,
 table.dataTable thead .sorting::after,
 table.dataTable thead .sorting_asc::before,

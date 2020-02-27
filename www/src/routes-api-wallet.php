@@ -34,6 +34,24 @@ $app->get('/api/wallet/orders', function ($request, $response, $args) {
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
+$app->get('/api/wallet/orderids', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT `orderId` FROM charOrder WHERE `charId` IN (
+                SELECT charId FROM dirtApiAuth WHERE userId=:userid
+            )';
+    $stmt = $db->prepare($sql);
+    $stmt->execute(array(
+        ':userid' => $u->getUserId()
+    ));
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
 $app->get('/api/wallet/transactions', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
