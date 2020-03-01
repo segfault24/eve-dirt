@@ -92,6 +92,7 @@ public class TaskCli {
 		Scanner in = new Scanner(System.in);
 
 		boolean done = false;
+		String lastCommand = "";
 		while (!done) {
 			System.out.print("> ");
 			String line = in.nextLine();
@@ -101,7 +102,14 @@ public class TaskCli {
 				continue;
 			}
 
-			switch (parts[0].trim().toLowerCase()) {
+			String cmd = parts[0].trim().toLowerCase();
+			if (cmd.equalsIgnoreCase(".")) {
+				cmd = lastCommand;
+			} else {
+				lastCommand = cmd;
+			}
+
+			switch (cmd) {
 			case "":
 				break;
 			case "help":
@@ -114,13 +122,14 @@ public class TaskCli {
 				exit();
 				break;
 			default:
-				Command c = commands.get(parts[0]);
+				Command c = commands.get(cmd);
 				if (c != null) {
 					log.info("Executing command '" + c.getCommandString() + "'");
 					c.execute(parts);
 					continue;
 				} else {
-					System.out.println("unknown command");
+					log.error("Unknown command '" + cmd + "'");
+					System.out.println("unknown command '" + cmd + "'");
 				}
 			}
 		}
