@@ -1,6 +1,7 @@
 package atsb.eve.dirt;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -78,6 +79,10 @@ public class FirstRun implements Taskable {
 		t.setDbPool(dbPool);
 		t.setDaemon(this);
 		queue.add(t);
+	}
+
+	@Override
+	public void addTasks(Collection<DirtTask> ts) {
 	}
 
 	public static void main(String[] args) {

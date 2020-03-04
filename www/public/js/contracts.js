@@ -7,10 +7,10 @@ $(document).ready(function(){
 	// initialize tables
 	var contractsTable = $('#contracts-table').DataTable({
 		columns: [
-			{title:'Type', responsivePriority: 2},
+			{title:'', responsivePriority: 2},
 			{title:'Issuer', responsivePriority: 1},
-			{title:'Status', responsivePriority: 3},
-			{title:'Acceptor', responsivePriority: 5},
+			{title:'Price (m)', responsivePriority: 3},
+			{title:'Title', responsivePriority: 5},
 			{title:'Date Issued', responsivePriority: 4}
 		],
 		order: [[4, "desc"]],
@@ -27,13 +27,13 @@ $(document).ready(function(){
 		if(contractsLoaded) {
 			return;
 		}
-		$.getJSON('/api/market/contracts', function(result) {
+		$.getJSON('/api/contracts/exchange', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
-					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i> ' + prettyType(result[i].type) + '</a>',
+					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract?contract=' + result[i].contractId + '" target="_blank">Details</a>',
 					result[i].issuerName,
-					prettyStatus(result[i].status),
-					result[i].acceptorName,
+					formatInt(result[i].price),
+					result[i].title,
 					result[i].dateIssued
 				]);
 			}
@@ -45,26 +45,44 @@ $(document).ready(function(){
 
 	function prettyType(type) {
 		switch(type) {
-			case 'item_exchange':
+			case '1':
+				return 'Unknown';
+			case '2':
 				return 'Item Exchange';
-			case 'courier':
+			case '3':
+				return 'Auction';
+			case '4':
 				return 'Courier';
+			case '5':
+				return 'Loan';
 		}
 		return "Unknown";
 	}
 
 	function prettyStatus(status) {
 		switch(status) {
-			case 'outstanding':
+			case '1':
 				return 'Outstanding';
-			case 'in_progress':
+			case '2':
 				return 'In Progress';
-			case 'finished':
+			case '3':
+				return 'Finished Issuer';
+			case '4':
+				return 'Finished Contractor';
+			case '5':
 				return 'Finished';
-			case 'deleted':
-				return 'Deleted';
-			case 'failed':
+			case '6':
+				return 'Cancelled';
+			case '7':
+				return 'Rejected';
+			case '8':
 				return 'Failed';
+			case '9':
+				return 'Deleted';
+			case '10':
+				return 'Reversed';
+			case '11':
+				return 'Unknown';
 		}
 		return "Unknown";
 	}

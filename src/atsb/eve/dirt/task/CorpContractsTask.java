@@ -80,15 +80,12 @@ public class CorpContractsTask extends DirtTask {
 			List<Contract> l = new ArrayList<Contract>(contracts.size());
 			for (GetCorporationsCorporationIdContracts200Ok gc : contracts) {
 				Contract c = TypeUtil.convert(gc);
-				if (c.getStatus().equalsIgnoreCase(Contract.STATUS_OUTSTANDING)) {
-					l.add(c);
-				}
+				l.add(c);
 			}
 
 			try {
 				getDb().setAutoCommit(false);
-				CorpContractTable.truncate(getDb());
-				CorpContractTable.insertMany(getDb(), l);
+				CorpContractTable.upsertMany(getDb(), l);
 				getDb().commit();
 				getDb().setAutoCommit(true);
 				log.debug("Inserted " + contracts.size() + " contracts for corporation " + corpId + " page " + page);

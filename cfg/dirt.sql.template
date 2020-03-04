@@ -49,4 +49,5 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("killstream.enab
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketpublic","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("maintenancemode","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("useragent","DIRT/0.1 (webmaster@DOMAINNAME)");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope","esi-wallet.read_character_wallet.v1 esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-ui.open_window.v1 esi-markets.structure_markets.v1 esi-markets.read_character_orders.v1 esi-contracts.read_character_contracts.v1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope","esi-wallet.read_character_wallet.v1 esi-universe.read_structures.v1 esi-assets.read_assets.v1 esi-ui.open_window.v1");
+INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("ssoscope2","esi-markets.structure_markets.v1 esi-markets.read_character_orders.v1 esi-contracts.read_character_contracts.v1 esi-contracts.read_corporation_contracts.v1");

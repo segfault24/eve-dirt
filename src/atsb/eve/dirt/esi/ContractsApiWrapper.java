@@ -12,7 +12,9 @@ import net.evetech.ApiException;
 import net.evetech.ApiResponse;
 import net.evetech.esi.ContractsApi;
 import net.evetech.esi.models.GetCharactersCharacterIdContracts200Ok;
+import net.evetech.esi.models.GetCharactersCharacterIdContractsContractIdItems200Ok;
 import net.evetech.esi.models.GetCorporationsCorporationIdContracts200Ok;
+import net.evetech.esi.models.GetCorporationsCorporationIdContractsContractIdItems200Ok;
 
 public class ContractsApiWrapper {
 
@@ -44,6 +46,21 @@ public class ContractsApiWrapper {
 		return resp.getData();
 	}
 
+	public List<GetCharactersCharacterIdContractsContractIdItems200Ok> getCharacterContractItems(int charId,
+			int contractId, String token) throws ApiException {
+		log.trace("Executing API query getCharacterContractItems(" + charId + ", " + contractId + ")");
+		ApiResponse<List<GetCharactersCharacterIdContractsContractIdItems200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = capi.getCharactersCharacterIdContractsContractIdItemsWithHttpInfo(charId, contractId, Utils.getApiDatasource(), null, token);
+		} catch(ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
+		log.trace("API query returned status code " + resp.getStatusCode());
+		return resp.getData();
+	}
+
 	public List<GetCorporationsCorporationIdContracts200Ok> getCorporationContracts(int corpId, int page, String token)
 			throws ApiException {
 		String etag = Utils.getEtag(db, "corp-contract-" + corpId + "-" + page);
@@ -59,6 +76,21 @@ public class ContractsApiWrapper {
 		}
 		log.trace("API query returned status code " + resp.getStatusCode());
 		Utils.upsertEtag(db, "corp-contract-" + corpId + "-" + page, etag);
+		return resp.getData();
+	}
+
+	public List<GetCorporationsCorporationIdContractsContractIdItems200Ok> getCorporationContractItems(int corpId,
+			int contractId, String token) throws ApiException {
+		log.trace("Executing API query getCorporationContractItems(" + corpId + ", " + contractId + ")");
+		ApiResponse<List<GetCorporationsCorporationIdContractsContractIdItems200Ok>> resp;
+		try {
+			Stats.esiCalls++;
+			resp = capi.getCorporationsCorporationIdContractsContractIdItemsWithHttpInfo(contractId, corpId, Utils.getApiDatasource(), null, token);
+		} catch(ApiException e) {
+			Stats.esiErrors++;
+			throw e;
+		}
+		log.trace("API query returned status code " + resp.getStatusCode());
 		return resp.getData();
 	}
 

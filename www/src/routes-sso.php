@@ -19,7 +19,8 @@ $app->post('/sso-auth/link', function ($request, $response, $args) {
     $sso_callback_uri = 'http://' . Tools::getProperty('domain') . '/sso-auth/callback';
     $sso_client_id = Dirt\Tools::getProperty('ssoclientid');
     $sso_scope = Dirt\Tools::getProperty('ssoscope');
-    $auth_url = Dirt\Tools::SSO_AUTH_URL . '?response_type=code&redirect_uri=' . urlencode($sso_callback_uri) . '&client_id=' . $sso_client_id . '&scope=' . $sso_scope . '&state=' . $state;
+    $sso_scope2 = Dirt\Tools::getProperty('ssoscope2');
+    $auth_url = Dirt\Tools::SSO_AUTH_URL . '?response_type=code&redirect_uri=' . urlencode($sso_callback_uri) . '&client_id=' . $sso_client_id . '&scope=' . $sso_scope . ' ' . $sso_scope2 . '&state=' . $state;
 
     return $response->withStatus(302)
         ->withHeader('Location', $auth_url);

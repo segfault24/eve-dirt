@@ -103,39 +103,6 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
     ));
 });
 
-$app->get('/api/market/open-in-game-contract/{contract}', function ($request, $response, $args) {
-    $u = Dirt\User::getUser();
-    if (! $u->hasActiveChar()) {
-        return $response->withJson(array(
-            'error' => 'no character linked to this account'
-        ));
-    }
-
-    // execute the api call
-    $header = "Authorization: Bearer " . ($u->getAuthToken());
-    $ch = curl_init();
-    $url = "https://esi.evetech.net/latest/ui/openwindow/contract/?datasource=tranquility&contract_id=" . $args['contract'];
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_USERAGENT, Dirt\Tools::getProperty('useragent'));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        $header
-    ));
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-    $result = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    $this->logger->debug('/open-in-game-contract sent esi request for user ' . $u->getUserId() . ' type ' . $args['contract']); 
-    $this->logger->debug('/open-in-game-contract got response (' . $httpcode . ')');
-    return $response->withJson(array(
-        'success' => 'made esi call'
-    ));
-});
-
 $app->get('/api/insurance-prices', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
@@ -158,31 +125,4 @@ $app->get('/api/insurance-price/{typeid}', function ($request, $response, $args)
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/market/contracts', function ($request, $response, $args) {
-    $u = Dirt\User::getUser();
-    if (! $u->isLoggedIn()) {
-        return $response->withStatus(401);
-    }
 
-    $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, ach.`name` AS acceptorName
-            FROM corpcontract AS co
-            LEFT JOIN (
-                SELECT charId AS id, charName AS name FROM `character`
-                UNION
-                SELECT corpId AS id, corpName AS name FROM `corporation`
-            ) AS ich ON co.issuerId=ich.id
-            LEFT JOIN (
-                SELECT charId AS id, charName AS name FROM `character`
-                UNION
-                SELECT corpId AS id, corpName AS name FROM `corporation`
-            ) AS ach ON co.acceptorId=ach.id
-            ORDER BY co.dateIssued DESC';
-
-    $stmt = $db->prepare($sql);
-    $stmt->execute(array(
-        ':userid' => $u->getUserId()
-    ));
-
-    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
-});

@@ -15,6 +15,8 @@ import atsb.eve.dirt.TypeUtil;
 import atsb.eve.dirt.esi.ContractsApiWrapper;
 import atsb.eve.dirt.esi.auth.OAuthUtil;
 import atsb.eve.model.Contract;
+import atsb.eve.model.Contract.ContractStatus;
+import atsb.eve.model.Contract.ContractType;
 import atsb.eve.model.Notification;
 import atsb.eve.model.OAuthUser;
 import net.evetech.ApiException;
@@ -55,6 +57,19 @@ public class CharacterContractsTask extends DirtTask {
 			return;
 		}
 
+		// get the user's other characters too
+		List<Integer> otherCharIds;
+		try {
+			otherCharIds = ApiAuthTable.getCharsByUserId(getDb(), auth.getUserId());
+			if (otherCharIds == null) {
+				log.fatal("No auth details found for user=" + auth.getUserId());
+				return;
+			}
+		} catch (SQLException e) {
+			log.fatal("Failed to get auth details for user=" + auth.getUserId());
+			return;
+		}
+
 		// iterate through the pages
 		ContractsApiWrapper capiw = new ContractsApiWrapper(getDb());
 		List<GetCharactersCharacterIdContracts200Ok> contracts = new ArrayList<>();
@@ -86,24 +101,49 @@ public class CharacterContractsTask extends DirtTask {
 
 			// check for notable conditions on contracts issued by this character
 			for (Contract contract : l) {
-				checkNotifications(auth, contract);
+				checkNotifications(auth, contract, otherCharIds);
 			}
+
+			// check if contracts haven't ever been seen, so we can get the items
+			// but don't queue the retrieval tasks until after we insert the contracts
+			List<DirtTask> tasks = checkContractItems(auth, l);
 
 			try {
 				getDb().setAutoCommit(false);
-				ContractTable.insertMany(getDb(), l);
+				ContractTable.upsertMany(getDb(), l);
 				getDb().commit();
 				getDb().setAutoCommit(true);
 				log.debug("Inserted " + contracts.size() + " contracts for character " + charId + " page " + page);
 			} catch (SQLException e) {
 				log.error("Unexpected failure while processing page " + page + " for character " + charId, e);
 			}
+
+			// queue explicitly after contract insert because of foreign key constraint
+			getDaemon().addTasks(tasks);
 		} while (contracts.size() > 0);
 
 		log.debug("Inserted " + totalContracts + " total contracts for character " + charId);
 	}
 
-	private void checkNotifications (OAuthUser auth, Contract contract) {
+	private List<DirtTask> checkContractItems(OAuthUser auth, List<Contract> contracts) {
+		List<DirtTask> tasks = new ArrayList<DirtTask>();
+		for (Contract contract : contracts) {
+			if (contract.getType() == ContractType.ITEM_EXCHANGE) {
+				try {
+					Contract c = ContractTable.selectById(getDb(), contract.getContractId());
+					if (c == null) {
+						// we haven't seen this contract before, get the items
+						tasks.add(new ContractItemsTask(contract.getContractId(), auth.getKeyId()));
+					}
+				} catch (SQLException e) {
+					log.error("Failed to search for contract", e);
+				}
+			}
+		}
+		return tasks;
+	}
+
+	private void checkNotifications (OAuthUser auth, Contract contract, List<Integer> otherCharIds) {
 		// TODO: make these configurable by the user
 		boolean notifyOnInProgress = true;
 		boolean notifyOnFinished = true;
@@ -122,26 +162,31 @@ public class CharacterContractsTask extends DirtTask {
 			// skip when we already have a record of this contract and the status
 			// is the same, that way, we only notify on previously unseen contracts
 			// and all status changes
-			if (dbContract != null && dbContract.getStatus().equalsIgnoreCase(contract.getStatus())) {
+			if (dbContract != null && dbContract.getStatus() == contract.getStatus()) {
 				return;
 			}
+
+			// skip when trading between alts
+			for (int otherCharId : otherCharIds) {
+				if (ignoreFromAlts && contract.getAcceptorId() == otherCharId) {
+					return;
+				}
+			}
+
 			Notification n = new Notification();
 			n.setUserId(auth.getUserId());
 			n.setTime(new Timestamp(System.currentTimeMillis()));
 			boolean notify = true;
-			if (notifyOnFailed && contract.getStatus().equalsIgnoreCase(Contract.STATUS_FAILED)) {
+			if (notifyOnFailed && contract.getStatus() == ContractStatus.FAILED) {
 				n.setTitle("Contract Failed");
 				n.setText("Contract " + contract.getContractId() + " was Failed");
-			} else if (notifyOnRejected
-					&& contract.getStatus().equalsIgnoreCase(Contract.STATUS_REJECTED)) {
+			} else if (notifyOnRejected && contract.getStatus() == ContractStatus.REJECTED) {
 				n.setTitle("Contract Rejected");
 				n.setText("Contract " + contract.getContractId() + " was Rejected");
-			} else if (notifyOnFinished
-					&& contract.getStatus().equalsIgnoreCase(Contract.STATUS_FINISHED)) {
+			} else if (notifyOnFinished && contract.getStatus() == ContractStatus.FINISHED) {
 				n.setTitle("Contract Completed");
 				n.setText("Contract " + contract.getContractId() + " was Completed");
-			} else if (notifyOnInProgress
-					&& contract.getStatus().equalsIgnoreCase(Contract.STATUS_IN_PROGRESS)) {
+			} else if (notifyOnInProgress && contract.getStatus() == ContractStatus.IN_PROGRESS) {
 				n.setTitle("Contract In Progress");
 				n.setText("Contract " + contract.getContractId() + " is now In Progress");
 			} else {
@@ -157,5 +202,5 @@ public class CharacterContractsTask extends DirtTask {
 			}
 		}
 	}
-	
+
 }

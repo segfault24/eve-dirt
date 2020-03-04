@@ -2,6 +2,7 @@ package atsb.eve.dirt;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -131,7 +132,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 
 		// corporation contracts
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_CORP_CONTRACTS_PERIOD);
-		//addPeriodicTask(db, new CorpContractsTask(), period);
+		addPeriodicTask(db, new CorpContractsTask(), period);
 
 		// unknown ids resolution
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_UNKNOWN_IDS_PERIOD);
@@ -147,6 +148,16 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		t.setDbPool(dbPool);
 		schedule(t, 0, TimeUnit.MINUTES);
 		log.debug("Queued " + t.getTaskName());
+	}
+
+	/**
+	 * @param ts
+	 */
+	@Override
+	public void addTasks(Collection<DirtTask> ts) {
+		for (DirtTask t : ts) {
+			addTask(t);
+		}
 	}
 
 	/**
