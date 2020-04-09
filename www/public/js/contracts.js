@@ -16,8 +16,7 @@ $(document).ready(function(){
 		order: [[4, "desc"]],
 		searching: true,
 		paging: true,
-		pageLength: 40,
-		bLengthChange: false,
+		pageLength: 25,
 		bInfo: false,
 		responsive: true,
 		select: true

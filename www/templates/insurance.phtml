@@ -1,8 +1,53 @@
 {% extends "base.phtml" %}
-{% block title %}Insurance Prices{% endblock %}
+{% block title %}Insurance{% endblock %}
+{% block extrahead %}
+{% include 'table-libs.phtml' %}
+<script>
+$(document).ready(function() {
+    $('#instable').DataTable({
+        order: [[3, "desc"]],
+        paging: true,
+        pageLength: 25,
+        bInfo: false,
+        responsive: true,
+        select: true
+    });
+} );
+</script>
+{% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
+		<h3 class="page-header" id="title"><i class="fa fa-medkit fa-fw"></i> Insurance</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-9">
+			<div class="table-responsive">
+			<table id="instable" class="table responsive table-striped table-condensed">
+				<thead>
+					<tr>
+						<th>Ship</th>
+						<th>Tier</th>
+						<th>Cost</th>
+						<th>Payout</th>
+						<th>Net</th>
+					</tr>
+				</thead>
+				<tbody>
+{% for result in inslist %}
+					<tr>
+						<td>{{result.typeName}}</td>
+						<td>{{result.tier}}</td>
+						<td>{{result.cost|number_format(0)}}</td>
+						<td>{{result.payout|number_format(0)}}</td>
+						<td>{{(result.payout - result.cost)|number_format(0)}}</td>
+					</tr>
+{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 {% endblock %}

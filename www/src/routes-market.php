@@ -57,5 +57,18 @@ $app->get('/insurance', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $uid = $u->getUserId();
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT t.`typeName`, i.`name` AS tier, i.`cost`, i.`payout`
+            FROM insuranceprice AS i
+            JOIN invType AS t ON t.`typeId`=i.`typeId`
+            ORDER BY t.`typeName`,i.`cost` DESC';
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':uid', $uid);
+    $stmt->execute();
+
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $args['inslist'] = $rows;
+
     return $this->renderer->render($response, 'insurance.phtml', $args);
 });
