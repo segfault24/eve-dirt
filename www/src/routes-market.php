@@ -62,6 +62,7 @@ $app->get('/insurance', function ($request, $response, $args) {
     $sql = 'SELECT t.`typeName`, i.`name` AS tier, i.`cost`, i.`payout`
             FROM insuranceprice AS i
             JOIN invType AS t ON t.`typeId`=i.`typeId`
+            WHERE t.`published`=1 AND t.`marketGroupId` IS NOT NULL
             ORDER BY t.`typeName`,i.`cost` DESC';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':uid', $uid);
