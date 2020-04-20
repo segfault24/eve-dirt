@@ -146,9 +146,15 @@ $app->get('/api/trade/structs-by-region/{region}/', function ($request, $respons
 
     $sql  = 'SELECT `stationId` AS sId,`stationName` AS sName FROM station where regionId=:regiona';
     $sql .= ' UNION ALL';
-    $sql .= ' SELECT `structId` AS sId,`structName` AS sName FROM structure where regionId=:regionb';
+    $sql .= ' (';
+    $sql .= '  SELECT s.`structId` AS sId, s.`structName` AS sName FROM structure AS s';
+    $sql .= '  JOIN dirtstructauth AS a ON s.`structId`=a.`structId`';
+    $sql .= '  WHERE s.`regionId`=:regionb';
+    $sql .= ' )';
     $sql .= ' ORDER BY sName';
 
+    $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    $stmt->execute();
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':regiona' => $args['region'],
@@ -176,6 +182,8 @@ $app->get('/api/trade/sell-sell/{source}/{destination}', function ($request, $re
     $sql .= ' AND o.isBuyOrder=0';
     $sql .= ' AND o.price < d.best';
 
+    $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    $stmt->execute();
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':source' => $args['source'],
@@ -203,6 +211,8 @@ $app->get('/api/trade/sell-buy/{source}/{destination}', function ($request, $res
     $sql .= ' AND o.isBuyOrder=0';
     $sql .= ' AND o.price < d.best';
 
+    $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    $stmt->execute();
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':source' => $args['source'],
@@ -222,6 +232,8 @@ $app->get('/api/trade/import/{source}/{destination}', function ($request, $respo
         $sql  = 'SELECT `regionId` FROM station WHERE stationId=:locationa';
         $sql .= ' UNION ALL';
         $sql .= ' SELECT `regionId` FROM structure WHERE structId=:locationb';
+        $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+        $stmt->execute();
         $stmt = $db->prepare($sql);
         $stmt->execute(array(
             ':locationa' => $args['destination'],
@@ -259,6 +271,8 @@ $app->get('/api/trade/import/{source}/{destination}', function ($request, $respo
     $sql .= ' AND stat.regionId=:destregionid';
     $sql .= ' AND stat.ma30 > 0';
 
+    $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    $stmt->execute();
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':source' => $args['source'],

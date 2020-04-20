@@ -10,11 +10,12 @@ $(document).ready(function(){
 			{title:'', responsivePriority: 2},
 			{title:'Location', responsivePriority: 4},
 			{title:'Issuer', responsivePriority: 1},
+			{title:'Acceptor', responsivePriority: 1},
 			{title:'Price', responsivePriority: 3},
 			{title:'Title', responsivePriority: 5},
 			{title:'Date Issued', responsivePriority: 4}
 		],
-		order: [[5, "desc"]],
+		order: [[6, "desc"]],
 		searching: true,
 		paging: true,
 		pageLength: 25,
@@ -27,15 +28,16 @@ $(document).ready(function(){
 		if(contractsLoaded) {
 			return;
 		}
-		$.getJSON('/api/contracts/exchange', function(result) {
+		$.getJSON('/api/contracts/exchange-finished', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
 					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract?contract=' + result[i].contractId + '" target="_blank">Details</a>',
 					result[i].locationId,
 					result[i].issuerName,
+					result[i].acceptorName,
 					formatInt(result[i].price),
 					result[i].title,
-					result[i].dateIssued
+					result[i].dateAccepted
 				]);
 			}
 			contractsTable.draw();

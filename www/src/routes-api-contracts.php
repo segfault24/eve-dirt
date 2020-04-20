@@ -11,20 +11,56 @@ $app->get('/api/contracts/exchange', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`price`, co.`title`, co.`dateIssued`
+    $sql = 'SELECT co.`contractId`, locs.`sName` AS locationId, ich.`name` AS issuerName, co.`price`, co.`title`, co.`dateIssued`
             FROM corpcontract AS co
             LEFT JOIN (
                 SELECT charId AS id, charName AS name FROM `character`
                 UNION
                 SELECT corpId AS id, corpName AS name FROM `corporation`
             ) AS ich ON co.issuerId=ich.id
+            LEFT JOIN (
+                SELECT `stationId` AS sId,`stationName` AS sName FROM station
+                UNION ALL
+                SELECT `structId` AS sId,`structName` AS sName FROM structure
+            ) AS locs ON co.`startLocationId`=locs.`sId`
             WHERE co.`type`=2 AND co.`status`=1
             ORDER BY co.dateIssued DESC';
 
     $stmt = $db->prepare($sql);
-    $stmt->execute(array(
-        ':userid' => $u->getUserId()
-    ));
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/contracts/exchange-finished', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT co.`contractId`, locs.`sName` AS locationId, ich.`name` AS issuerName, ach.`name` AS acceptorName, co.`price`, co.`title`, co.`dateAccepted`
+        FROM corpcontract AS co
+        LEFT JOIN (
+            SELECT charId AS id, charName AS name FROM `character`
+            UNION
+            SELECT corpId AS id, corpName AS name FROM `corporation`
+        ) AS ich ON co.issuerId=ich.id
+        LEFT JOIN (
+            SELECT charId AS id, charName AS name FROM `character`
+            UNION
+            SELECT corpId AS id, corpName AS name FROM `corporation`
+        ) AS ach ON co.acceptorId=ach.id
+        LEFT JOIN (
+            SELECT `stationId` AS sId,`stationName` AS sName FROM station
+            UNION ALL
+            SELECT `structId` AS sId,`structName` AS sName FROM structure
+        ) AS locs ON co.`startLocationId`=locs.`sId`
+        WHERE co.`type`=2 AND co.`status`=5
+        ORDER BY co.dateIssued DESC LIMIT 1000';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
 
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });

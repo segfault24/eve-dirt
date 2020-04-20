@@ -34,6 +34,10 @@ public class InsurancePricesTask extends DirtTask {
 		List<InsurancePrice> prices = getInsurancePrices();
 		log.debug("Retrieved " + prices.size() + " insurance price records");
 
+		if (prices.isEmpty()) {
+			return;
+		}
+
 		try {
 			getDb().setAutoCommit(false);
 			InsuranceTable.deleteAll(getDb());

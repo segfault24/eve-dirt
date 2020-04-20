@@ -95,6 +95,50 @@ function removeOutliers(arr, bounds) {
 	return narr;
 }
 
+function prettyType(type) {
+	switch(type) {
+		case '1':
+			return 'Unknown';
+		case '2':
+			return 'Item Exchange';
+		case '3':
+			return 'Auction';
+		case '4':
+			return 'Courier';
+		case '5':
+			return 'Loan';
+	}
+	return "Unknown";
+}
+
+function prettyStatus(status) {
+	switch(status) {
+		case '1':
+			return 'Outstanding';
+		case '2':
+			return 'In Progress';
+		case '3':
+			return 'Finished Issuer';
+		case '4':
+			return 'Finished Contractor';
+		case '5':
+			return 'Finished';
+		case '6':
+			return 'Cancelled';
+		case '7':
+			return 'Rejected';
+		case '8':
+			return 'Failed';
+		case '9':
+			return 'Deleted';
+		case '10':
+			return 'Reversed';
+		case '11':
+			return 'Unknown';
+	}
+	return "Unknown";
+}
+
 $(function() {
 	// click handler for opening types in game market
 	$(document).on('click', '.open-in-game', function(e) {

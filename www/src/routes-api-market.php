@@ -13,6 +13,8 @@ $app->get('/api/market/history/{region}/type/{type}', function ($request, $respo
             WHERE `regionId`=:region
             AND `typeId`=:type
             ORDER BY `date` ASC;';
+    $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    $stmt->execute();
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':region', $args['region']);
     $stmt->bindParam(':type', $args['type']);
@@ -38,6 +40,8 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
     if ($args['location'] != 0) {
         $sql .= ' AND (o.`regionId`=:location OR o.`locationId`=:location);';
     }
+    $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+    $stmt->execute();
     $stmt = $db->prepare($sql);
     if ($args['location'] != 0) {
         $stmt->bindParam(':location', $args['location']);
