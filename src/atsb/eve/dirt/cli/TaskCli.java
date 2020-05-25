@@ -40,7 +40,6 @@ public class TaskCli {
 		addCommand(new MiscCommands.Status());
 		addCommand(new MiscCommands.StructAdd());
 		addCommand(new TaskCommands.TaskList());
-		addCommand(new TaskCommands.TaskClear());
 		addCommand(new TaskCommands.TaskCancel());
 		addCommand(new TaskCommands.TaskAdd());
 		addCommand(new TaskCommands.TaskStatusCommand());

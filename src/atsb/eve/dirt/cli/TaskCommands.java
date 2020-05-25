@@ -8,8 +8,8 @@ import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.TaskStatusTable;
-import atsb.eve.model.TaskStatus;
+import atsb.eve.db.TaskLogTable;
+import atsb.eve.model.TaskLog;
 
 public class TaskCommands {
 
@@ -35,53 +35,10 @@ public class TaskCommands {
 		@Override
 		public void execute(String[] args) {
 			if (args.length > 1) {
-				TaskStatus ts = TaskStatusTable.getTaskStatus(db, args[1]);
-				if (ts != null) {
-					System.out.println("last run: " + ts.getLastRun());
-					System.out.println("last duration: " + ts.getLastRunDuration());
-				} else {
-					log.error("could not find status for " + args[1]);
-					System.err.println("could not find status for '" + args[1] + "'");
-				}
-			} else {
-				log.error("no task name specified");
-				System.err.println("no task name specified");
-			}
-		}
-
-	}
-
-	public static class TaskClear extends Command {
-
-		@Override
-		public String getCommandString() {
-			return "task-clear";
-		}
-
-		@Override
-		public String getOptionString() {
-			return "<taskname>";
-		}
-
-		@Override
-		public String getHelpString() {
-			return "clear a task's last run time";
-		}
-
-		@Override
-		public void execute(String[] args) {
-			if (args.length > 1) {
-				TaskStatus ts = TaskStatusTable.getTaskStatus(db, args[1]);
-				if (ts != null) {
-					ts.setLastRun(new Timestamp(24*60*60*1000));
-					try {
-						TaskStatusTable.upsertTaskStatus(db, ts);
-						log.info("cleared status for '" + args[1] + "'");
-						System.out.println("cleared status for '" + args[1] + "'");
-					} catch (SQLException e) {
-						log.error("failed to clear status for '" + args[1] + "'", e);
-						System.err.println("failed to clear status for '" + args[1] + "'");
-					}
+				TaskLog tl = TaskLogTable.getLatestTaskLog(db, args[1]);
+				if (tl != null) {
+					System.out.println("last run: " + tl.getFinishTime());
+					System.out.println("last duration: " + tl.getDuration());
 				} else {
 					log.error("could not find status for " + args[1]);
 					System.err.println("could not find status for '" + args[1] + "'");

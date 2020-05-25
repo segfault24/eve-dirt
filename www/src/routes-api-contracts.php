@@ -4,7 +4,7 @@
 // // Contract Data ////
 // //////////////////////////////////////////////
 
-$app->get('/api/contracts/exchange', function ($request, $response, $args) {
+$app->get('/api/contract/corp/exchange', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
@@ -23,7 +23,7 @@ $app->get('/api/contracts/exchange', function ($request, $response, $args) {
                 UNION ALL
                 SELECT `structId` AS sId,`structName` AS sName FROM structure
             ) AS locs ON co.`startLocationId`=locs.`sId`
-            WHERE co.`type`=2 AND co.`status`=1
+            WHERE co.`type`=2 AND co.`status`=1 AND `dateExpired`>NOW()
             ORDER BY co.dateIssued DESC';
 
     $stmt = $db->prepare($sql);
@@ -32,7 +32,7 @@ $app->get('/api/contracts/exchange', function ($request, $response, $args) {
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/contracts/exchange-finished', function ($request, $response, $args) {
+$app->get('/api/contract/corp/exchange/finished', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
@@ -65,7 +65,7 @@ $app->get('/api/contracts/exchange-finished', function ($request, $response, $ar
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/contracts/courier', function ($request, $response, $args) {
+$app->get('/api/contract/corp/courier', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
@@ -90,7 +90,7 @@ $app->get('/api/contracts/courier', function ($request, $response, $args) {
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/contracts/{contractid}/items/', function ($request, $response, $args) {
+$app->get('/api/contract/{contractid}/items/', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
@@ -103,8 +103,17 @@ $app->get('/api/contracts/{contractid}/items/', function ($request, $response, $
     $stmt->execute(array(
         ':contractid' => $args['contractid']
     ));
-
-    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if ($stmt->rowCount() > 0) {
+        return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+    } else {
+        $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM corpcontractitem AS i
+            JOIN invType AS t ON t.typeId=i.typeId WHERE contractId=:contractid';
+        $stmt = $db->prepare($sql);
+        $stmt->execute(array(
+            ':contractid' => $args['contractid']
+        ));
+        return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
 });
 
 $app->get('/api/market/open-in-game-contract/{contract}', function ($request, $response, $args) {

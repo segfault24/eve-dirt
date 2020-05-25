@@ -109,10 +109,7 @@ public class CharacterContractsTask extends DirtTask {
 			List<DirtTask> tasks = checkContractItems(auth, l);
 
 			try {
-				getDb().setAutoCommit(false);
 				ContractTable.upsertMany(getDb(), l);
-				getDb().commit();
-				getDb().setAutoCommit(true);
 				log.debug("Inserted " + contracts.size() + " contracts for character " + charId + " page " + page);
 			} catch (SQLException e) {
 				log.error("Unexpected failure while processing page " + page + " for character " + charId, e);

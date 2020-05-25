@@ -26,7 +26,7 @@ $(document).ready(function(){
 		if(itemsLoaded) {
 			return;
 		}
-		$.getJSON('/api/contracts/' + contractId + '/items/', function(result) {
+		$.getJSON('/api/contract/' + contractId + '/items/', function(result) {
 			for(var i=0; i<result.length; i++) {
 				itemsTable.row.add([
 					result[i].typeName,

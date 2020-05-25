@@ -2,7 +2,7 @@
 
 function myListsLoad() {
 	var listTable = $('#list-table').DataTable({
-		order: [[1, "desc"]],
+		order: [[1, "asc"]],
 		searching: false,
 		paging: false,
 		bInfo: false,

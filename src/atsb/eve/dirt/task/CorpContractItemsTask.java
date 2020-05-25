@@ -26,6 +26,8 @@ public class CorpContractItemsTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
+	private static final int SLEEP_HACK = 5000;
+
 	private int corpId;
 	private int contractId;
 	private int keyId;
@@ -61,6 +63,10 @@ public class CorpContractItemsTask extends DirtTask {
 		List<GetCorporationsCorporationIdContractsContractIdItems200Ok> items;
 		try {
 			items = capiw.getCorporationContractItems(corpId, contractId, OAuthUtil.getAuthToken(getDb(), auth));
+			try {
+				Thread.sleep(SLEEP_HACK);
+			} catch (InterruptedException e) {
+			}
 		} catch (ApiException e) {
 			log.error("Failed to retrieve items for contract " + contractId);
 			return;

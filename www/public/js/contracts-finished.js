@@ -28,7 +28,7 @@ $(document).ready(function(){
 		if(contractsLoaded) {
 			return;
 		}
-		$.getJSON('/api/contracts/exchange-finished', function(result) {
+		$.getJSON('/api/contract/corp/exchange/finished', function(result) {
 			for(var i=0; i<result.length; i++) {
 				contractsTable.row.add([
 					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract?contract=' + result[i].contractId + '" target="_blank">Details</a>',

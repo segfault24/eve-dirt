@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.TaskStatusTable;
+import atsb.eve.db.TaskLogTable;
 import atsb.eve.dirt.cli.TaskCli;
 import atsb.eve.dirt.task.CorpContractsTask;
 import atsb.eve.dirt.task.DirtTask;
@@ -29,7 +29,7 @@ import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
 import atsb.eve.dirt.task.UnknownIdsTask;
 import atsb.eve.dirt.zkill.KillstreamWorker;
-import atsb.eve.model.TaskStatus;
+import atsb.eve.model.TaskLog;
 import atsb.eve.util.DbInfo;
 import atsb.eve.util.DbPool;
 import atsb.eve.util.Utils;
@@ -166,10 +166,10 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	 * @param period
 	 */
 	public void addPeriodicTask(Connection db, DirtTask t, long period) {
-		TaskStatus ts = TaskStatusTable.getTaskStatus(db, t.getTaskName());
+		TaskLog ts = TaskLogTable.getLatestTaskLog(db, t.getTaskName());
 		long initialDelay = 0;
 		if (ts != null) {
-			long lastRun = ts.getLastRun().getTime() / 1000 / 60;
+			long lastRun = ts.getFinishTime().getTime() / 1000 / 60;
 			long now = System.currentTimeMillis() / 1000 / 60;
 			long minSinceLastRun = now - lastRun;
 			if (minSinceLastRun < period) {

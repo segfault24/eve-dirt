@@ -8,9 +8,9 @@ import java.util.Calendar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import atsb.eve.db.TaskStatusTable;
+import atsb.eve.db.TaskLogTable;
 import atsb.eve.dirt.Taskable;
-import atsb.eve.model.TaskStatus;
+import atsb.eve.model.TaskLog;
 import atsb.eve.util.DbPool;
 
 public abstract class DirtTask implements Runnable {
@@ -68,9 +68,15 @@ public abstract class DirtTask implements Runnable {
 
 		int duration = (int) ((endTime - startTime) / 1000);
 		if (saveStatus) {
-			TaskStatus ts = new TaskStatus(getTaskName(), new Timestamp(startTime), duration);
+			TaskLog tl = new TaskLog();
+			tl.setTaskName(getTaskName());
+			tl.setStartTime(new Timestamp(startTime));
+			tl.setFinishTime(new Timestamp(endTime));
+			tl.setDuration(duration);
+			tl.setSuccess(true);
+			tl.setError(null);
 			try {
-				TaskStatusTable.upsertTaskStatus(db, ts);
+				TaskLogTable.insertTaskLog(db, tl);
 			} catch (SQLException e) {
 				log.warn("Failed to update TaskStatus for " + getTaskName(), e);
 			}

@@ -1,0 +1,57 @@
+{% extends "base.phtml" %}
+{% block title %}Doctrines{% endblock %}
+{% block extrahead %}
+{% include 'table-libs.phtml' %}
+<script>
+$(document).ready(function() {
+    $('#doctrineTable').DataTable({
+        order: [[1, "desc"]],
+        paging: false,
+        bInfo: false,
+        responsive: true,
+        searching: false,
+        bLengthChange: false
+    });
+} );
+</script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header" id="title"><i class="fa fa-rocket fa-fw"></i> Doctrines</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-6">
+		<div class="table-responsive">
+			<table class="table responsive table-striped table-condensed" id="doctrineTable">
+				<thead>
+					<tr>
+						<th>Doctrine</th>
+						<th>Location</th>
+						<th>In Stock</th>
+						<th>Target Stock</th>
+						<th>Needed</th>
+					</tr>
+				</thead>
+				<tbody>
+{% for result in doclist %}
+					<tr>
+						<td>{{result.name}}</td>
+						<td>{{result.structName}}</td>
+						<td>{{result.quantity}}</td>
+						<td>{{result.target}}</td>
+						<td>{{ result.target - result.quantity }}</td>
+					</tr>
+{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="col-md-3">
+	</div>
+	<div class="col-md-3">
+	</div>
+</div>
+{% endblock %}
