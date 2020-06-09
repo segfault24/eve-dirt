@@ -28,7 +28,6 @@ import atsb.eve.dirt.task.MetaWalletTask;
 import atsb.eve.dirt.task.OrderReaperTask;
 import atsb.eve.dirt.task.PublicStructuresTask;
 import atsb.eve.dirt.task.UnknownIdsTask;
-import atsb.eve.dirt.zkill.KillstreamWorker;
 import atsb.eve.model.TaskLog;
 import atsb.eve.util.DbInfo;
 import atsb.eve.util.DbPool;
@@ -74,11 +73,6 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 
 		// release connection to pool
 		dbPool.release(db);
-
-		// start the killstream
-		if(Utils.getBoolProperty(db, DirtConstants.PROPERTY_KILLSTREAM_ENABLED)) {
-			new Thread(new KillstreamWorker(this)).start();
-		}
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {

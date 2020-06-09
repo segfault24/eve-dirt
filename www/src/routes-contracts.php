@@ -47,7 +47,7 @@ $app->get('/doctrines', function ($request, $response, $args) {
     $u->setTemplateVars($args);
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT l.name, s.structName, d.quantity, d.target
+    $sql = 'SELECT l.listId, l.name, s.structName, d.quantity, d.target
             FROM doctrine AS d
             JOIN dirtList AS l ON d.listId=l.listId
             JOIN structure AS s ON d.locationId=s.structId';

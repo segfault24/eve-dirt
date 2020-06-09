@@ -45,7 +45,6 @@ INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.p
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("characterdata.expires","60");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("mer.period","720");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("unknownids.period","120");
-INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("killstream.enabled","0");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("marketpublic","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("maintenancemode","false");
 INSERT INTO `property` (`propertyName`,`propertyValue`) VALUES ("useragent","DIRT/0.1 (webmaster@DOMAINNAME)");

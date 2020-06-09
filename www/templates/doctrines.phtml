@@ -5,7 +5,7 @@
 <script>
 $(document).ready(function() {
     $('#doctrineTable').DataTable({
-        order: [[1, "desc"]],
+        order: [[0, "asc"]],
         paging: false,
         bInfo: false,
         responsive: true,
@@ -23,7 +23,7 @@ $(document).ready(function() {
 	</div>
 </div>
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-9">
 		<div class="table-responsive">
 			<table class="table responsive table-striped table-condensed" id="doctrineTable">
 				<thead>
@@ -38,7 +38,7 @@ $(document).ready(function() {
 				<tbody>
 {% for result in doclist %}
 					<tr>
-						<td>{{result.name}}</td>
+						<td><a href="/list-detail?listid={{result.listId}}">{{result.name}}</a></td>
 						<td>{{result.structName}}</td>
 						<td>{{result.quantity}}</td>
 						<td>{{result.target}}</td>
@@ -48,8 +48,6 @@ $(document).ready(function() {
 				</tbody>
 			</table>
 		</div>
-	</div>
-	<div class="col-md-3">
 	</div>
 	<div class="col-md-3">
 	</div>

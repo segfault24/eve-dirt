@@ -147,24 +147,3 @@ $app->get('/economic-reports', function ($request, $response, $args) {
     return $this->renderer->render($response, 'mer.phtml', $args);
 });
 
-$app->get('/kill-dump', function ($request, $response, $args) {
-    $u = Dirt\User::getUser();
-    if (! $u->isLoggedIn()) {
-        return $response->withStatus(302)
-            ->withHeader('Location', '/login');
-    }
-    $u->setTemplateVars($args);
-
-    return $this->renderer->render($response, 'kill-dump.phtml', $args);
-});
-
-$app->get('/fortizar-chain', function ($request, $response, $args) {
-    $u = Dirt\User::getUser();
-    if (! $u->isLoggedIn()) {
-        return $response->withStatus(302)
-            ->withHeader('Location', '/login');
-    }
-    $u->setTemplateVars($args);
-
-    return $this->renderer->render($response, 'fortizar-chain.phtml', $args);
-});
