@@ -1,4 +1,4 @@
-package atsb.eve.dirt;
+package atsb.eve.dirt.test;
 
 import java.sql.Connection;
 import java.sql.SQLException;

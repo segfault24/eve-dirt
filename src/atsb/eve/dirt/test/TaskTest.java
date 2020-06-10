@@ -1,4 +1,4 @@
-package atsb.eve.dirt;
+package atsb.eve.dirt.test;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;

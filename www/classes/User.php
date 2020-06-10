@@ -383,4 +383,47 @@ class User
         $stmt->bindParam(':charid', $charid);
         $ret = $stmt->execute();
     }
+
+    public function changePassword($oldpw, $newpw, $newpwconf)
+    {
+        if ($newpw != $newpwconf) {
+            return "Passwords must match";
+        }
+
+        // get the user's info from the db
+        $db = Database::getDb();
+        $sql = 'SELECT `hash`, `disabled` FROM dirtUser WHERE `userId`=:userid';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':userid', $_SESSION['userid']);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (! $row) {
+            return "Incorrect username or password";
+        }
+        // found user by that username
+        // verify the given old password
+        if (!password_verify($oldpw, $row['hash'])) {
+            return "Incorrect username or password";
+        }
+        // verify the account isn't disabled
+        if ($row['disabled'] != 0) {
+            return "Account is disabled";
+        }
+        // check strength
+        $err = Tools::checkPasswordStrength($newpw);
+        if (!empty($err)) {
+            return $err;
+        }
+
+        // update the user's password
+        $newhash = password_hash($newpw, PASSWORD_DEFAULT);
+        $sql = 'UPDATE dirtUser SET `hash`=:hash WHERE `userId`=:userid';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':hash', $newhash);
+        $stmt->bindParam(':userid', $_SESSION['userid']);
+        $stmt->execute();
+        return "";
+    }
+
 }

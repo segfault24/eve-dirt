@@ -1,9 +1,12 @@
 {% extends "base.phtml" %}
-{% block title %}Admin Panel{% endblock %}
+{% block title %}Admin Pages{% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
 		<h3 class="page-header">Admin Panel</h3>
+		<hr>
+		<a href="/admin/create-user">Create User</a><br>
+		<a href="/admin/list-users">List Users</a><br>
 	</div>
 </div>
 {% endblock %}

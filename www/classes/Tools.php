@@ -136,4 +136,43 @@ class Tools
             return null;
         }
     }
+
+    public static function createUser($username, $password, $passwordconf, $admin)
+    {
+        if ($password != $passwordconf) {
+            return "Passwords must match";
+        }
+
+        $err = Tools::checkPasswordStrength($password);
+        if (!empty($err)) {
+            return $err;
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+
+        $db = Database::getDb();
+        $sql = 'INSERT INTO dirtUser (`username`,`name`,`hash`) VALUES (:username, :name, :hash)';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':name', $username);
+        $stmt->bindParam(':hash', $hash);
+        $stmt->execute();
+
+        return "";
+    }
+
+    public static function checkPasswordStrength($pwd)
+    {
+        if (strlen($pwd) < 12) {
+            return "Password must be 12 or more characters";
+        }
+        if (!preg_match("#[0-9]+#", $pwd)) {
+            return "Password must contain at least one number";
+        }
+        if (!preg_match("#[a-zA-Z]+#", $pwd)) {
+            return "Password must contain at least one letter";
+        }
+        return "";
+    }
+
 }

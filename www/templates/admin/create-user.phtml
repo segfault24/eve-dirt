@@ -1,0 +1,27 @@
+{% extends "base.phtml" %}
+{% block title %}Add New User{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		<h3 class="page-header">Add New User</h3>
+		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-6">
+		<form action="/admin/create-user" method="post" autocomplete="off">
+			<div class="form-group">
+				<input type="text" name="usernm" placeholder="username"><br><br>
+				<p>Passwords must be at least 12 characters, contain 1 number, and 1 letter</p>
+				<input type="password" name="userpw" autocomplete="new-password"><br>
+				<input type="password" name="userpwconf" autocomplete="new-password">
+			<div class="form-group">
+			</div>
+				<button type="submit" class="btn btn-default">Create</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-sm-6">
+	</div>
+</div>
+{% endblock %}

@@ -9,9 +9,13 @@
 </div>
 <div class="row">
 	<div class="col-md-6">
-		<form action="/notifications" method="post">
-			<input type="hidden" id="notifId" name="notifId" value="all">
+		<form action="/user/notifications" method="post">
+			<input type="hidden" id="notifId" name="notifId" value="ack-all">
 			<button type="submit" class="btn btn-primary">Acknowledge All</button>
+		</form>
+		<form action="/user/notifications" method="post">
+			<input type="hidden" id="notifId" name="notifId" value="del-all">
+			<button type="submit" class="btn btn-primary">Delete All</button>
 		</form>
 		<br />
 		<div class="table-responsive">
@@ -22,7 +26,7 @@
 					<td>{{result.text}}</td>
 					<td>
 {% if result.acknowledged == 0 %}
-						<form action="/notifications" method="post">
+						<form action="/user/notifications" method="post">
 							<input type="hidden" id="notifId" name="notifId" value="{{result.notifId}}">
 							<button type="submit" class="btn btn-primary">Acknowledge</button>
 						</form>

@@ -19,7 +19,6 @@ public interface DirtConstants {
 	public static final String PROPERTY_TYPE_INFO_PERIOD = "typeinfo.period";
 	public static final String PROPERTY_MER_PERIOD = "mer.period";
 	public static final String PROPERTY_UNKNOWN_IDS_PERIOD = "unknownids.period";
-	public static final String PROPERTY_KILLSTREAM_ENABLED = "killstream.enabled";
 
 	public static final String PROPERTY_SCRAPER_KEY_ID = "scraperkeyid";
 	public static final String PROPERTY_SCRAPER_CORP_ID = "scrapercorpid";

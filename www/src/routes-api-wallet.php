@@ -143,6 +143,7 @@ $app->get('/api/wallet/returns', function ($request, $response, $args) {
                 AND charId IN (SELECT charId FROM dirtApiAuth WHERE userId=:userida)
                 GROUP BY typeId
               ) AS lbuy ON t.typeId=lbuy.typeId AND t.date=lbuy.maxDate
+              ORDER BY t.date DESC LIMIT 100
             ) AS b
             INNER JOIN (
               SELECT t.date, t.typeId, t.unitPrice AS sell
@@ -154,6 +155,7 @@ $app->get('/api/wallet/returns', function ($request, $response, $args) {
                 AND charId IN (SELECT charId FROM dirtApiAuth WHERE userId=:useridb)
                 GROUP BY typeId
               ) AS lsell ON t.typeId=lsell.typeId AND t.date=lsell.maxDate
+              ORDER BY t.date DESC LIMIT 100
             ) AS s ON b.typeId=s.typeId
             JOIN invType AS i ON i.typeId=b.typeId
            ';

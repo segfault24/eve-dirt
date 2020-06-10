@@ -36,7 +36,7 @@ $app->get('/logout', function ($request, $response, $args) {
         ->withHeader('Location', '/');
 });
 
-$app->get('/notifications', function ($request, $response, $args) {
+$app->get('/user/notifications', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -57,10 +57,10 @@ $app->get('/notifications', function ($request, $response, $args) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $args['notiflist'] = $rows;
 
-    return $this->renderer->render($response, 'notifications.phtml', $args);
+    return $this->renderer->render($response, 'user/notifications.phtml', $args);
 });
 
-$app->post('/notifications', function ($request, $response, $args) {
+$app->post('/user/notifications', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -69,23 +69,33 @@ $app->post('/notifications', function ($request, $response, $args) {
 
     $uid = $u->getUserId();
     $db = Dirt\Database::getDb();
-    $sql = 'UPDATE dirtNotification SET acknowledged=1 WHERE userId=:uid';
     $nid = $request->getParsedBody()['notifId'];
-    if ($nid != "all") {
-        $sql .= ' AND notifId=:nid';
-    }
-    $stmt = $db->prepare($sql);
-    $stmt->bindParam(':uid', $uid);
-    if ($nid != "all") {
+    if ($nid == "del-all") {
+        // delete all
+        $sql = 'DELETE FROM dirtNotification WHERE userId=:uid';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':uid', $uid);
+        $stmt->execute();
+    } else if ($nid == "ack-all") {
+        // ack all
+        $sql = 'UPDATE dirtNotification SET acknowledged=1 WHERE userId=:uid';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':uid', $uid);
+        $stmt->execute();
+    } else {
+        // ack specific
+        $sql = 'UPDATE dirtNotification SET acknowledged=1 WHERE userId=:uid AND notifId=:nid';
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':uid', $uid);
         $stmt->bindParam(':nid', $nid);
+        $stmt->execute();
     }
-    $stmt->execute();
 
     return $response->withStatus(302)
-        ->withHeader('Location', '/notifications');
+        ->withHeader('Location', '/user/notifications');
 });
 
-$app->get('/characters', function ($request, $response, $args) {
+$app->get('/user/characters', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -106,10 +116,10 @@ $app->get('/characters', function ($request, $response, $args) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $args['charlist'] = $rows;
 
-    return $this->renderer->render($response, 'characters.phtml', $args);
+    return $this->renderer->render($response, 'user/characters.phtml', $args);
 });
 
-$app->post('/characters', function ($request, $response, $args) {
+$app->post('/user/characters', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(302)
@@ -117,9 +127,43 @@ $app->post('/characters', function ($request, $response, $args) {
     }
 
     $u->setActiveChar($request->getParsedBody()['charId']);
-    $this->logger->info('/characters set active character ' . $u->getActiveCharId() . ' for user ' . $u->getUserId());
+    $this->logger->info('/user/characters set active character ' . $u->getActiveCharId() . ' for user ' . $u->getUserId());
     return $response->withStatus(302)
-        ->withHeader('Location', '/characters');
+        ->withHeader('Location', '/user/characters');
+});
+
+$app->get('/user/change-password', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+        ->withHeader('Location', '/login');
+    }
+    $u->setTemplateVars($args);
+
+    return $this->renderer->render($response, 'user/change-password.phtml', $args);
+});
+
+$app->post('/user/change-password', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(302)
+        ->withHeader('Location', '/login');
+    }
+
+    $oldpw = $request->getParsedBody()['userpw'];
+    $newpw = $request->getParsedBody()['userpwnew'];
+    $newpwconf = $request->getParsedBody()['userpwnewconf'];
+    $err = $u->changePassword($oldpw, $newpw, $newpwconf);
+    if (empty($err)) {
+        $this->logger->info('/user/change-password changed password for user ' . $u->getUserId());
+        $args['successmsg'] = "Successfully changed password";
+    } else {
+        $this->logger->info('/user/change-password failed to changed password for user ' . $u->getUserId() . ' ' . $err);
+        $args['errormsg'] = $err;
+    }
+    $u->setTemplateVars($args);
+
+    return $this->renderer->render($response, 'user/change-password.phtml', $args);
 });
 
 // structures associated with this account
