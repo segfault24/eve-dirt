@@ -179,10 +179,18 @@ $(function() {
 					options.icon = 'https://imageserver.eveonline.com/Type/' + data[0].typeId + '_64.png';
 				}
 				var notif = new Notification(data[0].title, options);
+				notif.onclick = function(event) {
+					event.preventDefault();
+					window.open('/user/notifications', '_blank');
+				};
 				audio.play();
 				//setTimeout(notif.close.bind(notif), 6000);
 			} else if (data.length > 1) {
 				var notif = new Notification("Multiple New Notifications");
+				notif.onclick = function(event) {
+					event.preventDefault();
+					window.open('/user/notifications', '_blank');
+				};
 				audio.play();
 				//setTimeout(notif.close.bind(notif), 6000);
 			}
