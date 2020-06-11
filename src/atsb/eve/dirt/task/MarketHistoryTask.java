@@ -53,26 +53,27 @@ public class MarketHistoryTask extends DirtTask {
 		List<Integer> b = types.subList(s / 4, s / 2);
 		List<Integer> c = types.subList(s / 2, 3 * s / 4);
 		List<Integer> d = types.subList(3 * s / 4, s);
-		getDaemon().addTask(new HistorySubTask(region, a));
-		getDaemon().addTask(new HistorySubTask(region, b));
-		getDaemon().addTask(new HistorySubTask(region, c));
-		getDaemon().addTask(new HistorySubTask(region, d));
+		getDaemon().addTask(new HistorySubTask(region, a, 1));
+		getDaemon().addTask(new HistorySubTask(region, b, 2));
+		getDaemon().addTask(new HistorySubTask(region, c, 3));
+		getDaemon().addTask(new HistorySubTask(region, d, 4));
 	}
 
 	private class HistorySubTask extends DirtTask {
 
 		private int region;
 		private List<Integer> types;
+		private int subTaskId;
 
-		public HistorySubTask(int region, List<Integer> types) {
+		public HistorySubTask(int region, List<Integer> types, int subTaskId) {
 			this.region = region;
 			this.types = types;
-			this.setSaveStatus(false);
+			this.subTaskId = subTaskId;
 		}
 
 		@Override
 		public String getTaskName() {
-			return "market-history-subtask-" + region;
+			return "market-history-subtask-" + region + "-" + subTaskId;
 		}
 
 		@Override

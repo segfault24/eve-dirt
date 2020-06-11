@@ -25,7 +25,6 @@ public class CorporationTask extends DirtTask {
 
 	public CorporationTask(int corpId) {
 		this.corpId = corpId;
-		setSaveStatus(false);
 	}
 
 	@Override

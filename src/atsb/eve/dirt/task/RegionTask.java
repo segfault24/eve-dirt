@@ -20,7 +20,6 @@ public class RegionTask extends DirtTask {
 
 	public RegionTask(int regionId) {
 		this.regionId = regionId;
-		this.setSaveStatus(false);
 	}
 
 	@Override

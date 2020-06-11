@@ -19,7 +19,6 @@ public class InvMarketGroupTask extends DirtTask {
 
 	public InvMarketGroupTask(int marketGroupId) {
 		this.marketGroupId = marketGroupId;
-		this.setSaveStatus(false);
 	}
 
 	@Override

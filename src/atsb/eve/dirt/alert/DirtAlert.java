@@ -38,8 +38,6 @@ public abstract class DirtAlert extends DirtTask {
 
 	@Override
 	protected void runTask() {
-		setSaveStatus(false);
-
 		if (getAlert() == null) {
 			log.fatal("Alert details were not provided");
 			return;

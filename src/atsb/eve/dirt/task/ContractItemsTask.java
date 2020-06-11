@@ -30,7 +30,6 @@ public class ContractItemsTask extends DirtTask {
 	private int keyId;
 
 	public ContractItemsTask(int contractId, int keyId) {
-		setSaveStatus(false);
 		this.contractId = contractId;
 		this.keyId = keyId;
 	}

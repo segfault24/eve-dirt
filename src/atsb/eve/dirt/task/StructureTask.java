@@ -31,12 +31,10 @@ public class StructureTask extends DirtTask {
 	private int keyId = -1;
 
 	public StructureTask(long structId) {
-		setSaveStatus(false);
 		this.structId = structId;
 	}
 
 	public StructureTask(long structId, int keyId) {
-		setSaveStatus(false);
 		this.structId = structId;
 		this.keyId = keyId;
 	}

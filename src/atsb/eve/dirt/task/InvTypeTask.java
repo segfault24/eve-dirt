@@ -19,7 +19,6 @@ public class InvTypeTask extends DirtTask {
 
 	public InvTypeTask(int typeId) {
 		this.typeId = typeId;
-		this.setSaveStatus(false);
 	}
 
 	@Override

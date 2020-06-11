@@ -24,7 +24,6 @@ public class StationTask extends DirtTask {
 		this.stationId = stationId;
 		this.constellationId = constellationId;
 		this.regionId = regionId;
-		this.setSaveStatus(false);
 	}
 
 	@Override

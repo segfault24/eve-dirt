@@ -20,7 +20,6 @@ public abstract class DirtTask implements Runnable {
 	private Taskable daemon;
 	private DbPool dbPool;
 	private Connection db;
-	private boolean saveStatus = true;
 
 	public abstract String getTaskName();
 
@@ -42,14 +41,6 @@ public abstract class DirtTask implements Runnable {
 		return db;
 	}
 
-	public void setSaveStatus(boolean save) {
-		saveStatus = save;
-	}
-
-	protected boolean isSavingStatus() {
-		return saveStatus;
-	}
-
 	@Override
 	public final void run() {
 		log.info("Started task " + getTaskName());
@@ -67,19 +58,17 @@ public abstract class DirtTask implements Runnable {
 		long endTime = Calendar.getInstance().getTimeInMillis();
 
 		int duration = (int) ((endTime - startTime) / 1000);
-		if (saveStatus) {
-			TaskLog tl = new TaskLog();
-			tl.setTaskName(getTaskName());
-			tl.setStartTime(new Timestamp(startTime));
-			tl.setFinishTime(new Timestamp(endTime));
-			tl.setDuration(duration);
-			tl.setSuccess(true);
-			tl.setError(null);
-			try {
-				TaskLogTable.insertTaskLog(db, tl);
-			} catch (SQLException e) {
-				log.warn("Failed to update TaskStatus for " + getTaskName(), e);
-			}
+		TaskLog tl = new TaskLog();
+		tl.setTaskName(getTaskName());
+		tl.setStartTime(new Timestamp(startTime));
+		tl.setFinishTime(new Timestamp(endTime));
+		tl.setDuration(duration);
+		tl.setSuccess(true);
+		tl.setError(null);
+		try {
+			TaskLogTable.insertTaskLog(db, tl);
+		} catch (SQLException e) {
+			log.warn("Failed to update TaskStatus for " + getTaskName(), e);
 		}
 
 		log.trace("Releasing database connection to pool");

@@ -111,6 +111,8 @@ public class UnknownIdsTask extends DirtTask {
 		while (rs.next()) {
 			ids.add(rs.getInt(1));
 		}
+		rs.close();
+		stmt.close();
 		return ids;
 	}
 
@@ -121,6 +123,8 @@ public class UnknownIdsTask extends DirtTask {
 		while (rs.next()) {
 			ids.add(rs.getInt(1));
 		}
+		rs.close();
+		stmt.close();
 		return ids;
 	}
 

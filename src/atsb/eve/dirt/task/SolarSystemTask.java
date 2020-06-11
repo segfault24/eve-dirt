@@ -23,7 +23,6 @@ public class SolarSystemTask extends DirtTask {
 	public SolarSystemTask(int solarSystemId, int regionId) {
 		this.solarSystemId = solarSystemId;
 		this.regionId = regionId;
-		this.setSaveStatus(false);
 	}
 
 	@Override

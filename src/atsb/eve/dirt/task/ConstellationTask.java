@@ -20,7 +20,6 @@ public class ConstellationTask extends DirtTask {
 
 	public ConstellationTask(int constellationId) {
 		this.constellationId = constellationId;
-		this.setSaveStatus(false);
 	}
 
 	@Override

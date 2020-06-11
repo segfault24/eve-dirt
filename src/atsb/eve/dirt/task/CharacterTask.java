@@ -25,7 +25,6 @@ public class CharacterTask extends DirtTask {
 
 	public CharacterTask(int charId) {
 		this.charId = charId;
-		setSaveStatus(false);
 	}
 
 	@Override

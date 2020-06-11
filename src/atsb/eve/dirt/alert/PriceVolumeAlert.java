@@ -15,6 +15,7 @@ import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.model.Alert;
 import atsb.eve.model.InvType;
 import atsb.eve.model.Notification;
+import atsb.eve.util.Utils;
 
 // When [param1=sell price/buy price/sell volume/buy volume]
 // of [param2=typeId] in [param3=locationId/regionId]
@@ -30,7 +31,6 @@ public class PriceVolumeAlert extends DirtTask {
 	private boolean gte;
 
 	public PriceVolumeAlert(Alert a) {
-		setSaveStatus(false);
 		this.alert = a;
 	}
 
@@ -60,17 +60,19 @@ public class PriceVolumeAlert extends DirtTask {
 		}
 
 		// generate the appropriate SQL query from the params
-		PreparedStatement stmt;
+		PreparedStatement stmt = null;
 		try {
 			stmt = parseParams();
 		} catch (SQLException | IllegalArgumentException e) {
 			log.fatal("Failed to parse alert parameters for alert " + alert.getAlertId(), e);
+			Utils.closeQuietly(stmt);
 			return;
 		}
 
 		// execute the query and create a notification if necessary
+		ResultSet rs = null;
 		try {
-			ResultSet rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 			if (rs.next() && rs.getInt(1) == 1) {
 				log.info("Generating notification for alert " + alert.getAlertId());
 				InvType t = InvTypeTable.getById(getDb(), typeId);
@@ -108,8 +110,11 @@ public class PriceVolumeAlert extends DirtTask {
 			}
 		} catch (SQLException e) {
 			log.fatal("Failed to run query for alert " + alert.getAlertId(), e);
-			return;
+		} finally {
+			Utils.closeQuietly(rs);
 		}
+		
+		Utils.closeQuietly(stmt);
 	}
 
 	private PreparedStatement parseParams() throws IllegalArgumentException, SQLException {
