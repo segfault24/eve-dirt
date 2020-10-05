@@ -1,8 +1,7 @@
 #!/bin/sh
-#export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 cd $(dirname "$0")/../
 
-cp="lib"
+cp="lib/eve-dirt.jar"
 cp="$cp:lib/esi-client.jar"
 cp="$cp:lib/eve-tools.jar"
 cp="$cp:lib/eve-dirt.jar"
@@ -18,8 +17,4 @@ cp="$cp:lib/okhttp-2.7.5.jar"
 cp="$cp:lib/okio-1.6.0.jar"
 cp="$cp:lib/swagger-annotations-1.5.12.jar"
 
-echo "pwd: $(pwd)"
-echo "classpath: $cp"
-echo ""
-
-java -cp "$cp" -Dconfig="cfg/db.ini" -Dlog4j.configurationFile="cfg/log4j2.xml" atsb.eve.dirt.DirtTaskDaemon $@
+java -cp "$cp" -Dconfig="cfg/db.ini" -Dlog4j.configurationFile="cfg/log4j2.xml" atsb.eve.dirt.FirstRun

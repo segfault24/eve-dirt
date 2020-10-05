@@ -1,3 +1,4 @@
+USE eve;
 
 DROP USER IF EXISTS 'dirt'@'localhost';
 DROP USER IF EXISTS 'dirt'@'DOMAINNAME';
