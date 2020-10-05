@@ -148,7 +148,7 @@ $app->get('/api/trade/structs-by-region/{region}/', function ($request, $respons
     $sql .= ' UNION ALL';
     $sql .= ' (';
     $sql .= '  SELECT s.`structId` AS sId, s.`structName` AS sName FROM structure AS s';
-    $sql .= '  JOIN dirtstructauth AS a ON s.`structId`=a.`structId`';
+    $sql .= '  JOIN dirtStructAuth AS a ON s.`structId`=a.`structId`';
     $sql .= '  WHERE s.`regionId`=:regionb';
     $sql .= ' )';
     $sql .= ' ORDER BY sName';
