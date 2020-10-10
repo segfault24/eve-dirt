@@ -3,7 +3,7 @@
 function myListsLoad() {
 	var listTable = $('#list-table').DataTable({
 		order: [[1, "asc"]],
-		searching: false,
+		searching: true,
 		paging: false,
 		bInfo: false,
 		responsive: true,
@@ -243,7 +243,7 @@ function loadItemTable(itemTable, listId) {
 				itemTable.row.add([
 					'<a target="_blank" href="/browse?type=' + items[i].typeId + '">' + items[i].typeName + '</a>',
 					items[i].quantity,
-					'<button type="submit" id="' + items[i].typeId + '" class="btn btn-xs btn-danger item-delete-button">Remove</button>'
+					'<button type="submit" id="' + items[i].typeId + '" class="btn btn-xs btn-danger item-delete-button no-padding">Remove</button>'
 				]);
 			}
 			itemTable.draw();

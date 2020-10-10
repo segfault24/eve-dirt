@@ -10,6 +10,8 @@ import org.apache.logging.log4j.core.config.Configurator;
 import atsb.eve.db.StructAuthTable;
 import atsb.eve.dirt.DirtConstants;
 import atsb.eve.dirt.Stats;
+import atsb.eve.dirt.task.InvMarketGroupsTask;
+import atsb.eve.dirt.task.InvTypesTask;
 import atsb.eve.dirt.task.StructureTask;
 import atsb.eve.util.Utils;
 
@@ -141,13 +143,28 @@ public class MiscCommands {
 		@Override
 		public void execute(String[] args) {
 			if (args.length > 1) {
-				Long structId = Long.parseLong(args[1]);
+				Long structId;
+				try {
+					structId = Long.parseLong(args[1]);
+				} catch (NumberFormatException e) {
+					log.error("bad id specified");
+					System.err.println("bad id specified");
+					return;
+				}
 				if (structId != null) {
-					int keyId = Utils.getIntProperty(db, DirtConstants.PROPERTY_SCRAPER_KEY_ID);
+					int keyId;
+					try {
+						keyId = Utils.getIntProperty(db, DirtConstants.PROPERTY_SCRAPER_KEY_ID);
+					} catch (NumberFormatException e) {
+						// retry?
+						keyId = Utils.getIntProperty(db, DirtConstants.PROPERTY_SCRAPER_KEY_ID);
+					}
+					// manually run the task
 					StructureTask st = new StructureTask(structId, keyId);
 					st.setDaemon(daemon);
 					st.setDbPool(dbPool);
 					st.run();
+					// create a link between the struct and the key
 					try {
 						StructAuthTable.insert(db, structId, keyId);
 					} catch (SQLException e) {
@@ -158,6 +175,35 @@ public class MiscCommands {
 				log.error("no structure id specified");
 				System.err.println("no structure id specified");
 			}
+		}
+
+	}
+
+	public static class ForceTypeUpdate extends Command {
+
+		@Override
+		public String getCommandString() {
+			return "type-update";
+		}
+
+		@Override
+		public String getOptionString() {
+			return "";
+		}
+
+		@Override
+		public String getHelpString() {
+			return "forcibly rescan type and groups";
+		}
+
+		@Override
+		public void execute(String[] args) {
+			InvTypesTask i = new InvTypesTask();
+			i.forceUpdate(true);
+			daemon.addTask(i);
+			InvMarketGroupsTask g = new InvMarketGroupsTask();
+			g.forceUpdate(true);
+			daemon.addTask(g);
 		}
 
 	}

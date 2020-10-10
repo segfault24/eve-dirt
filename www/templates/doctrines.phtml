@@ -9,7 +9,7 @@ $(document).ready(function() {
         paging: false,
         bInfo: false,
         responsive: true,
-        searching: false,
+        searching: true,
         bLengthChange: false
     });
 } );
@@ -30,6 +30,7 @@ $(document).ready(function() {
 					<tr>
 						<th>Doctrine</th>
 						<th>Location</th>
+						<th>Lowest Price</th>
 						<th>In Stock</th>
 						<th>Target Stock</th>
 						<th>Needed</th>
@@ -40,9 +41,10 @@ $(document).ready(function() {
 					<tr>
 						<td><a href="/list-detail?listid={{result.listId}}">{{result.name}}</a></td>
 						<td>{{result.structName}}</td>
+						<td>{{result.lowestPrice|number_format(0)}}</td>
 						<td>{{result.quantity}}</td>
 						<td>{{result.target}}</td>
-						<td>{{ result.target - result.quantity }}</td>
+						<td>{{ max(result.target - result.quantity, 0) }}</td>
 					</tr>
 {% endfor %}
 				</tbody>

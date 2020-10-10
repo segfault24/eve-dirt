@@ -40,6 +40,7 @@ public class CharacterOrdersTask extends DirtTask {
 
 	@Override
 	protected void runTask() {
+		Timestamp deleteBefore = new Timestamp(System.currentTimeMillis() - 5 * 60 * 1000);
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 
 		// get api auth info
@@ -66,9 +67,6 @@ public class CharacterOrdersTask extends DirtTask {
 			}
 			return;
 		}
-		if (aos.isEmpty()) {
-			return;
-		}
 		List<CharOrder> os = new ArrayList<CharOrder>(aos.size());
 		for (GetCharactersCharacterIdOrders200Ok ao : aos) {
 			CharOrder o = TypeUtil.convert(ao);
@@ -88,7 +86,7 @@ public class CharacterOrdersTask extends DirtTask {
 
 		// delete old orders (where 'retrieved' is older than 'now')
 		try {
-			int count = CharOrderTable.deleteOldOrdersByChar(getDb(), charId, now);
+			int count = CharOrderTable.deleteOldOrdersByChar(getDb(), charId, deleteBefore);
 			log.debug("Deleted " + count + " old market orders for character " + charId);
 		} catch (SQLException e) {
 			log.fatal("Failed to delete old market orders for character " + charId, e);

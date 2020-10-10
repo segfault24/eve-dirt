@@ -58,6 +58,7 @@ public class DoctrineTask extends DirtTask {
 		// reset doctrine counts
 		for (Doctrine d : doctrines) {
 			d.setQuantity(0);
+			d.setLowestPrice(Double.MAX_VALUE);
 		}
 
 		// scan contracts one by one
@@ -109,13 +110,19 @@ public class DoctrineTask extends DirtTask {
 				if (meets) {
 					log.debug("Contract " + c.getContractId() + " meets doctrine " + d.getDoctrineId());
 					d.incrementQuantity();
+					if (c.getPrice() < d.getLowestPrice()) {
+						d.setLowestPrice(c.getPrice());
+					}
 				}
 			}
 		}
 
 		// update database with doctrine counts
 		for (Doctrine d : doctrines) {
-			log.debug("Doctrine " + d.getDoctrineId() + ": " + d.getQuantity());
+			if (d.getLowestPrice() == Double.MAX_VALUE) {
+				d.setLowestPrice(0);
+			}
+			log.debug("doctrine:" + d.getDoctrineId() + " - qt:" + d.getQuantity() + " - min:" + d.getLowestPrice());
 			try {
 				DoctrineTable.upsert(getDb(), d);
 			} catch (SQLException e) {

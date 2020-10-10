@@ -19,6 +19,8 @@ public class InvMarketGroupsTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
+	private boolean force = false;
+
 	@Override
 	public String getTaskName() {
 		return "inv-market-groups";
@@ -47,10 +49,15 @@ public class InvMarketGroupsTask extends DirtTask {
 		}
 
 		for (Integer apiGroup : groups) {
-			if (!dbGroups.contains(apiGroup)) {
+			// queue task if we don't have the info for the group, or we're forcing an update
+			if (!dbGroups.contains(apiGroup) || force) {
 				getDaemon().addTask(new InvMarketGroupTask(apiGroup));
 			}
 		}
+	}
+
+	public void forceUpdate(boolean force) {
+		this.force = force;
 	}
 
 }

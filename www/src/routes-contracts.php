@@ -16,17 +16,6 @@ $app->get('/contracts', function ($request, $response, $args) {
     return $this->renderer->render($response, 'contracts.phtml', $args);
 });
 
-$app->get('/contracts-finished', function ($request, $response, $args) {
-    $u = Dirt\User::getUser();
-    if (! $u->isLoggedIn()) {
-        return $response->withStatus(302)
-        ->withHeader('Location', '/login');
-    }
-    $u->setTemplateVars($args);
-    
-    return $this->renderer->render($response, 'contracts-finished.phtml', $args);
-});
-
 $app->get('/contract', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
@@ -47,7 +36,7 @@ $app->get('/doctrines', function ($request, $response, $args) {
     $u->setTemplateVars($args);
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT l.listId, l.name, s.structName, d.quantity, d.target
+    $sql = 'SELECT l.listId, l.name, s.structName, d.quantity, d.target, d.lowestPrice
             FROM doctrine AS d
             JOIN dirtList AS l ON d.listId=l.listId
             JOIN structure AS s ON d.locationId=s.structId';

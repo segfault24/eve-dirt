@@ -20,6 +20,8 @@ public class InvTypesTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
+	private boolean force = false;
+
 	@Override
 	public String getTaskName() {
 		return "inv-types";
@@ -51,11 +53,15 @@ public class InvTypesTask extends DirtTask {
 			}
 			
 			for (Integer apiType : types) {
-				if (!dbTypes.contains(apiType)) {
+				// queue task if we don't have the info for the type, or we're forcing an update
+				if (!dbTypes.contains(apiType) || force) {
 					getDaemon().addTask(new InvTypeTask(apiType));
 				}
 			}
 		} while(types.size() > 0);
 	}
 
+	public void forceUpdate(boolean force) {
+		this.force = force;
+	}
 }

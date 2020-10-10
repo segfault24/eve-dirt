@@ -7,8 +7,14 @@
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
-		<h3 class="page-header"><i class="fa fa-handshake-o fa-fw"></i> Alliance Contracts</h3> <a href="contracts-finished">(goto finished)</a>
+		<h3 class="page-header"><i class="fa fa-handshake-o fa-fw"></i> Alliance Contracts</h3>
 		<hr>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<button onclick="loadExchangeContracts()">Exchange Contracts</button><button onclick="loadFinishedExchangeContracts()">Finished</button><br />
+		<button onclick="loadCourierContracts()">Courier Contracts</button><button onclick="loadInProgressCourierContracts()">In Progress</button><button onclick="loadFinishedCourierContracts()">Finished</button><button onclick="loadFailedCourierContracts()">Failed</button>
 	</div>
 </div>
 <div class="row">

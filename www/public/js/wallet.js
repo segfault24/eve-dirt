@@ -119,7 +119,8 @@ $(document).ready(function(){
 			{title:'Issuer', responsivePriority: 1},
 			{title:'Status', responsivePriority: 3},
 			{title:'Acceptor', responsivePriority: 5},
-			{title:'Date Issued', responsivePriority: 4}
+			{title:'Issued', responsivePriority: 4},
+			{title:'Completed', responsivePriority: 4}
 		],
 		order: [[4, "desc"]],
 		searching: true,
@@ -289,7 +290,8 @@ $(document).ready(function(){
 					result[i].issuerName,
 					prettyStatus(result[i].status),
 					result[i].acceptorName,
-					result[i].dateIssued
+					result[i].dateIssued,
+					result[i].dateCompleted
 				]);
 			}
 			contractsTable.draw();
