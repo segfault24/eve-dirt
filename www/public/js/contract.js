@@ -6,6 +6,8 @@ $(document).ready(function(){
 
 	var contractId = getUrlParam('contract');
 
+	$('#open-in-game').attr('data-contractid', contractId);
+
 	// initialize tables
 	var itemsTable = $('#contract-items-table').DataTable({
 		columns: [

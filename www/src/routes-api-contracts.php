@@ -212,6 +212,66 @@ $app->get('/api/contract/corp/courier/failed', function ($request, $response, $a
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
+$app->get('/api/contract/capital/open', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT c.contractId, i.typeName, c.dateIssued, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue
+    FROM corpcontract AS c
+    JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
+    JOIN invType AS i ON ci.typeId=i.typeId
+    LEFT JOIN (
+        SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
+        FROM corpcontract AS c
+        JOIN corpcontractitem AS ci ON ci.contractId=c.contractId
+        JOIN vjitabestsell AS j ON j.typeid=ci.typeid
+        WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+        GROUP BY c.contractId
+    ) AS a ON a.contractId=c.contractId
+    WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+    AND c.`type`=2 AND c.`status`=1 AND c.`dateExpired`>NOW()
+    ORDER BY c.dateCompleted DESC
+    LIMIT 1000';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/contract/capital/finished', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT c.contractId, i.typeName, c.dateCompleted, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue
+    FROM corpcontract AS c
+    JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
+    JOIN invType AS i ON ci.typeId=i.typeId
+    JOIN (
+        SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
+        FROM corpcontract AS c
+        JOIN corpcontractitem AS ci ON ci.contractId=c.contractId
+        JOIN vjitabestsell AS j ON j.typeid=ci.typeid
+        WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+        GROUP BY c.contractId
+    ) AS a ON a.contractId=c.contractId
+    WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+    AND c.`type`=2 AND c.`status`=5
+    ORDER BY c.dateCompleted DESC
+    LIMIT 1000';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
 $app->get('/api/contract/{contractid}/items/', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {

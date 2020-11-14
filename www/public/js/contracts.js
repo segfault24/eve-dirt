@@ -257,3 +257,79 @@ function loadFailedCourierContracts() {
 		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
 	})
 }
+
+function loadOpenCapContracts() {
+	if ($.fn.DataTable.isDataTable('#contracts-table')) {
+		$('#contracts-table').DataTable().destroy();
+		$('#contracts-table').empty();
+	}
+	var contractsTable = $('#contracts-table').DataTable({
+		columns: [
+			{title:'', responsivePriority: 2},
+			{title:'Hull Type', responsivePriority: 1},
+			{title:'Price', responsivePriority: 1},
+			{title:'Fittings', responsivePriority: 3},
+			{title:'Hull Estimate', responsivePriority: 4},
+			{title:'Issued', responsivePriority: 5}
+		],
+		order: [[4, "asc"]],
+		searching: true,
+		paging: true,
+		pageLength: 25,
+		bInfo: false,
+		responsive: true,
+		select: true
+	});
+	$.getJSON('/api/contract/capital/open', function(result) {
+		for(var i=0; i<result.length; i++) {
+			contractsTable.row.add([
+				'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract?contract=' + result[i].contractId + '" target="_blank">Details</a>',
+				result[i].typeName,
+				formatInt(result[i].price),
+				result[i].fittings !== null ? formatInt(result[i].fittings) : 0,
+				result[i].hullvalue !== null ? formatInt(result[i].hullvalue) : formatInt(result[i].price),
+				result[i].dateIssued
+			]);
+		}
+		contractsTable.draw();
+		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+	})
+}
+
+function loadFinishedCapContracts() {
+	if ($.fn.DataTable.isDataTable('#contracts-table')) {
+		$('#contracts-table').DataTable().destroy();
+		$('#contracts-table').empty();
+	}
+	var contractsTable = $('#contracts-table').DataTable({
+		columns: [
+			{title:'', responsivePriority: 2},
+			{title:'Hull Type', responsivePriority: 1},
+			{title:'Price', responsivePriority: 1},
+			{title:'Fittings', responsivePriority: 3},
+			{title:'Hull Estimate', responsivePriority: 4},
+			{title:'Completed', responsivePriority: 5}
+		],
+		order: [[5, "desc"]],
+		searching: true,
+		paging: true,
+		pageLength: 25,
+		bInfo: false,
+		responsive: true,
+		select: true
+	});
+	$.getJSON('/api/contract/capital/finished', function(result) {
+		for(var i=0; i<result.length; i++) {
+			contractsTable.row.add([
+				'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract?contract=' + result[i].contractId + '" target="_blank">Details</a>',
+				result[i].typeName,
+				formatInt(result[i].price),
+				result[i].fittings !== null ? formatInt(result[i].fittings) : 0,
+				result[i].hullvalue !== null ? formatInt(result[i].hullvalue) : formatInt(result[i].price),
+				result[i].dateCompleted
+			]);
+		}
+		contractsTable.draw();
+		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+	})
+}
