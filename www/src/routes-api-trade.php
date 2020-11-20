@@ -7,7 +7,7 @@
 $app->get('/api/jita-buy', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vJitaBestBuy';
+    $sql = 'SELECT typeId, best FROM vjitabestbuy';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -18,7 +18,7 @@ $app->get('/api/jita-buy', function ($request, $response, $args) {
 $app->get('/api/jita-buy-xml', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vJitaBestBuy';
+    $sql = 'SELECT typeId, best FROM vjitabestbuy';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -40,7 +40,7 @@ $app->get('/api/jita-buy-xml', function ($request, $response, $args) {
 $app->get('/api/jita-sell', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vJitaBestSell';
+    $sql = 'SELECT typeId, best FROM vjitabestsell';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -51,7 +51,7 @@ $app->get('/api/jita-sell', function ($request, $response, $args) {
 $app->get('/api/jita-sell-xml', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vJitaBestSell';
+    $sql = 'SELECT typeId, best FROM vjitabestsell';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -73,7 +73,7 @@ $app->get('/api/jita-sell-xml', function ($request, $response, $args) {
 $app->get('/api/amarr-buy', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vAmarrBestBuy';
+    $sql = 'SELECT typeId, best FROM vamarrbestbuy';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -84,7 +84,7 @@ $app->get('/api/amarr-buy', function ($request, $response, $args) {
 $app->get('/api/amarr-buy-xml', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vAmarrBestBuy';
+    $sql = 'SELECT typeId, best FROM vamarrbestbuy';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -106,7 +106,7 @@ $app->get('/api/amarr-buy-xml', function ($request, $response, $args) {
 $app->get('/api/amarr-sell', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vAmarrBestSell';
+    $sql = 'SELECT typeId, best FROM vamarrbestsell';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -117,7 +117,7 @@ $app->get('/api/amarr-sell', function ($request, $response, $args) {
 $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT typeId, best FROM vAmarrBestSell';
+    $sql = 'SELECT typeId, best FROM vamarrbestsell';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
