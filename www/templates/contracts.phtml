@@ -12,14 +12,22 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-sm-12">
+	<div class="col-sm-4">
 		Exchange <button onclick="loadExchangeContracts()">Outstanding</button><button onclick="loadFinishedExchangeContracts()">Finished</button><br />
 		Courier <button onclick="loadCourierContracts()">Outstanding</button><button onclick="loadInProgressCourierContracts()">In Progress</button><button onclick="loadFinishedCourierContracts()">Finished</button><button onclick="loadFailedCourierContracts()">Failed</button><br />
-		Capitals <button onclick="loadOpenCapContracts()">Outstanding</button><button onclick="loadFinishedCapContracts()">Finished</button><br /><hr />
+		Auction <button onclick="loadOpenAuctionContracts()">Outstanding</button><button onclick="loadFinishedAuctionContracts()">Finished</button><br />
+	</div>
+	<div class="col-sm-4">
+		Capitals <button onclick="loadOpenCapContracts()">Outstanding</button><button onclick="loadFinishedCapContracts()">Finished</button><br />
+		Corp Business <button onclick="loadOpenCorpLogiContracts()">Outstanding</button><button onclick="loadFinishedCorpLogiContracts()">Finished</button><br />
+		Competition <button onclick="loadBigContractors()">Big Contractors</button><br />
+	</div>
+	<div class="col-sm-4">
 	</div>
 </div>
 <div class="row">
 	<div class="col-md-9">
+		<hr />
 		<div class="panel panel-default no-border">
 			<div class="panel-body no-padding">
 				<div class="table-responsive">

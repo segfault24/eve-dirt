@@ -11,18 +11,10 @@ $app->get('/api/contract/corp/exchange', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, locs.`sName` AS locationId, ich.`name` AS issuerName, co.`price`, co.`title`, co.`dateIssued`
+    $sql = 'SELECT co.`contractId`, locs.`locationName`, ich.`name` AS issuerName, co.`price`, co.`title`, co.`dateIssued`
             FROM corpcontract AS co
-            LEFT JOIN (
-                SELECT charId AS id, charName AS name FROM `character`
-                UNION
-                SELECT corpId AS id, corpName AS name FROM `corporation`
-            ) AS ich ON co.issuerId=ich.id
-            LEFT JOIN (
-                SELECT `stationId` AS sId,`stationName` AS sName FROM station
-                UNION ALL
-                SELECT `structId` AS sId,`structName` AS sName FROM structure
-            ) AS locs ON co.`startLocationId`=locs.`sId`
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dlocation AS locs ON co.`startLocationId`=locs.`locationId`
             WHERE co.`type`=2 AND co.`status`=1 AND `dateExpired`>NOW()
             ORDER BY co.dateIssued DESC';
 
@@ -39,25 +31,13 @@ $app->get('/api/contract/corp/exchange/finished', function ($request, $response,
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, locs.`sName` AS locationId, ich.`name` AS issuerName, ach.`name` AS acceptorName, co.`price`, co.`title`, co.`dateCompleted`
-        FROM corpcontract AS co
-        LEFT JOIN (
-            SELECT charId AS id, charName AS name FROM `character`
-            UNION
-            SELECT corpId AS id, corpName AS name FROM `corporation`
-        ) AS ich ON co.issuerId=ich.id
-        LEFT JOIN (
-            SELECT charId AS id, charName AS name FROM `character`
-            UNION
-            SELECT corpId AS id, corpName AS name FROM `corporation`
-        ) AS ach ON co.acceptorId=ach.id
-        LEFT JOIN (
-            SELECT `stationId` AS sId,`stationName` AS sName FROM station
-            UNION ALL
-            SELECT `structId` AS sId,`structName` AS sName FROM structure
-        ) AS locs ON co.`startLocationId`=locs.`sId`
-        WHERE co.`type`=2 AND co.`status`=5
-        ORDER BY co.dateIssued DESC LIMIT 1000';
+    $sql = 'SELECT co.`contractId`, locs.`locationName`, ich.`name` AS issuerName, ach.`name` AS acceptorName, co.`price`, co.`title`, co.`dateCompleted`
+            FROM corpcontract AS co
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dentity AS ach ON co.acceptorId=ach.id
+            LEFT JOIN dlocation AS locs ON co.`startLocationId`=locs.`locationId`
+            WHERE co.`type`=2 AND co.`status`=5
+            ORDER BY co.dateIssued DESC LIMIT 1000';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -72,25 +52,13 @@ $app->get('/api/contract/corp/courier', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`sName` AS startLocation, elocs.`eName` AS endLocation, co.`collateral`, co.`volume`, co.`reward`, co.`daysToComplete`
-        FROM corpcontract AS co
-        LEFT JOIN (
-            SELECT charId AS id, charName AS name FROM `character`
-            UNION
-            SELECT corpId AS id, corpName AS name FROM `corporation`
-        ) AS ich ON co.issuerId=ich.id
-        LEFT JOIN (
-            SELECT `stationId` AS sId,`stationName` AS sName FROM station
-            UNION ALL
-            SELECT `structId` AS sId,`structName` AS sName FROM structure
-        ) AS slocs ON co.`startLocationId`=slocs.`sId`
-        LEFT JOIN (
-            SELECT `stationId` AS sId,`stationName` AS eName FROM station
-            UNION ALL
-            SELECT `structId` AS sId,`structName` AS eName FROM structure
-        ) AS elocs ON co.`endLocationId`=elocs.`sId`
-        WHERE co.`type`=4 AND co.`status`=1 AND `dateExpired`>NOW()
-        ORDER BY co.dateIssued DESC';
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`locationName` AS startLocation, elocs.`locationName` AS endLocation, co.`collateral`, co.`volume`, co.`reward`, co.`daysToComplete`
+            FROM corpcontract AS co
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dlocation AS slocs ON co.`startLocationId`=slocs.`locationId`
+            LEFT JOIN dlocation AS elocs ON co.`endLocationId`=elocs.`locationId`
+            WHERE co.`type`=4 AND co.`status`=1 AND `dateExpired`>NOW()
+            ORDER BY co.dateIssued DESC';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -105,30 +73,14 @@ $app->get('/api/contract/corp/courier/in-progress', function ($request, $respons
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`sName` AS startLocation, elocs.`eName` AS endLocation, co.`collateral`, co.`volume`, co.`reward`, ach.`name` AS acceptor
-    FROM corpcontract AS co
-    LEFT JOIN (
-        SELECT charId AS id, charName AS name FROM `character`
-        UNION
-        SELECT corpId AS id, corpName AS name FROM `corporation`
-    ) AS ich ON co.issuerId=ich.id
-    LEFT JOIN (
-        SELECT charId AS id, charName AS name FROM `character`
-        UNION
-        SELECT corpId AS id, corpName AS name FROM `corporation`
-    ) AS ach ON co.acceptorId=ach.id
-    LEFT JOIN (
-        SELECT `stationId` AS sId,`stationName` AS sName FROM station
-        UNION ALL
-        SELECT `structId` AS sId,`structName` AS sName FROM structure
-    ) AS slocs ON co.`startLocationId`=slocs.`sId`
-    LEFT JOIN (
-        SELECT `stationId` AS sId,`stationName` AS eName FROM station
-        UNION ALL
-        SELECT `structId` AS sId,`structName` AS eName FROM structure
-    ) AS elocs ON co.`endLocationId`=elocs.`sId`
-    WHERE co.`type`=4 AND co.`status`=2
-    ORDER BY co.dateCompleted DESC LIMIT 1000';
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`locationName` AS startLocation, elocs.`locationName` AS endLocation, co.`collateral`, co.`volume`, co.`reward`, ach.`name` AS acceptor
+            FROM corpcontract AS co
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dentity AS ach ON co.acceptorId=ach.id
+            LEFT JOIN dlocation AS slocs ON co.`startLocationId`=slocs.`locationId`
+            LEFT JOIN dlocation AS elocs ON co.`endLocationId`=elocs.`locationId`
+            WHERE co.`type`=4 AND co.`status`=2
+            ORDER BY co.dateCompleted DESC';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -143,30 +95,15 @@ $app->get('/api/contract/corp/courier/finished', function ($request, $response, 
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`sName` AS startLocation, elocs.`eName` AS endLocation, co.`collateral`, co.`volume`, co.`reward`, ach.`name` AS acceptor, co.`dateCompleted`
-    FROM corpcontract AS co
-    LEFT JOIN (
-        SELECT charId AS id, charName AS name FROM `character`
-        UNION
-        SELECT corpId AS id, corpName AS name FROM `corporation`
-    ) AS ich ON co.issuerId=ich.id
-    LEFT JOIN (
-        SELECT charId AS id, charName AS name FROM `character`
-        UNION
-        SELECT corpId AS id, corpName AS name FROM `corporation`
-    ) AS ach ON co.acceptorId=ach.id
-    LEFT JOIN (
-        SELECT `stationId` AS sId,`stationName` AS sName FROM station
-        UNION ALL
-        SELECT `structId` AS sId,`structName` AS sName FROM structure
-    ) AS slocs ON co.`startLocationId`=slocs.`sId`
-    LEFT JOIN (
-        SELECT `stationId` AS sId,`stationName` AS eName FROM station
-        UNION ALL
-        SELECT `structId` AS sId,`structName` AS eName FROM structure
-    ) AS elocs ON co.`endLocationId`=elocs.`sId`
-    WHERE co.`type`=4 AND co.`status`=5
-    ORDER BY co.dateCompleted DESC LIMIT 1000';
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`locationName` AS startLocation, elocs.`locationName` AS endLocation,
+                co.`collateral`, co.`volume`, co.`reward`, ach.`name` AS acceptor, co.`dateCompleted`
+            FROM corpcontract AS co
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dentity AS ach ON co.acceptorId=ach.id
+            LEFT JOIN dlocation AS slocs ON co.`startLocationId`=slocs.`locationId`
+            LEFT JOIN dlocation AS elocs ON co.`endLocationId`=elocs.`locationId`
+            WHERE co.`type`=4 AND co.`status`=5
+            ORDER BY co.dateCompleted DESC LIMIT 1000';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -181,30 +118,15 @@ $app->get('/api/contract/corp/courier/failed', function ($request, $response, $a
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`sName` AS startLocation, elocs.`eName` AS endLocation, co.`collateral`, co.`volume`, co.`reward`, ach.`name` AS acceptor, co.`dateCompleted`
-    FROM corpcontract AS co
-    LEFT JOIN (
-        SELECT charId AS id, charName AS name FROM `character`
-        UNION
-        SELECT corpId AS id, corpName AS name FROM `corporation`
-    ) AS ich ON co.issuerId=ich.id
-    LEFT JOIN (
-        SELECT charId AS id, charName AS name FROM `character`
-        UNION
-        SELECT corpId AS id, corpName AS name FROM `corporation`
-    ) AS ach ON co.acceptorId=ach.id
-    LEFT JOIN (
-        SELECT `stationId` AS sId,`stationName` AS sName FROM station
-        UNION ALL
-        SELECT `structId` AS sId,`structName` AS sName FROM structure
-    ) AS slocs ON co.`startLocationId`=slocs.`sId`
-    LEFT JOIN (
-        SELECT `stationId` AS sId,`stationName` AS eName FROM station
-        UNION ALL
-        SELECT `structId` AS sId,`structName` AS eName FROM structure
-    ) AS elocs ON co.`endLocationId`=elocs.`sId`
-    WHERE co.`type`=4 AND co.`status`=8
-    ORDER BY co.dateCompleted DESC LIMIT 1000';
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`dateIssued`, slocs.`locationName` AS startLocation, elocs.`locationName` AS endLocation,
+                co.`collateral`, co.`volume`, co.`reward`, ach.`name` AS acceptor, co.`dateCompleted`
+            FROM corpcontract AS co
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dentity AS ach ON co.acceptorId=ach.id
+            LEFT JOIN dlocation AS slocs ON co.`startLocationId`=slocs.`locationId`
+            LEFT JOIN dlocation AS elocs ON co.`endLocationId`=elocs.`locationId`
+            WHERE co.`type`=4 AND co.`status`=8
+            ORDER BY co.dateCompleted DESC LIMIT 1000';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -212,29 +134,30 @@ $app->get('/api/contract/corp/courier/failed', function ($request, $response, $a
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/contract/capital/open', function ($request, $response, $args) {
+$app->get('/api/contract/capital/outstanding', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT c.contractId, i.typeName, c.dateIssued, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue
-    FROM corpcontract AS c
-    JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
-    JOIN invType AS i ON ci.typeId=i.typeId
-    LEFT JOIN (
-        SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
-        FROM corpcontract AS c
-        JOIN corpcontractitem AS ci ON ci.contractId=c.contractId
-        JOIN vjitabestsell AS j ON j.typeid=ci.typeid
-        WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
-        GROUP BY c.contractId
-    ) AS a ON a.contractId=c.contractId
-    WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
-    AND c.`type`=2 AND c.`status`=1 AND c.`dateExpired`>NOW()
-    ORDER BY c.dateCompleted DESC
-    LIMIT 1000';
+    $sql = 'SELECT c.contractId, i.typeName, c.dateIssued, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue, l.locationName, e.name AS issuer
+            FROM corpcontract AS c
+            JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
+            JOIN invType AS i ON ci.typeId=i.typeId
+            LEFT JOIN (
+                SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
+                FROM corpcontract AS c
+                JOIN corpcontractitem AS ci ON ci.contractId=c.contractId
+                JOIN vjitabestsell AS j ON j.typeid=ci.typeid
+                WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+                GROUP BY c.contractId
+            ) AS a ON a.contractId=c.contractId
+            LEFT JOIN dLocation AS l ON l.locationId=c.startLocationId
+            LEFT JOIN dEntity AS e ON e.id=c.issuerId
+            WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+            AND c.`type`=2 AND c.`status`=1 AND c.`dateExpired`>NOW()
+            ORDER BY c.dateCompleted DESC';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -249,22 +172,23 @@ $app->get('/api/contract/capital/finished', function ($request, $response, $args
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT c.contractId, i.typeName, c.dateCompleted, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue
-    FROM corpcontract AS c
-    JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
-    JOIN invType AS i ON ci.typeId=i.typeId
-    JOIN (
-        SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
-        FROM corpcontract AS c
-        JOIN corpcontractitem AS ci ON ci.contractId=c.contractId
-        JOIN vjitabestsell AS j ON j.typeid=ci.typeid
-        WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
-        GROUP BY c.contractId
-    ) AS a ON a.contractId=c.contractId
-    WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
-    AND c.`type`=2 AND c.`status`=5
-    ORDER BY c.dateCompleted DESC
-    LIMIT 1000';
+    $sql = 'SELECT c.contractId, i.typeName, c.dateCompleted, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue, l.locationName, e.name AS issuer
+            FROM corpcontract AS c
+            JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
+            JOIN invType AS i ON ci.typeId=i.typeId
+            LEFT JOIN (
+                SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
+                FROM corpcontract AS c
+                JOIN corpcontractitem AS ci ON ci.contractId=c.contractId
+                JOIN vjitabestsell AS j ON j.typeid=ci.typeid
+                WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+                GROUP BY c.contractId
+            ) AS a ON a.contractId=c.contractId
+            LEFT JOIN dLocation AS l ON l.locationId=c.startLocationId
+            LEFT JOIN dEntity AS e ON e.id=c.issuerId
+            WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
+            AND c.`type`=2 AND c.`status`=5
+            ORDER BY c.dateCompleted DESC LIMIT 1000';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -272,30 +196,74 @@ $app->get('/api/contract/capital/finished', function ($request, $response, $args
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/contract/{contractid}/items/', function ($request, $response, $args) {
+$app->get('/api/contract/corp/business/open', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM contractitem AS i
-            JOIN invType AS t ON t.typeId=i.typeId WHERE contractId=:contractid';
+    $sql = 'SELECT c.contractId, locs.locationName, ch.charName AS issuer, co.corpName AS issuerCorp, a.name AS assignee, c.title, c.dateIssued
+            FROM corpcontract AS c
+            JOIN `character` AS ch ON c.issuerId=ch.charId
+            JOIN corporation AS co ON c.issuerCorpId=co.corpId
+            LEFT JOIN dentity AS a ON a.id=c.assigneeId
+            LEFT JOIN dlocation AS locs ON c.startLocationId=locs.locationId
+            WHERE c.type=2 AND c.status=1 AND c.forCorp=1 AND c.dateExpired>NOW()
+            ORDER BY c.dateIssued DESC';
+
     $stmt = $db->prepare($sql);
-    $stmt->execute(array(
-        ':contractid' => $args['contractid']
-    ));
-    if ($stmt->rowCount() > 0) {
-        return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
-    } else {
-        $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM corpcontractitem AS i
-            JOIN invType AS t ON t.typeId=i.typeId WHERE contractId=:contractid';
-        $stmt = $db->prepare($sql);
-        $stmt->execute(array(
-            ':contractid' => $args['contractid']
-        ));
-        return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/contract/corp/business/finished', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
     }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT c.contractId, locs.locationName, ch.charName AS issuer, co.corpName AS issuerCorp, a.name AS assignee, c.title, c.dateCompleted
+            FROM corpcontract AS c
+            JOIN `character` AS ch ON c.issuerId=ch.charId
+            JOIN corporation AS co ON c.issuerCorpId=co.corpId
+            LEFT JOIN dentity AS a ON a.id=c.assigneeId
+            LEFT JOIN dlocation AS locs ON c.startLocationId=locs.locationId
+            WHERE c.type=2 AND c.status=5 AND c.forCorp=1 AND c.dateExpired>NOW()
+            ORDER BY c.dateCompleted DESC LIMIT 1000';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/contract/bigcontractors', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT p.charName AS contractor, sum(c.price) AS total, count(c.price) AS count
+            FROM corpcontract AS c
+            JOIN `character` As p ON p.charId=c.issuerId
+            WHERE c.type=2 AND c.status=1 AND c.forCorp=0 AND c.dateExpired>NOW()
+            GROUP BY c.issuerId
+            UNION
+            SELECT p.corpName AS issuer, sum(c.price) AS total, count(c.price) AS count
+            FROM corpcontract AS c
+            JOIN corporation AS p ON p.corpId=c.issuerCorpId
+            WHERE c.type=2 AND c.status=1 AND c.forCorp=1 AND c.dateExpired>NOW()
+            GROUP BY c.issuerCorpId
+            ORDER BY total DESC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
 $app->get('/api/market/open-in-game-contract/{contract}', function ($request, $response, $args) {
@@ -312,9 +280,7 @@ $app->get('/api/market/open-in-game-contract/{contract}', function ($request, $r
     $url = "https://esi.evetech.net/latest/ui/openwindow/contract/?datasource=tranquility&contract_id=" . $args['contract'];
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_USERAGENT, Dirt\Tools::getProperty('useragent'));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        $header
-    ));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array($header));
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

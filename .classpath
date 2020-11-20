@@ -18,6 +18,6 @@
 	<classpathentry kind="lib" path="lib/log4j-core-2.11.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eve-tools"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.17.jar"/>
-	<classpathentry kind="lib" path="lib/esi-client.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/esiclient"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

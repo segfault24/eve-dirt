@@ -17,6 +17,7 @@ import atsb.eve.dirt.esi.MarketApiWrapper;
 import atsb.eve.dirt.esi.auth.OAuthUtil;
 import atsb.eve.model.MarketOrder;
 import atsb.eve.model.OAuthUser;
+import atsb.eve.util.Utils;
 import net.evetech.ApiException;
 import net.evetech.esi.models.GetMarketsRegionIdOrders200Ok;
 import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
@@ -29,6 +30,8 @@ import net.evetech.esi.models.GetMarketsStructuresStructureId200Ok;
 public class MarketRegionOrdersTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
+
+	private static final int FORBIDDEN_RETRIES = 5;
 
 	private int region;
 	private Timestamp start;
@@ -162,19 +165,12 @@ public class MarketRegionOrdersTask extends DirtTask {
 			page++;
 			try {
 				orders = mapiw.getMarketsStructureIdOrders(structId, page, OAuthUtil.getAuthToken(getDb(), auth));
+				Utils.putKV(getDb(), "forbidden-" + structId, "0"); // reset forbidden retry counter
 			} catch (ApiException e) {
 				if (e.getCode() == 304) {
 					break;
 				} else if (e.getCode() == 403) {
-					// TODO: implement delayed retries before removing?
-					// TODO: try other keys
-					log.warn("Access forbidden to structure " + structId + ", removing structAuth");
-					try {
-						StructAuthTable.deleteStructAuth(getDb(), structId, keyId);
-					} catch (SQLException e1) {
-						log.error("Failed to remove structAuth for structure " + structId + " with key " + keyId, e1);
-						break;
-					}
+					forbidden(structId, keyId);
 					break;
 				} else {
 					log.error("Failed to retrieve page " + page + " of orders for structure " + structId, e);
@@ -207,6 +203,33 @@ public class MarketRegionOrdersTask extends DirtTask {
 		} while (orders.size() > 0);
 
 		log.debug("Inserted " + totalOrders + " total orders for structure " + structId);
+	}
+
+	private void forbidden(long structId, int keyId) {
+		// TODO: try other keys
+		String scount = Utils.getKV(getDb(), "forbidden-" + structId);
+		int count = 0;
+		if (scount != null) {
+			try {
+				count = Integer.parseInt(scount);
+			} catch(NumberFormatException e) {
+				log.warn("Failed to parse value for kv key: forbidden-" + structId);
+			}
+		}
+		count++; // increment for this attempt
+
+		log.warn("Access forbidden to structure " + structId + " (attempt " + count + ")");
+
+		if (count > FORBIDDEN_RETRIES) {
+			// reached limit, remove key
+			try {
+				log.warn("Reached retry limit for forbidden, removing structAuth for struct " + structId + " and key " + keyId);
+				StructAuthTable.deleteStructAuth(getDb(), structId, keyId);
+			} catch (SQLException e1) {
+				log.error("Failed to remove structAuth for structure " + structId + " with key " + keyId, e1);
+			}
+		}
+		Utils.putKV(getDb(), "forbidden-" + structId, "" + count);
 	}
 
 	private void doDeleteOld() {

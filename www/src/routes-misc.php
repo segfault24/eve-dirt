@@ -2,7 +2,7 @@
 use Dirt\Tools;
 
 $app->get('/', function ($request, $response, $args) {
-    return $this->renderer->render($response, 'index.phtml', $args);
+    return $response->withStatus(302)->withHeader('Location', '/login');
 });
 
 // //////////////////////////////////////////////

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import atsb.eve.db.TaskLogTable;
 import atsb.eve.dirt.cli.TaskCli;
 import atsb.eve.dirt.task.CorpContractsTask;
+import atsb.eve.dirt.task.DerivedTableTask;
 import atsb.eve.dirt.task.DirtTask;
 import atsb.eve.dirt.task.InsurancePricesTask;
 import atsb.eve.dirt.task.InvMarketGroupsTask;
@@ -92,6 +93,9 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 		// auto-delete old market orders that might not be cleaned up elsewhere
 		addPeriodicTask(db, new OrderReaperTask(), 30);
 
+		// auto-regenerate derived tables periodically
+		addPeriodicTask(db, new DerivedTableTask(), 120);
+
 		// market history for specific regions
 		regions = Utils.parseIntList(Utils.getProperty(db, DirtConstants.PROPERTY_MARKET_HISTORY_REGIONS));
 		period = Utils.getIntProperty(db, DirtConstants.PROPERTY_MARKET_HISTORY_PERIOD);
@@ -157,7 +161,7 @@ public class DirtTaskDaemon extends ScheduledThreadPoolExecutor implements Taska
 	/**
 	 * @param db
 	 * @param t
-	 * @param period
+	 * @param period in minutes
 	 */
 	public void addPeriodicTask(Connection db, DirtTask t, long period) {
 		TaskLog ts = TaskLogTable.getLatestTaskLog(db, t.getTaskName());

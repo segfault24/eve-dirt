@@ -17,18 +17,6 @@ $app->get('/admin', function ($request, $response, $args) {
     return $this->renderer->render($response, 'admin/index.phtml', $args);
 });
 
-$app->get('/admin/test', function ($request, $response, $args) {
-    $u = Dirt\User::getUser();
-    if (! $u->isAdmin()) {
-        $this->logger->warning('/admin/test unauthorized access attempt');
-        return $response->withStatus(302)
-            ->withHeader('Location', '/dashboard');
-    }
-    $u->setTemplateVars($args);
-
-    return $this->renderer->render($response, 'admin/test.phtml', $args);
-});
-
 $app->get('/admin/create-user', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isAdmin()) {
@@ -62,7 +50,6 @@ $app->post('/admin/create-user', function ($request, $response, $args) {
         $this->logger->info('/admin/create-user failed to create user: ' . $err);
         $args['errormsg'] = $err;
     }
-
     $u->setTemplateVars($args);
 
     return $this->renderer->render($response, 'admin/create-user.phtml', $args);
@@ -77,6 +64,37 @@ $app->get('/admin/list-users', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT userId, username, name, dateCreated, lastLogin, admin, disabled FROM dirtuser';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    $args['userlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     return $this->renderer->render($response, 'admin/list-users.phtml', $args);
 });
 
+$app->get('/admin/structure-auths', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isAdmin()) {
+        $this->logger->warning('/admin/structure-auths unauthorized access attempt');
+        return $response->withStatus(302)
+        ->withHeader('Location', '/dashboard');
+    }
+    $u->setTemplateVars($args);
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT r.regionName, s.structName, a.charName, u.username
+            FROM dirtstructauth AS d
+            JOIN structure AS s ON d.structId=s.structId
+            JOIN region AS r ON s.regionId=r.regionId
+            JOIN dirtapiauth AS a ON d.keyId=a.keyId
+            JOIN dirtuser AS u ON u.userId=a.userId
+            ORDER BY r.regionName, s.structName';
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    $args['authlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $this->renderer->render($response, 'admin/structure-auths.phtml', $args);
+});
