@@ -151,7 +151,7 @@ public class PriceVolumeAlert extends DirtTask {
 		default:
 			throw new IllegalArgumentException();
 		}
-		sql += "FROM `marketOrder` WHERE `typeId`=? AND `isBuyOrder`=? ";
+		sql += "FROM `marketorder` WHERE `typeId`=? AND `isBuyOrder`=? ";
 		sql += "AND (`locationId`=? OR `regionId`=?)";
 
 		value = Double.parseDouble(alert.getParam5());

@@ -229,7 +229,7 @@ public class PriceCompare {
 		}
 
 		// check that items exist and get ids
-		String typeSql = "SELECT typeId, volume FROM invType WHERE typeName=?";
+		String typeSql = "SELECT typeId, volume FROM invtype WHERE typeName=?";
 		for (LineItem i : items) {
 			try {
 				PreparedStatement stmt = db.prepareStatement(typeSql);
@@ -262,7 +262,7 @@ public class PriceCompare {
 		for (int i = 0; i < routes.size(); i++) {
 			sql += ", a" + i + ".best AS a" + i;
 		}
-		sql += " FROM invType AS i";
+		sql += " FROM invtype AS i";
 		for (int i = 0; i < routes.size(); i++) {
 			sql += " LEFT JOIN (";
 			sql += " SELECT typeId, MIN(price) AS best FROM marketorder";

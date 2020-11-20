@@ -32,14 +32,14 @@ public class UnknownIdsTask extends DirtTask {
 			+ "UNION SELECT acceptorId FROM contract "
 			+ "UNION SELECT assigneeId FROM contract "
 			+ "UNION SELECT issuerCorpId FROM contract "
-			+ "UNION SELECT issuerId FROM corpContract "
-			+ "UNION SELECT acceptorId FROM corpContract "
-			+ "UNION SELECT assigneeId FROM corpContract "
-			+ "UNION SELECT issuerCorpId FROM corpContract "
+			+ "UNION SELECT issuerId FROM corpcontract "
+			+ "UNION SELECT acceptorId FROM corpcontract "
+			+ "UNION SELECT assigneeId FROM corpcontract "
+			+ "UNION SELECT issuerCorpId FROM corpcontract "
 			+ "UNION SELECT corpId FROM structure "
-			+ "UNION SELECT firstPartyId FROM walletJournal "
-			+ "UNION SELECT secondPartyId FROM walletJournal "
-			+ "UNION SELECT clientId FROM walletTransaction";
+			+ "UNION SELECT firstPartyId FROM walletjournal "
+			+ "UNION SELECT secondPartyId FROM walletjournal "
+			+ "UNION SELECT clientId FROM wallettransaction";
 
 	private static final int BATCH_SIZE = 500;
 

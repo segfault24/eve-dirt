@@ -17,13 +17,13 @@ public class DerivedTableTask extends DirtTask {
 
 	private static Logger log = LogManager.getLogger();
 
-	private static final String DENTITY_TRUNCATE_SQL = "DELETE FROM dEntity;";
-	private static final String DENTITY_INSERT_SQL = "INSERT INTO dEntity"
+	private static final String DENTITY_TRUNCATE_SQL = "DELETE FROM dentity;";
+	private static final String DENTITY_INSERT_SQL = "INSERT INTO dentity"
 			+ " SELECT `character`.`charId` AS `id`,`character`.`charName` AS `name` FROM `character`"
 			+ " UNION SELECT `corporation`.`corpId` AS `id`,`corporation`.`corpName` AS `name` FROM `corporation`"
 			+ " UNION SELECT  `alliance`.`allianceId` AS `id`, `alliance`.`allianceName` AS `name` FROM `alliance`;";
-	private static final String DLOCATION_TRUNCATE_SQL = "DELETE FROM dLocation;";
-	private static final String DLOCATION_INSERT_SQL = "INSERT INTO `dLocation`"
+	private static final String DLOCATION_TRUNCATE_SQL = "DELETE FROM dlocation;";
+	private static final String DLOCATION_INSERT_SQL = "INSERT INTO `dlocation`"
 			+ " SELECT `stationId` AS locationId, `stationName` AS locationName FROM `station`"
 			+ " UNION ALL SELECT `structId` AS locationId, `structName` AS locationName FROM `structure`;";
 
