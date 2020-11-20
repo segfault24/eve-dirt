@@ -64,7 +64,7 @@ class User
         $db = Database::getDb();
 
         // get the user's info from the db
-        $sql = 'SELECT `userId`, `name`, `hash`, `admin`, `disabled` FROM dirtUser WHERE `username`=:username';
+        $sql = 'SELECT `userId`, `name`, `hash`, `admin`, `disabled` FROM dirtuser WHERE `username`=:username';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':username', $user);
         $stmt->execute();
@@ -89,7 +89,7 @@ class User
                     }
 
                     // update the user's last login
-                    $sql = 'UPDATE dirtUser SET `lastLogin`=NOW() WHERE `userId`=:userid';
+                    $sql = 'UPDATE dirtuser SET `lastLogin`=NOW() WHERE `userId`=:userid';
                     $stmt = $db->prepare($sql);
                     $stmt->bindParam(':userid', $row['userId']);
                     $stmt->execute();
@@ -122,7 +122,7 @@ class User
         $userid = $this->getUserId();
 
         // check if this char is already linked
-        $sql = 'SELECT `charId` FROM dirtApiAuth WHERE `userId`=:userid AND `charId`=:charid';
+        $sql = 'SELECT `charId` FROM dirtapiauth WHERE `userId`=:userid AND `charId`=:charid';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':userid', $userid);
         $stmt->bindParam(':charid', $charid);
@@ -135,7 +135,7 @@ class User
 		date_default_timezone_set('America/New_York');
         $expires_timestamp = date('Y-m-d H:i:s', strtotime('now +' . $expires . ' seconds'));
 
-        $sql = 'INSERT INTO dirtApiAuth (`userId`, `charId`, `charName`, `charHash`, `token`, `expires`, `refresh`)
+        $sql = 'INSERT INTO dirtapiauth (`userId`, `charId`, `charName`, `charHash`, `token`, `expires`, `refresh`)
 				VALUES (:userid, :charid, :charname, :charhash, :token, :expires, :refresh);';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':userid', $userid);
@@ -172,7 +172,7 @@ class User
         // we match the userid here as well as the charid
         // to prevent mitigate on the form hidden input
         $db = Database::getDb();
-        $sql = 'DELETE FROM dirtApiAuth WHERE userId=:userid AND charId=:charid;';
+        $sql = 'DELETE FROM dirtapiauth WHERE userId=:userid AND charId=:charid;';
         $stmt = $db->prepare($sql);
         $userid = $this->getUserId();
         $stmt->bindParam(':userid', $userid);
@@ -282,7 +282,7 @@ class User
     private function setActiveCharAny()
     {
         $db = Database::getDb();
-        $sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtApiAuth WHERE `userId`=:userid LIMIT 1';
+        $sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtapiauth WHERE `userId`=:userid LIMIT 1';
         $stmt = $db->prepare($sql);
         $userid = $this->getUserId();
         $stmt->bindParam(':userid', $userid);
@@ -311,7 +311,7 @@ class User
     public function setActiveChar($charid)
     {
         $db = Database::getDb();
-        $sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtApiAuth WHERE `userId`=:userid AND `charId`=:charid';
+        $sql = 'SELECT `charId`, `charName`, `token`, `expires`, `refresh` FROM dirtapiauth WHERE `userId`=:userid AND `charId`=:charid';
         $stmt = $db->prepare($sql);
         $userid = $this->getUserId();
         $stmt->bindParam(':userid', $userid);
@@ -373,7 +373,7 @@ class User
 
         // update the database
         $db = Database::getDb();
-        $sql = 'UPDATE dirtApiAuth SET `token`=:token, `expires`=:expires, `refresh`=:refresh';
+        $sql = 'UPDATE dirtapiauth SET `token`=:token, `expires`=:expires, `refresh`=:refresh';
         $sql .= ' WHERE `userId`=:userid AND `charId`=:charid;';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':token', $new_token);
@@ -392,7 +392,7 @@ class User
 
         // get the user's info from the db
         $db = Database::getDb();
-        $sql = 'SELECT `hash`, `disabled` FROM dirtUser WHERE `userId`=:userid';
+        $sql = 'SELECT `hash`, `disabled` FROM dirtuser WHERE `userId`=:userid';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':userid', $_SESSION['userid']);
         $stmt->execute();
@@ -418,7 +418,7 @@ class User
 
         // update the user's password
         $newhash = password_hash($newpw, PASSWORD_DEFAULT);
-        $sql = 'UPDATE dirtUser SET `hash`=:hash WHERE `userId`=:userid';
+        $sql = 'UPDATE dirtuser SET `hash`=:hash WHERE `userId`=:userid';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':hash', $newhash);
         $stmt->bindParam(':userid', $_SESSION['userid']);

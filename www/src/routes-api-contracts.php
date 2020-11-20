@@ -144,7 +144,7 @@ $app->get('/api/contract/capital/outstanding', function ($request, $response, $a
     $sql = 'SELECT c.contractId, i.typeName, c.dateIssued, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue, l.locationName, e.name AS issuer
             FROM corpcontract AS c
             JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
-            JOIN invType AS i ON ci.typeId=i.typeId
+            JOIN invtype AS i ON ci.typeId=i.typeId
             LEFT JOIN (
                 SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
                 FROM corpcontract AS c
@@ -153,8 +153,8 @@ $app->get('/api/contract/capital/outstanding', function ($request, $response, $a
                 WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
                 GROUP BY c.contractId
             ) AS a ON a.contractId=c.contractId
-            LEFT JOIN dLocation AS l ON l.locationId=c.startLocationId
-            LEFT JOIN dEntity AS e ON e.id=c.issuerId
+            LEFT JOIN dlocation AS l ON l.locationId=c.startLocationId
+            LEFT JOIN dentity AS e ON e.id=c.issuerId
             WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
             AND c.`type`=2 AND c.`status`=1 AND c.`dateExpired`>NOW()
             ORDER BY c.dateCompleted DESC';
@@ -175,7 +175,7 @@ $app->get('/api/contract/capital/finished', function ($request, $response, $args
     $sql = 'SELECT c.contractId, i.typeName, c.dateCompleted, c.price, a.appraisal AS fittings, c.price - a.appraisal AS hullvalue, l.locationName, e.name AS issuer
             FROM corpcontract AS c
             JOIN corpcontractitem AS ci ON c.contractId=ci.contractId
-            JOIN invType AS i ON ci.typeId=i.typeId
+            JOIN invtype AS i ON ci.typeId=i.typeId
             LEFT JOIN (
                 SELECT c.contractId, SUM(j.best*ci.quantity) AS appraisal
                 FROM corpcontract AS c
@@ -184,8 +184,8 @@ $app->get('/api/contract/capital/finished', function ($request, $response, $args
                 WHERE ci.typeId NOT IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
                 GROUP BY c.contractId
             ) AS a ON a.contractId=c.contractId
-            LEFT JOIN dLocation AS l ON l.locationId=c.startLocationId
-            LEFT JOIN dEntity AS e ON e.id=c.issuerId
+            LEFT JOIN dlocation AS l ON l.locationId=c.startLocationId
+            LEFT JOIN dentity AS e ON e.id=c.issuerId
             WHERE ci.typeId IN (23911,24483,23757,23915,19722,19726,19720,19724,37605,37604,22852,23913,23917,23919,28352,3514,42125,45647,42243,42124,52907,42242,45645,37607,37606,11567,3764,671,23773,45649,42241,42126)
             AND c.`type`=2 AND c.`status`=5
             ORDER BY c.dateCompleted DESC LIMIT 1000';

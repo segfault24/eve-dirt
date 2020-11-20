@@ -9,7 +9,7 @@ $app->get('/api/market/history/{region}/type/{type}', function ($request, $respo
 
     $sql = 'SELECT `typeId`, `regionId`, `date`, `highest`,
             `average`, `lowest`, `volume`, `orderCount`
-            FROM marketHistory
+            FROM markethistory
             WHERE `regionId`=:region
             AND `typeId`=:type
             ORDER BY `date` ASC;';
@@ -29,7 +29,7 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
     $sql = 'SELECT
             o.`orderId`, o.`typeId`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
-            FROM marketOrder AS o
+            FROM marketorder AS o
             LEFT JOIN region AS r ON o.`regionId`=r.`regionId`
             LEFT JOIN (
                 SELECT `stationId` AS sId,`stationName` AS sName FROM station
@@ -65,7 +65,7 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
 /*
  * $app->post('/api/market/volume/{location}[/length/{length}]', function ($request, $response, $args) {
  * // SELECT `type_id`, `region_id`, AVG(`volume`) as avgvol
- * // FROM evemrkt.marketHistory
+ * // FROM markethistory
  * // WHERE DATEDIFF(`date`, CURDATE())<90
  * // AND `region_id`=?
  * // AND `type_id` IN ('.str_repeat('?,', count($types)-1).'?)
@@ -110,7 +110,7 @@ $app->get('/api/market/open-in-game/{type}', function ($request, $response, $arg
 $app->get('/api/insurance-prices', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT t.typeId, t.typeName, i.name, i.cost, i.payout' . ' FROM insurancePrice AS i' . ' JOIN invType AS t ON i.typeId=t.typeId' . ' WHERE t.marketGroupId IS NOT NULL' . ' AND published=1';
+    $sql = 'SELECT t.typeId, t.typeName, i.name, i.cost, i.payout' . ' FROM insuranceprice AS i' . ' JOIN invtype AS t ON i.typeId=t.typeId' . ' WHERE t.marketGroupId IS NOT NULL' . ' AND published=1';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -120,7 +120,7 @@ $app->get('/api/insurance-prices', function ($request, $response, $args) {
 $app->get('/api/insurance-price/{typeid}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT name, cost, payout FROM insurancePrice WHERE typeId=:typeid';
+    $sql = 'SELECT name, cost, payout FROM insuranceprice WHERE typeId=:typeid';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':typeid' => $args['typeid']

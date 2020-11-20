@@ -41,7 +41,7 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
         $args['cinfo'] = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
         // get the items
         $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM contractitem AS i
-                JOIN invType AS t ON t.typeId=i.typeId
+                JOIN invtype AS t ON t.typeId=i.typeId
                 WHERE contractId=:contractid AND i.included=1';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(':contractid' => $args['contractid']));
@@ -49,7 +49,7 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
             $args['offeritems'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM contractitem AS i
-                JOIN invType AS t ON t.typeId=i.typeId
+                JOIN invtype AS t ON t.typeId=i.typeId
                 WHERE contractId=:contractid AND i.included=0';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(':contractid' => $args['contractid']));
@@ -75,7 +75,7 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
         $args['cinfo'] = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
         // get the items
         $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM corpcontractitem AS i
-                JOIN invType AS t ON t.typeId=i.typeId
+                JOIN invtype AS t ON t.typeId=i.typeId
                 WHERE contractId=:contractid AND i.included=1';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(':contractid' => $args['contractid']));
@@ -83,7 +83,7 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
             $args['offeritems'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         $sql = 'SELECT i.typeId, t.typeName, i.quantity FROM corpcontractitem AS i
-                JOIN invType AS t ON t.typeId=i.typeId
+                JOIN invtype AS t ON t.typeId=i.typeId
                 WHERE contractId=:contractid AND i.included=0';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(':contractid' => $args['contractid']));
@@ -108,7 +108,7 @@ $app->get('/doctrines', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
     $sql = 'SELECT l.listId, l.name, s.structName, d.quantity, d.target, d.lowestPrice
             FROM doctrine AS d
-            JOIN dirtList AS l ON d.listId=l.listId
+            JOIN dirtlist AS l ON d.listId=l.listId
             JOIN structure AS s ON d.locationId=s.structId';
     $stmt = $db->prepare($sql);
     $stmt->execute();

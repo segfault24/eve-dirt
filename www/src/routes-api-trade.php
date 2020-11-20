@@ -148,7 +148,7 @@ $app->get('/api/trade/structs-by-region/{region}/', function ($request, $respons
     $sql .= ' UNION ALL';
     $sql .= ' (';
     $sql .= '  SELECT s.`structId` AS sId, s.`structName` AS sName FROM structure AS s';
-    $sql .= '  JOIN dirtStructAuth AS a ON s.`structId`=a.`structId`';
+    $sql .= '  JOIN dirtstructauth AS a ON s.`structId`=a.`structId`';
     $sql .= '  WHERE s.`regionId`=:regionb';
     $sql .= ' )';
     $sql .= ' ORDER BY sName';
@@ -169,11 +169,11 @@ $app->get('/api/trade/sell-sell/{source}/{destination}', function ($request, $re
     $db = Dirt\Database::getDb();
 
     $sql  = 'SELECT o.typeId, i.typeName, o.price AS source, o.volumeRemain AS qt, d.best AS dest, i.volume
-             FROM marketOrder AS o
+             FROM marketorder AS o
              JOIN (
-               SELECT typeId, MIN(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=0 GROUP BY typeId, locationId
+               SELECT typeId, MIN(price) AS best FROM marketorder WHERE locationId=:destination AND isBuyOrder=0 GROUP BY typeId, locationId
              ) AS d ON o.typeId=d.typeId
-             JOIN invType AS i ON o.typeId=i.typeId';
+             JOIN invtype AS i ON o.typeId=i.typeId';
     if (intval($args['source']) > 20000000) {
         $sql .= ' WHERE o.locationId=:source';
     } else {
@@ -198,11 +198,11 @@ $app->get('/api/trade/sell-buy/{source}/{destination}', function ($request, $res
     $db = Dirt\Database::getDb();
 
     $sql  = 'SELECT o.typeId, i.typeName, o.price AS source, o.volumeRemain AS qt, d.best AS dest, i.volume';
-    $sql .= ' FROM marketOrder AS o';
+    $sql .= ' FROM marketorder AS o';
     $sql .= ' JOIN (';
-    $sql .= '  SELECT typeId, MAX(price) AS best FROM marketOrder WHERE locationId=:destination AND isBuyOrder=1 GROUP BY typeId, locationId';
+    $sql .= '  SELECT typeId, MAX(price) AS best FROM marketorder WHERE locationId=:destination AND isBuyOrder=1 GROUP BY typeId, locationId';
     $sql .= ' ) AS d ON o.typeId=d.typeId';
-    $sql .= ' JOIN invType AS i ON o.typeId=i.typeId';
+    $sql .= ' JOIN invtype AS i ON o.typeId=i.typeId';
     if (intval($args['source']) > 20000000) {
         $sql .= ' WHERE o.locationId=:source';
     } else {
@@ -247,10 +247,10 @@ $app->get('/api/trade/import/{source}/{destination}', function ($request, $respo
         $destregionid = $regioninfo['regionId'];
     }
 
-    $sql  = 'SELECT inv.typeId, inv.typeName, inv.volume, src.source, dst.dest, dst.stock, stat.ma30, stat.ma90 FROM marketStat stat';
-    $sql .= ' JOIN invType inv ON inv.typeId=stat.typeId';
+    $sql  = 'SELECT inv.typeId, inv.typeName, inv.volume, src.source, dst.dest, dst.stock, stat.ma30, stat.ma90 FROM marketstat stat';
+    $sql .= ' JOIN invtype inv ON inv.typeId=stat.typeId';
     $sql .= ' JOIN (';
-    $sql .= '  SELECT typeId, MIN(price) AS source FROM marketOrder';
+    $sql .= '  SELECT typeId, MIN(price) AS source FROM marketorder';
     if (intval($args['source']) > 20000000) {
         $sql .= '  WHERE locationId=:source';
     } else {
@@ -259,7 +259,7 @@ $app->get('/api/trade/import/{source}/{destination}', function ($request, $respo
     $sql .= '   AND isBuyOrder=0 GROUP BY typeId';
     $sql .= ' ) src ON src.typeId=stat.typeId';
     $sql .= ' JOIN (';
-    $sql .= '  SELECT typeId, MIN(price) AS dest, SUM(volumeRemain) AS stock FROM marketOrder';
+    $sql .= '  SELECT typeId, MIN(price) AS dest, SUM(volumeRemain) AS stock FROM marketorder';
     if (intval($args['destination']) > 20000000) {
         $sql .= '  WHERE locationId=:destination';
     } else {

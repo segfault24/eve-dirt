@@ -7,7 +7,7 @@
 $app->get('/api/economic-reports/mined-produced-destroyed', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT `date`, `produced`, `destroyed`, `mined` FROM merProdDestMine';
+    $sql = 'SELECT `date`, `produced`, `destroyed`, `mined` FROM merproddestmine';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -17,7 +17,7 @@ $app->get('/api/economic-reports/mined-produced-destroyed', function ($request, 
 $app->get('/api/economic-reports/velocity-of-isk', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT `date`, `iskVolume` AS volume FROM merIskVolume;';
+    $sql = 'SELECT `date`, `iskVolume` AS volume FROM meriskvolume;';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -27,7 +27,7 @@ $app->get('/api/economic-reports/velocity-of-isk', function ($request, $response
 $app->get('/api/economic-reports/money-supply', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT `date`, `character`, `corporation`, `total` FROM merMoneySupply;';
+    $sql = 'SELECT `date`, `character`, `corporation`, `total` FROM mermoneysupply;';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 
@@ -37,7 +37,7 @@ $app->get('/api/economic-reports/money-supply', function ($request, $response, $
 $app->get('/api/economic-reports/faucets-sinks/{year}/{month}', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT `date`, `keyText`, `faucet`, `sink`, `sortValue` FROM merSinkFaucet WHERE YEAR(`date`)=:year AND MONTH(`date`)=:month ORDER BY `sortValue` ASC;';
+    $sql = 'SELECT `date`, `keyText`, `faucet`, `sink`, `sortValue` FROM mersinkfaucet WHERE YEAR(`date`)=:year AND MONTH(`date`)=:month ORDER BY `sortValue` ASC;';
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':year', $args['year']);
     $stmt->bindParam(':month', $args['month']);
@@ -49,7 +49,7 @@ $app->get('/api/economic-reports/faucets-sinks/{year}/{month}', function ($reque
 $app->get('/api/economic-reports/faucets-sinks', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql = 'SELECT DISTINCT `date` FROM merSinkFaucet ORDER BY `date` DESC;';
+    $sql = 'SELECT DISTINCT `date` FROM mersinkfaucet ORDER BY `date` DESC;';
     $stmt = $db->prepare($sql);
     $stmt->execute();
 

@@ -61,7 +61,7 @@ $app->get('/insurance', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
     $sql = 'SELECT t.`typeName`, i.`name` AS tier, i.`cost`, i.`payout`
             FROM insuranceprice AS i
-            JOIN invType AS t ON t.`typeId`=i.`typeId`
+            JOIN invtype AS t ON t.`typeId`=i.`typeId`
             WHERE t.`published`=1 AND t.`marketGroupId` IS NOT NULL
             ORDER BY t.`typeName`,i.`cost` DESC';
     $stmt = $db->prepare($sql);

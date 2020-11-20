@@ -13,7 +13,7 @@ $app->get('/api/notifications', function ($request, $response, $args) {
     // get unacknowledged notifications
     $db = Dirt\Database::getDb();
     $sql = 'SELECT `time`, title, text, typeId
-            FROM dirtNotification
+            FROM dirtnotification
             WHERE userId=:userid
             AND acknowledged=0';
     $stmt = $db->prepare($sql);
@@ -33,7 +33,7 @@ $app->get('/api/notifications/new', function ($request, $response, $args) {
     // get unsent notifications
     $db = Dirt\Database::getDb();
     $sql = 'SELECT `time`, title, text, typeId
-            FROM dirtNotification
+            FROM dirtnotification
             WHERE userId=:userid
             AND sent=0';
     $stmt = $db->prepare($sql);
@@ -43,7 +43,7 @@ $app->get('/api/notifications/new', function ($request, $response, $args) {
     $n = $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 
     // mark all as sent
-    $stmtb = $db->prepare('UPDATE dirtNotification SET sent=1 WHERE userId=:userid');
+    $stmtb = $db->prepare('UPDATE dirtnotification SET sent=1 WHERE userId=:userid');
     $stmtb->execute(array(
         ':userid' => $u->getUserId()
     ));

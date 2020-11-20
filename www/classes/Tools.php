@@ -151,7 +151,7 @@ class Tools
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
         $db = Database::getDb();
-        $sql = 'INSERT INTO dirtUser (`username`,`name`,`hash`) VALUES (:username, :name, :hash)';
+        $sql = 'INSERT INTO dirtuser (`username`,`name`,`hash`) VALUES (:username, :name, :hash)';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':name', $username);

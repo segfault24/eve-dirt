@@ -47,7 +47,7 @@ $app->get('/user/notifications', function ($request, $response, $args) {
     $uid = $u->getUserId();
     $db = Dirt\Database::getDb();
     $sql = 'SELECT `notifId`, `time`, `title`, `text`, `acknowledged`
-            FROM dirtNotification
+            FROM dirtnotification
             WHERE `userId`=:uid
             ORDER BY `time` DESC LIMIT 1000';
     $stmt = $db->prepare($sql);
@@ -72,19 +72,19 @@ $app->post('/user/notifications', function ($request, $response, $args) {
     $nid = $request->getParsedBody()['notifId'];
     if ($nid == "del-all") {
         // delete all
-        $sql = 'DELETE FROM dirtNotification WHERE userId=:uid';
+        $sql = 'DELETE FROM dirtnotification WHERE userId=:uid';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':uid', $uid);
         $stmt->execute();
     } else if ($nid == "ack-all") {
         // ack all
-        $sql = 'UPDATE dirtNotification SET acknowledged=1 WHERE userId=:uid';
+        $sql = 'UPDATE dirtnotification SET acknowledged=1 WHERE userId=:uid';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':uid', $uid);
         $stmt->execute();
     } else {
         // ack specific
-        $sql = 'UPDATE dirtNotification SET acknowledged=1 WHERE userId=:uid AND notifId=:nid';
+        $sql = 'UPDATE dirtnotification SET acknowledged=1 WHERE userId=:uid AND notifId=:nid';
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':uid', $uid);
         $stmt->bindParam(':nid', $nid);
@@ -106,7 +106,7 @@ $app->get('/user/characters', function ($request, $response, $args) {
     $uid = $u->getUserId();
     $db = Dirt\Database::getDb();
     $sql = 'SELECT `charId`, `charName`
-            FROM dirtApiAuth
+            FROM dirtapiauth
             WHERE `userId`=:uid
             ORDER BY `charName`';
     $stmt = $db->prepare($sql);

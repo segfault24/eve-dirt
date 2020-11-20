@@ -13,7 +13,11 @@ $app->get('/api/lists/', function ($request, $response, $args) {
 
     // retrieve all the user's lists
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT dl.listId, dl.userId, dl.name, dl.public, count(dli.typeId) AS typeCount FROM dirtList AS dl LEFT JOIN dirtListItem AS dli ON dl.listId=dli.listId WHERE userId=:userid GROUP BY dl.listId;';
+    $sql = 'SELECT dl.listId, dl.userId, dl.name, dl.public, count(dli.typeId) AS typeCount
+            FROM dirtlist AS dl
+            LEFT JOIN dirtlistitem AS dli ON dl.listId=dli.listId
+            WHERE userId=:userid
+            GROUP BY dl.listId;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':userid' => $u->getUserId()
@@ -42,7 +46,7 @@ $app->post('/api/lists/', function ($request, $response, $args) {
 
     // create the new list
     $db = Dirt\Database::getDb();
-    $sql = 'INSERT INTO dirtList (name, userId, public) VALUES (:listname, :userid, :public);';
+    $sql = 'INSERT INTO dirtlist (name, userId, public) VALUES (:listname, :userid, :public);';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listname' => $listname,
@@ -64,7 +68,7 @@ $app->get('/api/lists/{listid}', function ($request, $response, $args) {
 
     // retrieve the list's info
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, name, public FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId, name, public FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -96,7 +100,7 @@ $app->put('/api/lists/{listid}', function ($request, $response, $args) {
 
     // retrieve the list's info
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, name, public FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId, name, public FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -126,7 +130,7 @@ $app->put('/api/lists/{listid}', function ($request, $response, $args) {
 
     // create the new list
     $db = Dirt\Database::getDb();
-    $sql = 'UPDATE dirtList SET name=:listname, public=:public WHERE listId=:listid';
+    $sql = 'UPDATE dirtlist SET name=:listname, public=:public WHERE listId=:listid';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $listid,
@@ -145,7 +149,7 @@ $app->delete('/api/lists/{listid}', function ($request, $response, $args) {
 
     // does the list exist and is it their list?
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -164,14 +168,14 @@ $app->delete('/api/lists/{listid}', function ($request, $response, $args) {
     }
 
     // remove listitems
-    $sql = 'DELETE FROM dirtListItem WHERE listId=:listid;';
+    $sql = 'DELETE FROM dirtlistitem WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
     ));
 
     // remove list
-    $sql = 'DELETE FROM dirtList WHERE listId=:listid;';
+    $sql = 'DELETE FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -191,7 +195,7 @@ $app->get('/api/lists/{listid}/types/', function ($request, $response, $args) {
 
     // retrieve the list's info
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId, public FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -210,7 +214,7 @@ $app->get('/api/lists/{listid}/types/', function ($request, $response, $args) {
     }
 
     // retrieve the items in the list
-    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invType AS i ON li.typeId=i.typeId WHERE li.listId=:listid;';
+    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtlistitem AS li JOIN invtype AS i ON li.typeId=i.typeId WHERE li.listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -240,7 +244,7 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
 
     // retrieve the list's info
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId, public FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -259,7 +263,10 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     }
 
     // retrieve the item from the list
-    $sql = 'SELECT li.typeId, i.typeName, li.quantity FROM dirtListItem AS li JOIN invType AS i ON li.typeId=i.typeId WHERE li.listId=:listid AND li.typeId=:typeid;';
+    $sql = 'SELECT li.typeId, i.typeName, li.quantity
+            FROM dirtlistitem AS li
+            JOIN invtype AS i ON li.typeId=i.typeId
+            WHERE li.listId=:listid AND li.typeId=:typeid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid'],
@@ -284,7 +291,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
 
     // retrieve the list's info
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId, public FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -304,7 +311,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
 
     // check for exact match first
     $typeName = $request->getParsedBody()['typeName'];
-    $sql = 'SELECT typeId FROM invType WHERE typeName=:typeName AND published=1;';
+    $sql = 'SELECT typeId FROM invtype WHERE typeName=:typeName AND published=1;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':typeName' => $typeName
@@ -320,7 +327,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         // no exact matchs
         // check if there's something close enough that is unique
         $typeName = '%' . $typeName . '%';
-        $sql = 'SELECT typeId FROM invType WHERE typeName LIKE :typeName AND published=1;';
+        $sql = 'SELECT typeId FROM invtype WHERE typeName LIKE :typeName AND published=1;';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(
             ':typeName' => $typeName
@@ -342,7 +349,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     if ($quantity == '') {
         // check if the type is already in the list
         // we don't want to overwrite the qt if the PUT didn't specify a quantity
-        $sql = 'SELECT typeId FROM dirtList WHERE listId=:listid AND typeId=:typeid;';
+        $sql = 'SELECT typeId FROM dirtlist WHERE listId=:listid AND typeId=:typeid;';
         $stmt = $db->prepare($sql);
         $stmt->execute(array(
             ':listid' => $args['listid'],
@@ -358,7 +365,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     $quantity = intval($quantity); // ensure integer
 
     // replace into the list
-    $sql = 'REPLACE INTO dirtListItem (listId, typeId, quantity) VALUES (:listid, :typeid, :quantity);';
+    $sql = 'REPLACE INTO dirtlistitem (listId, typeId, quantity) VALUES (:listid, :typeid, :quantity);';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid'],
@@ -378,7 +385,7 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
 
     // retrieve the list's info
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT listId, userId, public FROM dirtList WHERE listId=:listid;';
+    $sql = 'SELECT listId, userId, public FROM dirtlist WHERE listId=:listid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid']
@@ -397,7 +404,7 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
     }
 
     // retrieve the item from the list
-    $sql = 'SELECT typeId FROM dirtListItem WHERE listId=:listid AND typeId=:typeid;';
+    $sql = 'SELECT typeId FROM dirtlistitem WHERE listId=:listid AND typeId=:typeid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid'],
@@ -410,7 +417,7 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
     }
 
     // remove the listitem
-    $sql = 'DELETE FROM dirtListItem WHERE listId=:listid AND typeId=:typeid;';
+    $sql = 'DELETE FROM dirtlistitem WHERE listId=:listid AND typeId=:typeid;';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(
         ':listid' => $args['listid'],

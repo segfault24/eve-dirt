@@ -31,7 +31,7 @@ $app->get('/search', function ($request, $response, $args) {
     $q = '%' . $request->getQueryParams()['q'] . '%';
     $db = Dirt\Database::getDb();
     $sql = 'SELECT `typeId`, `typeName`
-			FROM invType
+			FROM invtype
 			WHERE `typeName` LIKE :query
 			AND `published`=1
 			ORDER BY `typeName`
