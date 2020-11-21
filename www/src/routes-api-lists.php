@@ -25,6 +25,7 @@ $app->get('/api/lists/', function ($request, $response, $args) {
 
     $lists = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $response = $this->cache->denyCache($response);
     return $response->withJson($lists);
 });
 
@@ -54,6 +55,7 @@ $app->post('/api/lists/', function ($request, $response, $args) {
         ':public' => $public
     ));
 
+    $response = $this->cache->denyCache($response);
     return $response;
 });
 
@@ -86,6 +88,7 @@ $app->get('/api/lists/{listid}', function ($request, $response, $args) {
         return $response->withStatus(403);
     }
 
+    $response = $this->cache->denyCache($response);
     return $response->withJson($listinfo);
 });
 
@@ -138,6 +141,7 @@ $app->put('/api/lists/{listid}', function ($request, $response, $args) {
         ':public' => $public
     ));
 
+    $response = $this->cache->denyCache($response);
     return $response;
 });
 
@@ -181,6 +185,7 @@ $app->delete('/api/lists/{listid}', function ($request, $response, $args) {
         ':listid' => $args['listid']
     ));
 
+    $response = $this->cache->denyCache($response);
     return $response;
 });
 
@@ -222,6 +227,7 @@ $app->get('/api/lists/{listid}/types/', function ($request, $response, $args) {
 
     $listitems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $response = $this->cache->denyCache($response);
     return $response->withJson($listitems);
 });
 
@@ -279,7 +285,7 @@ $app->get('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
     }
 
     $listitems = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    $response = $this->cache->denyCache($response);
     return $response->withJson($listitems);
 });
 
@@ -356,6 +362,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
             ':typeid' => $typeid
         ));
         if ($stmt->rowCount() == 1) {
+            $response = $this->cache->denyCache($response);
             return response;
         }
 
@@ -373,6 +380,7 @@ $app->put('/api/lists/{listid}/types/{typeid}', function ($request, $response, $
         ':quantity' => $quantity
     ));
 
+    $response = $this->cache->denyCache($response);
     return $response;
 });
 
@@ -424,6 +432,7 @@ $app->delete('/api/lists/{listid}/types/{typeid}', function ($request, $response
         ':typeid' => $args['typeid']
     ));
 
+    $response = $this->cache->denyCache($response);
     return $response;
 });
 

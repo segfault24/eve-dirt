@@ -83,6 +83,7 @@ $app->get('/sso-auth/callback', function ($request, $response, $args) {
         $this->logger->error('/sso-auth/callback failed to link character ' . $rsp->CharacterID . ' to user ' . $u->getUserId());
     }
 
+    $response = $this->cache->denyCache($response);
     return $response->withStatus(302)
         ->withHeader('Location', '/user/characters');
 });
@@ -105,6 +106,7 @@ $app->post('/sso-auth/unlink', function ($request, $response, $args) {
         Tools::oauthRevoke($refresh_token); // don't really care if it works, that's CCP's problem
     }
 
+    $response = $this->cache->denyCache($response);
     return $response->withStatus(302)
         ->withHeader('Location', '/user/characters');
 });

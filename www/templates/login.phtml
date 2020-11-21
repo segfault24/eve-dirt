@@ -14,21 +14,18 @@
 	<body class="bg-dark">
 		<div class="container">
 			<div class="card card-login mx-auto mt-5">
-				<div class="card-header">Login</div>
 				<div class="card-body">
 					<form action="/login" method="post">
 						<div class="form-group">
-							<label for="username">Username</label>
 							<input class="form-control" placeholder="Username" id="username" name="username" type="text" autofocus>
 						</div>
 						<div class="form-group">
-							<label for="password">Password</label>
 							<input class="form-control" placeholder="Password" id="password" name="password" type="password" value="">
 						</div>
 {% if error %}
 						<p class="text-danger">{{error}}</p>
 {% endif %}
-						<button type="submit" class="btn btn-primary btn-block">Login</button>
+						<button type="submit" class="btn btn-secondary btn-block">Login</button>
 					</form>
 				</div>
 			</div>

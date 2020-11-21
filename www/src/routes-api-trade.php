@@ -161,7 +161,7 @@ $app->get('/api/trade/structs-by-region/{region}/', function ($request, $respons
         ':regionb' => $args['region']
     ));
 
-    $response = $this->cache->withExpires($response, time() + 300);
+    $response = $this->cache->withExpires($response, time() + 1200);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 

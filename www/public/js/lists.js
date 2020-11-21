@@ -13,11 +13,9 @@ function myListsLoad() {
 		},
 		dom: 'Bfrtip',
 		columns: [
-			{title:'', responsivePriority: 1},
-			{title:'Name', responsivePriority: 1, render: $.fn.dataTable.render.text()},
+			{title:'Name', responsivePriority: 1},
 			{title:'Types', responsivePriority: 2},
-			{title:'Visibility', responsivePriority: 3},
-			{title:'ID', responsivePriority: 4}
+			{title:'Visibility', responsivePriority: 3}
 		],
 		buttons: [
 			{
@@ -127,13 +125,10 @@ function loadListTable(listTable) {
 			listTable.clear();
 			var lists = result;
 			for(var i=0; i<lists.length; i++) {
-				var link = $('<a>', {className:'list-select', text:'View', href:'list-detail?listid=' + lists[i].listId });
 				listTable.row.add([
-					link[0].outerHTML,
-					lists[i].name,
+					'<a class="list-select" href="list-detail?listid=' + lists[i].listId + '">' + lists[i].name + '</a>',
 					lists[i].typeCount,
-					lists[i].public==1?'Public':'Private',
-					lists[i].listId
+					lists[i].public==1?'Public':'Private'
 				]).node().id = lists[i].listId;
 			}
 			listTable.draw();

@@ -26,7 +26,7 @@ $(document).ready(function() {
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
-		<h3 class="page-header"><i class="fa fa-handshake-o fa-fw"></i> Contract {{contractid}}</h3><a id="open-in-game" class="open-in-game-contract" data-contractid="{{contractid}}" href="#"><i class="fa fa-magnet fa-fw"></i></a>
+		<h3 class="page-header"><i class="fa fa-handshake-o fa-fw"></i> Contract {{contractid}} <a id="open-in-game" class="open-in-game-contract" data-contractid="{{contractid}}" href="#"><i class="fa fa-magnet fa-fw"></i></a></h3>
 		<hr>
 	</div>
 </div>
@@ -34,7 +34,6 @@ $(document).ready(function() {
 	<div class="col-sm-6">
 		<p>Issuer: {{cinfo.issuer}}</p>
 		<p>Location: {{cinfo.locationName}}</p>
-		<p>Price: {{cinfo.price|number_format(0)}}</p>
 		<p>Availability: {{cinfo.availability}}</p>
 {% if cinfo.assignee %}
 		<p>Assignee: {{cinfo.assignee}}</p>
@@ -48,11 +47,17 @@ $(document).ready(function() {
 		<p>Completed: {{cinfo.dateCompleted}}</p>
 {% endif %}
 	</div>
-	<hr>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<p>Acceptor Will Pay: {{cinfo.price|number_format(0)}} isk</p>
+		<p>Acceptor Will Receive: {{cinfo.reward|number_format(0)}} isk</p>
+	</div>
 </div>
 {% if offeritems %}
 <div class="row">
 	<div class="col-md-12">
+		<hr><h5>Offered</h5>
 		<div class="table-responsive">
 			<table id="offertable" class="table responsive table-striped table-condensed">
 				<thead>
@@ -77,6 +82,7 @@ $(document).ready(function() {
 {% if askitems %}
 <div class="row">
 	<div class="col-md-12">
+		<hr><h5>Asking For</h5>
 		<div class="table-responsive">
 			<table id="asktable" class="table responsive table-striped table-condensed">
 				<thead>

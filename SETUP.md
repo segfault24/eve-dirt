@@ -67,4 +67,6 @@ vim install_freebsd.sh
 sudo ./install_freebsd.sh
 ```
 
-5. Update session.gc_maxlifetime in your php.ini to 86400
+5. Update session.gc_maxlifetime in php.ini to 86400
+
+6. Update session.cache_limiter in php.ini to an empty string

@@ -56,6 +56,7 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
         if ($stmt->rowCount() > 0) {
             $args['askitems'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        $response = $this->cache->withExpires($response, time() + 300);
         return $this->renderer->render($response, 'contract.phtml', $args);
     }
 
@@ -90,6 +91,7 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
         if ($stmt->rowCount() > 0) {
             $args['askitems'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        $response = $this->cache->withExpires($response, time() + 300);
         return $this->renderer->render($response, 'contract.phtml', $args);
     }
 
@@ -116,5 +118,6 @@ $app->get('/doctrines', function ($request, $response, $args) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $args['doclist'] = $rows;
 
+    $response = $this->cache->withExpires($response, time() + 300);
     return $this->renderer->render($response, 'doctrines.phtml', $args);
 });

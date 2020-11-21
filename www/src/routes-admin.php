@@ -14,6 +14,7 @@ $app->get('/admin', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'admin/index.phtml', $args);
 });
 
@@ -26,6 +27,7 @@ $app->get('/admin/create-user', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'admin/create-user.phtml', $args);
 });
 
@@ -52,6 +54,7 @@ $app->post('/admin/create-user', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'admin/create-user.phtml', $args);
 });
 
@@ -71,6 +74,7 @@ $app->get('/admin/list-users', function ($request, $response, $args) {
 
     $args['userlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'admin/list-users.phtml', $args);
 });
 
@@ -96,5 +100,6 @@ $app->get('/admin/structure-auths', function ($request, $response, $args) {
 
     $args['authlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'admin/structure-auths.phtml', $args);
 });

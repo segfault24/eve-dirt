@@ -77,6 +77,7 @@ public class MiscCommands {
 					} else {
 						daemon.setCorePoolSize(s);
 						daemon.setMaximumPoolSize(s);
+						Utils.setIntProperty(db, DirtConstants.PROPERTY_NUM_THREADS, s);
 						log.info("Core pool size was set to " + s);
 					}
 				} catch (NumberFormatException e) {

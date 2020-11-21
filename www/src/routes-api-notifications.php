@@ -21,6 +21,7 @@ $app->get('/api/notifications', function ($request, $response, $args) {
         ':userid' => $u->getUserId()
     ));
 
+    $response = $this->cache->denyCache($response);
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
@@ -40,6 +41,7 @@ $app->get('/api/notifications/new', function ($request, $response, $args) {
     $stmt->execute(array(
         ':userid' => $u->getUserId()
     ));
+    $response = $this->cache->denyCache($response);
     $n = $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 
     // mark all as sent

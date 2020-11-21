@@ -12,6 +12,7 @@ $app->get('/login', function ($request, $response, $args) {
         return $response->withStatus(302)
             ->withHeader('Location', '/dashboard');
     } else {
+        $response = $this->cache->denyCache($response);
         return $this->renderer->render($response, 'login.phtml', $args);
     }
 });
@@ -57,6 +58,7 @@ $app->get('/user/notifications', function ($request, $response, $args) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $args['notiflist'] = $rows;
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'user/notifications.phtml', $args);
 });
 
@@ -116,6 +118,7 @@ $app->get('/user/characters', function ($request, $response, $args) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $args['charlist'] = $rows;
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'user/characters.phtml', $args);
 });
 
@@ -140,6 +143,7 @@ $app->get('/user/change-password', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'user/change-password.phtml', $args);
 });
 
@@ -163,18 +167,6 @@ $app->post('/user/change-password', function ($request, $response, $args) {
     }
     $u->setTemplateVars($args);
 
+    $response = $this->cache->denyCache($response);
     return $this->renderer->render($response, 'user/change-password.phtml', $args);
 });
-
-// structures associated with this account
-//
-// select d.dsaId, r.regionName, s.structName, a.charName
-// from eve.dirtstructauth as d
-// join eve.structure as s
-//   on d.structId=s.structId
-// join eve.dirtapiauth as a
-//   on d.keyId=a.keyId
-// join eve.region as r
-//   on s.regionId=r.regionId
-// where a.userId=1
-// order by r.regionName, s.structName

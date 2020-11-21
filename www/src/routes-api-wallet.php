@@ -168,5 +168,3 @@ $app->get('/api/wallet/returns', function ($request, $response, $args) {
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-
-

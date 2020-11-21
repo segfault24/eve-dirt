@@ -129,4 +129,3 @@ $app->get('/api/insurance-price/{typeid}', function ($request, $response, $args)
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-

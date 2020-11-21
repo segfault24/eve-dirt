@@ -8,20 +8,33 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-12">
 		<form action="/admin/create-user" method="post" autocomplete="off">
 			<div class="form-group">
-				<input type="text" name="usernm" placeholder="username"><br><br>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Username</div>
+					</div>
+					<input type="text" name="usernm" autocomplete="off"><br><br>
+				</div>
 				<p>Passwords must be at least 12 characters, contain 1 number, and 1 letter</p>
-				<input type="password" name="userpw" autocomplete="new-password"><br>
-				<input type="password" name="userpwconf" autocomplete="new-password">
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Password</div>
+					</div>
+					<input type="password" name="userpw" autocomplete="new-password"><br>
+				</div>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<div class="input-group-text">Confirm</div>
+					</div>
+					<input type="password" name="userpwconf" autocomplete="new-password">
+				</div>
 			<div class="form-group">
 			</div>
 				<button type="submit" class="btn btn-default">Create</button>
 			</div>
 		</form>
-	</div>
-	<div class="col-sm-6">
 	</div>
 </div>
 {% endblock %}

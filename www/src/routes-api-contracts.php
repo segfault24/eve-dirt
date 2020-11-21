@@ -292,6 +292,7 @@ $app->get('/api/market/open-in-game-contract/{contract}', function ($request, $r
 
     $this->logger->debug('/open-in-game-contract sent esi request for user ' . $u->getUserId() . ' type ' . $args['contract']); 
     $this->logger->debug('/open-in-game-contract got response (' . $httpcode . ')');
+    $response = $this->cache->denyCache($response);
     return $response->withJson(array(
         'success' => 'made esi call'
     ));
