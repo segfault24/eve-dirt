@@ -7,20 +7,51 @@
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
-		<h3 class="page-header"><i class="fa fa-handshake-o fa-fw"></i> Alliance Contracts</h3>
+		<h3 class="page-header"><i class="fa fa-handshake-o fa-fw"></i> Contracts</h3>
 		<hr>
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-6">
-		Exchange <button onclick="loadExchangeContracts()">Outstanding</button><button onclick="loadFinishedExchangeContracts()">Finished</button><br />
-		Courier <button onclick="loadCourierContracts()">Outstanding</button><button onclick="loadInProgressCourierContracts()">In Progress</button><button onclick="loadFinishedCourierContracts()">Finished</button><button onclick="loadFailedCourierContracts()">Failed</button><br />
-		Auction <button onclick="loadOpenAuctionContracts()">Outstanding</button><button onclick="loadFinishedAuctionContracts()">Finished</button><br />
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group btn-group-sm ml-2 mr-2" role="group">
+				<button class="btn btn-secondary" onclick="loadExchangeContracts()">Exchanges</button>
+				<button class="btn" onclick="loadFinishedExchangeContracts()">Finished</button>
+			</div>
+		</div>
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group btn-group-sm ml-2 mr-2" role="group">
+				<button class="btn btn-secondary" onclick="loadCourierContracts()">Couriers</button>
+				<button class="btn" onclick="loadInProgressCourierContracts()">In Progress</button>
+				<button class="btn" onclick="loadFinishedCourierContracts()">Finished</button>
+				<button class="btn" onclick="loadFailedCourierContracts()">Failed</button>
+			</div>
+		</div>
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group btn-group-sm ml-2 mr-2" role="group">
+				<button class="btn btn-secondary" onclick="loadOpenAuctionContracts()">Auctions</button>
+				<button class="btn" onclick="loadFinishedAuctionContracts()">Finished</button>
+			</div>
+		</div>
 	</div>
 	<div class="col-sm-6">
-		Capitals <button onclick="loadOpenCapContracts()">Outstanding</button><button onclick="loadFinishedCapContracts()">Finished</button><br />
-		Corp Business <button onclick="loadOpenCorpLogiContracts()">Outstanding</button><button onclick="loadFinishedCorpLogiContracts()">Finished</button><br />
-		Competition <button onclick="loadBigContractors()">Big Contractors</button><br />
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group btn-group-sm ml-2 mr-2" role="group">
+				<button class="btn btn-secondary" onclick="loadOpenCapContracts()">Capitals</button>
+				<button class="btn" onclick="loadFinishedCapContracts()">Finished</button>
+			</div>
+		</div>
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group btn-group-sm ml-2 mr-2" role="group">
+				<button class="btn btn-secondary" onclick="loadOpenCorpLogiContracts()">Corp Business</button>
+				<button class="btn" onclick="loadFinishedCorpLogiContracts()">Finished</button>
+			</div>
+		</div>
+		<div class="btn-toolbar" role="toolbar">
+			<div class="btn-group btn-group-sm ml-2 mr-2" role="group">
+				<button class="btn" onclick="loadBigContractors()">Big Contractors</button>
+			</div>
+		</div>
 	</div>
 </div>
 <div class="row">

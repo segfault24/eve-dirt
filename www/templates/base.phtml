@@ -42,12 +42,14 @@
 							<span class="nav-link-text">My Lists</span>
 						</a>
 					</li>
+{% if admin %}
 					<li class="nav-item" title="My Alerts">
 						<a class="nav-link" href="/my-alerts">
 							<i class="fa fa-bell-o fa-fw"></i>
 							<span class="nav-link-text">My Alerts</span>
 						</a>
 					</li>
+{% endif %}
 					<li class="nav-item" title="Market Browser">
 						<a class="nav-link" href="/browse">
 							<i class="fa fa-bar-chart-o fa-fw"></i>
@@ -66,6 +68,7 @@
 							<span class="nav-link-text">Doctrine Stock</span>
 						</a>
 					</li>
+{% if admin %}
 					<li class="nav-item" title="Station Trading">
 						<a class="nav-link" href="/station-trade">
 							<i class="fa fa-exchange fa-rotate-90 fa-fw"></i>
@@ -78,18 +81,21 @@
 							<span class="nav-link-text">Import Analysis</span>
 						</a>
 					</li>
+{% endif %}
 					<li class="nav-item" title="Trade Analysis">
 						<a class="nav-link" href="/trade">
 							<i class="fa fa-sign-out fa-fw"></i>
 							<span class="nav-link-text">Trade Analysis</span>
 						</a>
 					</li>
+{% if admin %}
 					<li class="nav-item" title="Appraisal">
 						<a class="nav-link" href="/appraisal">
 							<i class="fa fa-calculator fa-fw"></i>
 							<span class="nav-link-text">Appraisal</span>
 						</a>
 					</li>
+{% endif %}
 					<li class="nav-item" title="Economic Reports">
 						<a class="nav-link" href="/economic-reports">
 							<i class="fa fa-line-chart fa-fw"></i>

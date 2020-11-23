@@ -258,6 +258,20 @@ function loadFailedCourierContracts() {
 	})
 }
 
+function loadOpenAuctionContracts() {
+	if ($.fn.DataTable.isDataTable('#contracts-table')) {
+		$('#contracts-table').DataTable().destroy();
+		$('#contracts-table').empty();
+	}
+}
+
+function loadFinishedAuctionContracts() {
+	if ($.fn.DataTable.isDataTable('#contracts-table')) {
+		$('#contracts-table').DataTable().destroy();
+		$('#contracts-table').empty();
+	}
+}
+
 function loadOpenCapContracts() {
 	if ($.fn.DataTable.isDataTable('#contracts-table')) {
 		$('#contracts-table').DataTable().destroy();

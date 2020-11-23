@@ -12,17 +12,13 @@ $app->get('/api/wallet/orders', function ($request, $response, $args) {
 
     $db = Dirt\Database::getDb();
     $sql = 'SELECT
-            a.`charName`, o.`orderId`, o.`typeId`, i.`typeName`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
+            a.`charName`, o.`orderId`, o.`typeId`, i.`typeName`, r.`regionName`, locs.`locationName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
             FROM charorder AS o
             LEFT JOIN invtype AS i ON o.`typeId`=i.`typeId`
             LEFT JOIN region AS r ON o.`regionId`=r.`regionId`
             LEFT JOIN dirtapiauth AS a ON o.`charId`=a.`charId`
-            LEFT JOIN (
-                SELECT `stationId` AS sId,`stationName` AS sName FROM station
-                UNION ALL
-                SELECT `structId` AS sId,`structName` AS sName FROM structure
-            ) locs ON o.`locationId`=locs.`sId`
+            LEFT JOIN dlocation locs ON o.`locationId`=locs.`locationId`
             WHERE o.`charId` IN (
                 SELECT charId FROM dirtapiauth WHERE userId=:userid
             )';
@@ -102,19 +98,10 @@ $app->get('/api/wallet/contracts', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
     $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, co.`dateCompleted`, ach.`name` AS acceptorName
             FROM contract AS co
-            LEFT JOIN (
-                SELECT charId AS id, charName AS name FROM `character`
-                UNION
-                SELECT corpId AS id, corpName AS name FROM `corporation`
-            ) AS ich ON co.issuerId=ich.id
-            LEFT JOIN (
-                SELECT charId AS id, charName AS name FROM `character`
-                UNION
-                SELECT corpId AS id, corpName AS name FROM `corporation`
-            ) AS ach ON co.acceptorId=ach.id
-            WHERE co.`issuerId` in (
-            SELECT charId FROM dirtapiauth WHERE userId=:userid
-            )
+            LEFT JOIN dentity AS ich ON co.issuerId=ich.id
+            LEFT JOIN dentity AS ach ON co.acceptorId=ach.id
+            WHERE co.`issuerId` IN (SELECT charId FROM dirtapiauth WHERE userId=:userid)
+            OR co.`acceptorId` IN (SELECT charId FROM dirtapiauth WHERE userId=:userid)
             ORDER BY co.dateIssued DESC';
 
     $stmt = $db->prepare($sql);

@@ -27,15 +27,11 @@ $app->get('/api/market/orders/{location}/type/{type}', function ($request, $resp
     $db = Dirt\Database::getDb();
 
     $sql = 'SELECT
-            o.`orderId`, o.`typeId`, r.`regionName`, locs.`sName`, o.`isBuyOrder`, o.`price`,
+            o.`orderId`, o.`typeId`, r.`regionName`, locs.`locationName`, o.`isBuyOrder`, o.`price`,
             o.`range`, o.`duration`, o.`volumeRemain`, o.`volumeTotal`, o.`minVolume`, o.`issued`
             FROM marketorder AS o
             LEFT JOIN region AS r ON o.`regionId`=r.`regionId`
-            LEFT JOIN (
-                SELECT `stationId` AS sId,`stationName` AS sName FROM station
-                UNION ALL
-                SELECT `structId` AS sId,`structName` AS sName FROM structure
-            ) locs ON o.`locationId`=locs.`sId`
+            LEFT JOIN dlocation AS locs ON o.`locationId`=locs.`locationId`
             WHERE o.`typeId`=:type';
     if ($args['location'] != 0) {
         $sql .= ' AND (o.`regionId`=:location OR o.`locationId`=:location);';

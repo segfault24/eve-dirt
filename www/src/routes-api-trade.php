@@ -144,14 +144,14 @@ $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
 $app->get('/api/trade/structs-by-region/{region}/', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT `stationId` AS sId,`stationName` AS sName FROM station where regionId=:regiona';
-    $sql .= ' UNION ALL';
-    $sql .= ' (';
-    $sql .= '  SELECT s.`structId` AS sId, s.`structName` AS sName FROM structure AS s';
-    $sql .= '  JOIN dirtstructauth AS a ON s.`structId`=a.`structId`';
-    $sql .= '  WHERE s.`regionId`=:regionb';
-    $sql .= ' )';
-    $sql .= ' ORDER BY sName';
+    $sql  = 'SELECT `stationId` AS sId,`stationName` AS sName FROM station where regionId=:regiona
+             UNION ALL
+             (
+                 SELECT s.`structId` AS sId, s.`structName` AS sName FROM structure AS s
+                 JOIN dirtstructauth AS a ON s.`structId`=a.`structId`
+                 WHERE s.`regionId`=:regionb
+             )
+             ORDER BY sName';
 
     $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
     $stmt->execute();
@@ -229,9 +229,9 @@ $app->get('/api/trade/import/{source}/{destination}', function ($request, $respo
     // get destination region if destination is a struct/station
     $destregionid = intval($args['destination']);
     if ($destregionid > 20000000) {
-        $sql  = 'SELECT `regionId` FROM station WHERE stationId=:locationa';
-        $sql .= ' UNION ALL';
-        $sql .= ' SELECT `regionId` FROM structure WHERE structId=:locationb';
+        $sql  = 'SELECT `regionId` FROM station WHERE stationId=:locationa
+                 UNION ALL
+                 SELECT `regionId` FROM structure WHERE structId=:locationb';
         $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
         $stmt->execute();
         $stmt = $db->prepare($sql);
