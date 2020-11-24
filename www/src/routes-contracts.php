@@ -26,13 +26,14 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
 
     $db = Dirt\Database::getDb();
     // try the personal contract table for exchange
-    $sql = 'SELECT ie.name AS issuer, sl.locationName, ae.name AS assignee, c.price, cs.value AS status, ca.value AS availability, c.title, c.dateIssued, c.dateCompleted
+    $sql = 'SELECT ie.name AS issuer, sl.locationName, ae.name AS assignee, ac.name AS acceptor, c.price, cs.value AS status, ca.value AS availability, c.title, c.dateIssued, c.dateCompleted
             FROM contract AS c
             JOIN contractstatus AS cs ON cs.id=c.status
             JOIN contractavailability AS ca ON ca.id=c.availability
             LEFT JOIN dlocation AS sl ON sl.locationId=c.startLocationId
             LEFT JOIN dentity AS ie ON ie.id=c.issuerId
             LEFT JOIN dentity AS ae ON ae.id=c.assigneeId
+            LEFT JOIN dentity AS ac ON ac.id=c.acceptorId
             WHERE c.contractId=:contractid';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(':contractid' => $args['contractid']));
@@ -61,13 +62,14 @@ $app->get('/contract/{contractid}', function ($request, $response, $args) {
     }
 
     // else try the corp contract table for exchange
-    $sql = 'SELECT ie.name AS issuer, sl.locationName, ae.name AS assignee, c.price, cs.value AS status, ca.value AS availability, c.title, c.dateIssued, c.dateCompleted
+    $sql = 'SELECT ie.name AS issuer, sl.locationName, ae.name AS assignee, ac.name AS acceptor, c.price, cs.value AS status, ca.value AS availability, c.title, c.dateIssued, c.dateCompleted
             FROM corpcontract AS c
             JOIN contractstatus AS cs ON cs.id=c.status
             JOIN contractavailability AS ca ON ca.id=c.availability
             LEFT JOIN dlocation AS sl ON sl.locationId=c.startLocationId
             LEFT JOIN dentity AS ie ON ie.id=c.issuerId
             LEFT JOIN dentity AS ae ON ae.id=c.assigneeId
+            LEFT JOIN dentity AS ac ON ac.id=c.acceptorId
             WHERE c.contractId=:contractid';
     $stmt = $db->prepare($sql);
     $stmt->execute(array(':contractid' => $args['contractid']));

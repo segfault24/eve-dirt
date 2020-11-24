@@ -279,7 +279,6 @@ function loadOpenCapContracts() {
 	}
 	var contractsTable = $('#contracts-table').DataTable({
 		columns: [
-			{title:'', responsivePriority: 2},
 			{title:'Hull Type', responsivePriority: 1},
 			{title:'Location', responsivePriority: 2},
 			{title:'Contractor', responsivePriority: 5},
@@ -288,7 +287,7 @@ function loadOpenCapContracts() {
 			{title:'Hull Estimate', responsivePriority: 4},
 			{title:'Issued', responsivePriority: 5}
 		],
-		order: [[6, "asc"]],
+		order: [[5, "asc"]],
 		searching: true,
 		paging: true,
 		pageLength: 25,
@@ -299,8 +298,7 @@ function loadOpenCapContracts() {
 	$.getJSON('/api/contract/capital/outstanding', function(result) {
 		for(var i=0; i<result.length; i++) {
 			contractsTable.row.add([
-				'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract/' + result[i].contractId + '" target="_blank">Details</a>',
-				result[i].typeName,
+				'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract/' + result[i].contractId + '" target="_blank">' + result[i].typeName + '</a>',
 				result[i].locationName,
 				result[i].issuer,
 				formatInt(result[i].price),
@@ -321,7 +319,6 @@ function loadFinishedCapContracts() {
 	}
 	var contractsTable = $('#contracts-table').DataTable({
 		columns: [
-			{title:'', responsivePriority: 2},
 			{title:'Hull Type', responsivePriority: 1},
 			{title:'Location', responsivePriority: 2},
 			{title:'Contractor', responsivePriority: 5},
@@ -330,7 +327,7 @@ function loadFinishedCapContracts() {
 			{title:'Hull Estimate', responsivePriority: 4},
 			{title:'Completed', responsivePriority: 5}
 		],
-		order: [[7, "desc"]],
+		order: [[6, "desc"]],
 		searching: true,
 		paging: true,
 		pageLength: 25,
@@ -341,8 +338,7 @@ function loadFinishedCapContracts() {
 	$.getJSON('/api/contract/capital/finished', function(result) {
 		for(var i=0; i<result.length; i++) {
 			contractsTable.row.add([
-				'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract/' + result[i].contractId + '" target="_blank">Details</a>',
-				result[i].typeName,
+				'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract/' + result[i].contractId + '" target="_blank">' + result[i].typeName + '</a>',
 				result[i].locationName,
 				result[i].issuer,
 				formatInt(result[i].price),

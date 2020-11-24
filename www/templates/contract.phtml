@@ -32,26 +32,36 @@ $(document).ready(function() {
 </div>
 <div class="row">
 	<div class="col-sm-6">
-		<p>Issuer: {{cinfo.issuer}}</p>
-		<p>Location: {{cinfo.locationName}}</p>
-		<p>Availability: {{cinfo.availability}}</p>
-{% if cinfo.assignee %}
-		<p>Assignee: {{cinfo.assignee}}</p>
+		<p class="mb-0">Issuer: {{cinfo.issuer}}</p>
+		<p class="mb-0">Location: {{cinfo.locationName}}</p>
+		<p class="mb-0">Availability: {{cinfo.availability}}</p>
+{% if cinfo.acceptor %}
+		<p class="mb-0">Acceptor: {{cinfo.acceptor}}</p>
+{% elseif cinfo.assignee %}
+		<p class="mb-0">Assignee: {{cinfo.assignee}}</p>
 {% endif %}
 	</div>
 	<div class="col-sm-6">
-		<p>Status: {{cinfo.status}}</p>
-		<p>Description: {{cinfo.title}}</p>
-		<p>Issued: {{cinfo.dateIssued}}</p>
+		<p class="mb-0">Status: {{cinfo.status}}</p>
+{% if cinfo.title %}
+		<p class="mb-0">Description: {{cinfo.title}}</p>
+{% else %}
+		<p class="mb-0">Description: (none)</p>
+{% endif %}
+		<p class="mb-0">Issued: {{cinfo.dateIssued}}</p>
 {% if cinfo.dateCompleted %}
-		<p>Completed: {{cinfo.dateCompleted}}</p>
+		<p class="mb-0">Completed: {{cinfo.dateCompleted}}</p>
 {% endif %}
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-12">
-		<p>Acceptor Will Pay: {{cinfo.price|number_format(0)}} isk</p>
-		<p>Acceptor Will Receive: {{cinfo.reward|number_format(0)}} isk</p>
+{% if cinfo.price != 0 %}
+		<p class="mb-0">Acceptor Will Pay: {{cinfo.price|number_format(0)}} isk</p>
+{% endif %}
+{% if cinfo.reward != 0 %}
+		<p class="mb-0">Acceptor Will Receive: {{cinfo.reward|number_format(0)}} isk</p>
+{% endif %}
 	</div>
 </div>
 {% if offeritems %}
