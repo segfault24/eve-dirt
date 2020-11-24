@@ -253,7 +253,7 @@ $(document).ready(function(){
 					buyOrdersTable.row.add([
 						result[i].charName,
 						result[i].regionName,
-						result[i].sName,
+						result[i].locationName,
 						'<a class="open-in-game" data-typeid="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
 						formatIsk(result[i].price),
 						formatInt(result[i].volumeRemain),
@@ -264,7 +264,7 @@ $(document).ready(function(){
 					sellOrdersTable.row.add([
 						result[i].charName,
 						result[i].regionName,
-						result[i].sName,
+						result[i].locationName,
 						'<a class="open-in-game" data-typeid="' + result[i].typeId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="browse?type=' + result[i].typeId + '" target="_blank">' + result[i].typeName + '</a>',
 						formatIsk(result[i].price),
 						formatInt(result[i].volumeRemain),

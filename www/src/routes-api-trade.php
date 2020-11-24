@@ -144,14 +144,14 @@ $app->get('/api/amarr-sell-xml', function ($request, $response, $args) {
 $app->get('/api/trade/structs-by-region/{region}/', function ($request, $response, $args) {
     $db = Dirt\Database::getDb();
 
-    $sql  = 'SELECT `stationId` AS sId,`stationName` AS sName FROM station where regionId=:regiona
+    $sql  = 'SELECT `stationId` AS locationId,`stationName` AS locationName FROM station where regionId=:regiona
              UNION ALL
              (
-                 SELECT s.`structId` AS sId, s.`structName` AS sName FROM structure AS s
+                 SELECT s.`structId` AS locationId, s.`structName` AS locationName FROM structure AS s
                  JOIN dirtstructauth AS a ON s.`structId`=a.`structId`
                  WHERE s.`regionId`=:regionb
              )
-             ORDER BY sName';
+             ORDER BY locationName';
 
     $stmt = $db->prepare("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
     $stmt->execute();

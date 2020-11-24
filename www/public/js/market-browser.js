@@ -104,10 +104,6 @@ $(document).ready(function(){
 	$('#depthtablabel').click(function() { loadOrders(); });
 	$('#histtablabel').click(function() { loadHistory(); });
 
-	// inter-tool links
-	$('#open-in-market-browser').click(function() { window.location = '/browse?type=' + type; });
-	$('#open-in-import-analyzer').click(function() { window.location = '/import?type=' + type; });
-	$('#open-in-station-trader').click(function() { window.location = '/station-trade?type=' + type; });
 	$('#refresh-data').click(function() { refreshData(); });
 
 	// capture history events
@@ -152,12 +148,12 @@ $(document).ready(function(){
 
 		// find the active tab and load its data now
 		switch($('.nav-tabs .active').text()) {
-			case ' Sell':
-			case ' Buy':
-			case ' Depth':
+			case 'Sell':
+			case 'Buy':
+			case 'Depth':
 				loadOrders();
 				break;
-			case ' History':
+			case 'History':
 				loadHistory();
 				break;
 		}
@@ -189,7 +185,7 @@ $(document).ready(function(){
 				if(orderData[i].isBuyOrder==1) {
 					row = buyTable.row.add([
 						orderData[i].regionName,
-						orderData[i].sName,
+						orderData[i].locationName,
 						orderData[i].range,
 						formatIsk(orderData[i].price),
 						formatInt(orderData[i].volumeRemain),
@@ -198,7 +194,7 @@ $(document).ready(function(){
 				} else {
 					row = sellTable.row.add([
 						orderData[i].regionName,
-						orderData[i].sName,
+						orderData[i].locationName,
 						formatIsk(orderData[i].price),
 						formatInt(orderData[i].volumeRemain)
 					]);
@@ -309,7 +305,7 @@ $(document).ready(function(){
 					enabled: false
 				}
 			});
-			
+
 			ordersLoaded = true;
 		});
 	}
@@ -467,3 +463,4 @@ $(document).ready(function(){
 	refreshData();
 
 });
+
