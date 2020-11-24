@@ -43,7 +43,7 @@ $(document).ready(function() {
 			$('#' + select).empty();
 			$('#' + select).append('<option value="' + region + '">All Structures</option>');
 			for(var i=0; i<result.length; i++) {
-				$('#' + select).append('<option value="' + result[i].sId + '">' + result[i].locationName + '</option>');
+				$('#' + select).append('<option value="' + result[i].locationId + '">' + result[i].locationName + '</option>');
 			}
 			for(var i=0; i<preferredStructs.length; i++) {
 				if(preferredStructs[i].region == region) {
