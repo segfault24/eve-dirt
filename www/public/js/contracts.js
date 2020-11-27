@@ -432,7 +432,7 @@ function loadFinishedCorpLogiContracts() {
 	})
 }
 
-function loadBigContractors() {
+function loadTopContractors() {
 	if ($.fn.DataTable.isDataTable('#contracts-table')) {
 		$('#contracts-table').DataTable().destroy();
 		$('#contracts-table').empty();
@@ -451,12 +451,80 @@ function loadBigContractors() {
 		responsive: true,
 		select: true
 	});
-	$.getJSON('/api/contract/bigcontractors', function(result) {
+	$.getJSON('/api/contract/topcontractors', function(result) {
 		for(var i=0; i<result.length; i++) {
 			contractsTable.row.add([
 				result[i].contractor,
 				formatInt(result[i].total),
 				result[i].count
+			]);
+		}
+		contractsTable.draw();
+		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+	})
+}
+
+function loadTopShippers() {
+	if ($.fn.DataTable.isDataTable('#contracts-table')) {
+		$('#contracts-table').DataTable().destroy();
+		$('#contracts-table').empty();
+	}
+	var contractsTable = $('#contracts-table').DataTable({
+		columns: [
+			{title:'Contractor', responsivePriority: 1},
+			{title:'Reward', responsivePriority: 3},
+			{title:'Collateral', responsivePriority: 3},
+			{title:'Volume', responsivePriority: 2}
+		],
+		order: [[3, "desc"]],
+		searching: true,
+		paging: true,
+		pageLength: 25,
+		bInfo: false,
+		responsive: true,
+		select: true
+	});
+	$.getJSON('/api/contract/topshippers', function(result) {
+		for(var i=0; i<result.length; i++) {
+			contractsTable.row.add([
+				result[i].contractor,
+				formatInt(result[i].totalreward),
+				formatInt(result[i].totalcollat),
+				formatInt(result[i].totalvolume)
+			]);
+		}
+		contractsTable.draw();
+		$.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+	})
+}
+
+function loadTopHaulers() {
+	if ($.fn.DataTable.isDataTable('#contracts-table')) {
+		$('#contracts-table').DataTable().destroy();
+		$('#contracts-table').empty();
+	}
+	var contractsTable = $('#contracts-table').DataTable({
+		columns: [
+			{title:'Hauler', responsivePriority: 1},
+			{title:'Reward', responsivePriority: 3},
+			{title:'Collateral', responsivePriority: 3},
+			{title:'Volume', responsivePriority: 2}
+		],
+		order: [[3, "desc"]],
+		searching: true,
+		paging: true,
+		pageLength: 25,
+		bInfo: false,
+		responsive: true,
+		select: true
+	});
+	$.getJSON('/api/contract/tophaulers', function(result) {
+		for(var i=0; i<result.length; i++) {
+			contractsTable.row.add([
+				result[i].contractor,
+				formatInt(result[i].totalreward),
+				formatInt(result[i].totalcollat),
+				formatInt(result[i].totalvolume)
 			]);
 		}
 		contractsTable.draw();

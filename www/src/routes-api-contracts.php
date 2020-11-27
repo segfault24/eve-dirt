@@ -209,7 +209,7 @@ $app->get('/api/contract/corp/business/open', function ($request, $response, $ar
             JOIN corporation AS co ON c.issuerCorpId=co.corpId
             LEFT JOIN dentity AS a ON a.id=c.assigneeId
             LEFT JOIN dlocation AS locs ON c.startLocationId=locs.locationId
-            WHERE c.type=2 AND c.status=1 AND c.forCorp=1 AND c.dateExpired>NOW()
+            WHERE c.type=2 AND c.status=1 AND c.forCorp=1 AND c.issuerCorpId=1018389948 AND c.dateExpired>NOW()
             ORDER BY c.dateIssued DESC';
 
     $stmt = $db->prepare($sql);
@@ -231,7 +231,7 @@ $app->get('/api/contract/corp/business/finished', function ($request, $response,
             JOIN corporation AS co ON c.issuerCorpId=co.corpId
             LEFT JOIN dentity AS a ON a.id=c.assigneeId
             LEFT JOIN dlocation AS locs ON c.startLocationId=locs.locationId
-            WHERE c.type=2 AND c.status=5 AND c.forCorp=1 AND c.dateExpired>NOW()
+            WHERE c.type=2 AND c.status=5 AND c.forCorp=1 AND c.issuerCorpId=1018389948
             ORDER BY c.dateCompleted DESC LIMIT 1000';
 
     $stmt = $db->prepare($sql);
@@ -240,7 +240,7 @@ $app->get('/api/contract/corp/business/finished', function ($request, $response,
     return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
 });
 
-$app->get('/api/contract/bigcontractors', function ($request, $response, $args) {
+$app->get('/api/contract/topcontractors', function ($request, $response, $args) {
     $u = Dirt\User::getUser();
     if (! $u->isLoggedIn()) {
         return $response->withStatus(401);
@@ -259,6 +259,44 @@ $app->get('/api/contract/bigcontractors', function ($request, $response, $args) 
             WHERE c.type=2 AND c.status=1 AND c.forCorp=1 AND c.dateExpired>NOW()
             GROUP BY c.issuerCorpId
             ORDER BY total DESC';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/contract/topshippers', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT e.name AS contractor, SUM(c.reward) AS totalreward, SUM(c.volume) AS totalvolume, SUM(c.collateral) AS totalcollat
+            FROM corpcontract AS c
+            JOIN dentity AS e ON e.id=c.issuerId
+            WHERE c.type=4 AND c.status=5 AND c.dateIssued > DATE_ADD(NOW(), INTERVAL -3 MONTH)
+            GROUP BY c.issuerId ORDER BY totalvolume DESC LIMIT 100';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    return $response->withJson($stmt->fetchAll(PDO::FETCH_ASSOC));
+});
+
+$app->get('/api/contract/tophaulers', function ($request, $response, $args) {
+    $u = Dirt\User::getUser();
+    if (! $u->isLoggedIn()) {
+        return $response->withStatus(401);
+    }
+
+    $db = Dirt\Database::getDb();
+    $sql = 'SELECT e.name AS contractor, SUM(c.reward) AS totalreward, SUM(c.volume) AS totalvolume, SUM(c.collateral) AS totalcollat
+            FROM corpcontract AS c
+            JOIN dentity AS e ON e.id=c.acceptorId
+            WHERE c.type=4 AND c.status=5 AND c.dateIssued > DATE_ADD(NOW(), INTERVAL -3 MONTH)
+            GROUP BY c.acceptorId ORDER BY totalvolume DESC LIMIT 100';
 
     $stmt = $db->prepare($sql);
     $stmt->execute();
