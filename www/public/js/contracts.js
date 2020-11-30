@@ -285,7 +285,8 @@ function loadOpenCapContracts() {
 			{title:'Price', responsivePriority: 1},
 			{title:'Fittings', responsivePriority: 3},
 			{title:'Hull Estimate', responsivePriority: 4},
-			{title:'Issued', responsivePriority: 5}
+			{title:'Issued', responsivePriority: 5},
+			{title:'Description', responsivePriority: 5}
 		],
 		order: [[5, "asc"]],
 		searching: true,
@@ -304,7 +305,8 @@ function loadOpenCapContracts() {
 				formatInt(result[i].price),
 				result[i].fittings !== null ? formatInt(result[i].fittings) : 0,
 				result[i].hullvalue !== null ? formatInt(result[i].hullvalue) : formatInt(result[i].price),
-				result[i].dateIssued
+				result[i].dateIssued,
+				result[i].title
 			]);
 		}
 		contractsTable.draw();
@@ -325,7 +327,8 @@ function loadFinishedCapContracts() {
 			{title:'Price', responsivePriority: 1},
 			{title:'Fittings', responsivePriority: 3},
 			{title:'Hull Estimate', responsivePriority: 4},
-			{title:'Completed', responsivePriority: 5}
+			{title:'Completed', responsivePriority: 5},
+			{title:'Description', responsivePriority: 5}
 		],
 		order: [[6, "desc"]],
 		searching: true,
@@ -344,7 +347,8 @@ function loadFinishedCapContracts() {
 				formatInt(result[i].price),
 				result[i].fittings !== null ? formatInt(result[i].fittings) : 0,
 				result[i].hullvalue !== null ? formatInt(result[i].hullvalue) : formatInt(result[i].price),
-				result[i].dateCompleted
+				result[i].dateCompleted,
+				result[i].title
 			]);
 		}
 		contractsTable.draw();
