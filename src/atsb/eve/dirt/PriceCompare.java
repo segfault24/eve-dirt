@@ -31,9 +31,13 @@ public class PriceCompare {
 	private Connection db;
 
 	public static void main(String[] args) {
+		if (args.length != 1) {
+			System.err.println("Please specify the input file");
+			System.exit(1);
+		}
 		try {
 			PriceCompare pc = new PriceCompare();
-			pc.parseInputFile(new File("C:\\Users\\austin\\Desktop\\input.txt"));
+			pc.parseInputFile(new File(args[0]));
 			pc.run();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -91,7 +95,7 @@ public class PriceCompare {
 					r.freightRate = Long.parseLong(line[3]);
 					r.collatRate = Double.parseDouble(line[4]);
 					routes.add(r);
-					debug("found route: " + r.startLocationId + ">" +r.endLocationId + "@" + r.freightRate + "+" + r.collatRate + "%");
+					debug("found route: " + r.startLocationId + " > " +r.endLocationId + " @ " + r.freightRate + " + " + r.collatRate + "%");
 				} else if (line[0].equalsIgnoreCase("destination")) {
 					destLocationId = Long.parseLong(line[1]);
 					debug("found dest: " + destLocationId);
@@ -132,6 +136,13 @@ public class PriceCompare {
 			}
 		}
 		routes = routes2;
+		// add self-route (0 cost) so that the algorithm looks at desto prices too
+		Route r = new Route();
+		r.startLocationId = destLocationId;
+		r.endLocationId = destLocationId;
+		r.freightRate = 0;
+		r.collatRate = 0;
+		routes.add(r);
 
 		// consolidate duplicate line items
 		for (int i = 0; i < items.size(); i++) {

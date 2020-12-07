@@ -36,7 +36,8 @@ public class RegionTask extends DirtTask {
 			region = uapiw.getUniverseRegion(regionId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query region info for regionId " + regionId, e);
+				log.fatal("Failed to query region info for regionId " + regionId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
@@ -46,7 +47,8 @@ public class RegionTask extends DirtTask {
 			r = TypeUtil.convert(region);
 			MapTables.upsert(getDb(), r);
 		} catch (SQLException e) {
-			log.fatal("Failed to upsert region info for regionId " + regionId, e);
+			log.fatal("Failed to upsert region info for regionId " + regionId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 

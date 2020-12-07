@@ -53,8 +53,9 @@ public class StructureTask extends DirtTask {
 			List<Integer> keys;
 			try {
 				keys = StructAuthTable.getAuthKeyByStruct(getDb(), structId);
-			} catch (SQLException e1) {
-				log.fatal("Failed to search for auth keys for structure " + structId);
+			} catch (SQLException e) {
+				log.fatal("Failed to search for auth keys for structure " + structId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 				return;
 			}
 			if (!keys.isEmpty()) {
@@ -73,7 +74,8 @@ public class StructureTask extends DirtTask {
 				return;
 			}
 		} catch (Exception e) {
-			log.fatal("Failed to get auth details for key=" + keyId, e);
+			log.fatal("Failed to get auth details for key=" + keyId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -87,10 +89,12 @@ public class StructureTask extends DirtTask {
 			log.debug("Inserted structure information for structId=" + structId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.error("Failed to retrieve info for structure " + structId, e);
+				log.error("Failed to retrieve info for structure " + structId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		} catch (SQLException e) {
-			log.error("Failed to insert info for structure " + structId, e);
+			log.error("Failed to insert info for structure " + structId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 	}
 

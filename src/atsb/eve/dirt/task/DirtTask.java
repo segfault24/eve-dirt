@@ -49,7 +49,8 @@ public abstract class DirtTask implements Runnable {
 		try {
 			db = dbPool.acquire();
 		} catch (SQLException e) {
-			log.fatal("Failed to acquire database connection, aborting task " + getTaskName(), e);
+			log.fatal("Failed to acquire database connection, aborting task " + getTaskName() + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -68,7 +69,8 @@ public abstract class DirtTask implements Runnable {
 		try {
 			TaskLogTable.insertTaskLog(db, tl);
 		} catch (SQLException e) {
-			log.warn("Failed to update TaskStatus for " + getTaskName(), e);
+			log.warn("Failed to update TaskStatus for " + getTaskName() + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 
 		log.trace("Releasing database connection to pool");

@@ -50,7 +50,8 @@ public class CorpContractsTask extends DirtTask {
 				return;
 			}
 		} catch (SQLException e) {
-			log.fatal("Failed to get auth details for key=" + keyId);
+			log.fatal("Failed to get auth details for key=" + keyId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -69,7 +70,8 @@ public class CorpContractsTask extends DirtTask {
 				if (e.getCode() == 304) {
 					continue;
 				} else {
-					log.error("Failed to retrieve page " + page + " of contracts for corporation " + corpId, e);
+					log.error("Failed to retrieve page " + page + " of contracts for corporation " + corpId + ": " + e.getLocalizedMessage());
+					log.debug(e);
 					break;
 				}
 			}
@@ -93,7 +95,8 @@ public class CorpContractsTask extends DirtTask {
 				CorpContractTable.upsertMany(getDb(), l);
 				log.debug("Inserted " + contracts.size() + " contracts for corporation " + corpId + " page " + page);
 			} catch (SQLException e) {
-				log.error("Unexpected failure while processing page " + page + " for corporation " + corpId, e);
+				log.error("Unexpected failure while processing page " + page + " for corporation " + corpId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 
 			// queue explicitly after contract insert because of foreign key constraint
@@ -117,7 +120,8 @@ public class CorpContractsTask extends DirtTask {
 						tasks.add(new CorpContractItemsTask(corpId, contract.getContractId(), auth.getKeyId()));
 					}
 				} catch (SQLException e) {
-					log.error("Failed to search for contract", e);
+					log.error("Failed to search for contract " + contract.getContractId()+ ": " + e.getLocalizedMessage());
+					log.debug(e);
 				}
 			}
 		}

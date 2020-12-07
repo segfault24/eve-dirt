@@ -40,7 +40,8 @@ public class StationTask extends DirtTask {
 			station = uapiw.getUniverseStation(stationId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query station info for stationId " + stationId, e);
+				log.fatal("Failed to query station info for stationId " + stationId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
@@ -52,7 +53,8 @@ public class StationTask extends DirtTask {
 			s.setRegionId(regionId);
 			MapTables.upsert(getDb(), s);
 		} catch (SQLException e) {
-			log.fatal("Failed to upsert station info for stationId " + stationId, e);
+			log.fatal("Failed to upsert station info for stationId " + stationId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 	}

@@ -43,9 +43,11 @@ public class CharacterTask extends DirtTask {
 			c.setCharId(charId);
 			CharacterTable.upsert(getDb(), c);
 		} catch (ApiException e) {
-			log.error("Failed to retrieve info for character " + charId, e);
+			log.error("Failed to retrieve info for character " + charId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		} catch (SQLException e) {
-			log.error("Failed to insert info for character " + charId, e);
+			log.error("Failed to insert info for character " + charId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 		log.debug("Inserted information for character " + charId);
 	}

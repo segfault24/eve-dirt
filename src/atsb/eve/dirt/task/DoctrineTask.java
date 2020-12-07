@@ -37,7 +37,8 @@ public class DoctrineTask extends DirtTask {
 		try {
 			doctrines = DoctrineTable.getAllDoctrines(getDb());
 		} catch (SQLException e) {
-			log.fatal("Failed to retrieve list of doctrines");
+			log.fatal("Failed to retrieve list of doctrines: " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		log.debug("Found " + doctrines.size() + " doctrines");
@@ -49,7 +50,8 @@ public class DoctrineTask extends DirtTask {
 				dItemsMap.put(d.getDoctrineId(), doctrineItems);
 			} catch (SQLException e) {
 				log.error("Failed to retrieve items for doctrine " + d.getDoctrineId() + " (listId=" + d.getListId()
-						+ ")");
+						+ "): " + e.getLocalizedMessage());
+				log.debug(e);
 				continue;
 			}
 		}
@@ -65,9 +67,9 @@ public class DoctrineTask extends DirtTask {
 		List<Contract> contracts;
 		try {
 			contracts = CorpContractTable.selectOutstandingExchange(getDb());
-		} catch (SQLException e1) {
-			log.fatal(e1);
+		} catch (SQLException e) {
 			log.fatal("Failed to retrieve outstanding item exchange contracts");
+			log.fatal(e);
 			return;
 		}
 		log.debug("Found " + contracts.size() + " contracts");
@@ -76,7 +78,8 @@ public class DoctrineTask extends DirtTask {
 			try {
 				contractItems = CorpContractItemTable.selectByContractId(getDb(), c.getContractId());
 			} catch (SQLException e) {
-				log.error("Failed to retrieve items for contract " + c.getContractId());
+				log.error("Failed to retrieve items for contract " + c.getContractId() + ": " + e.getLocalizedMessage());
+				log.debug(e);
 				continue;
 			}
 			// check if the contract meets each doctrine
@@ -126,7 +129,8 @@ public class DoctrineTask extends DirtTask {
 			try {
 				DoctrineTable.upsert(getDb(), d);
 			} catch (SQLException e) {
-				log.error("Failed to update doctrine " + d.getDoctrineId());
+				log.error("Failed to update doctrine " + d.getDoctrineId() + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		}
 

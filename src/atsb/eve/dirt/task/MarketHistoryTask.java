@@ -45,7 +45,8 @@ public class MarketHistoryTask extends DirtTask {
 			types = InvTypeTable.getMarketableTypeIds(getDb());
 			log.debug("Found " + types.size() + " marketable types");
 		} catch (SQLException e) {
-			log.fatal("Failed to get list of marketable type ids from database", e);
+			log.fatal("Failed to get list of marketable type ids from database: " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		int s = types.size();
@@ -87,7 +88,8 @@ public class MarketHistoryTask extends DirtTask {
 					getDb().commit();
 					log.debug("Inserted " + hs.size() + " history entries for region " + region + " type " + type);
 				} catch (SQLException e) {
-					log.error("Failed to insert history for type " + type + " for region " + region);
+					log.error("Failed to insert history for type " + type + " for region " + region + ": " + e.getLocalizedMessage());
+					log.debug(e);
 					try {
 						getDb().rollback();
 					} catch (SQLException e1) {
@@ -115,7 +117,8 @@ public class MarketHistoryTask extends DirtTask {
 					break;
 				} catch (ApiException e) {
 					if (retry == 3) {
-						log.error("Failed to retrieve history for type " + typeId + " for region " + regionId);
+						log.error("Failed to retrieve history for type " + typeId + " for region " + regionId + ": " + e.getLocalizedMessage());
+						log.debug(e);
 						break;
 					} else {
 						retry++;
@@ -155,7 +158,8 @@ public class MarketHistoryTask extends DirtTask {
 				MarketStatTable.upsert(getDb(), s);
 				log.debug("Inserted market stats for type " + typeId + " for region " + region);
 			} catch (SQLException e) {
-				log.error("Failed to insert market stats for region " + region);
+				log.error("Failed to insert market stats for region " + region + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		}
 

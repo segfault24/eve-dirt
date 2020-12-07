@@ -35,14 +35,16 @@ public class InvMarketGroupTask extends DirtTask {
 			group = mapiw.getMarketGroup(marketGroupId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query market group info for marketGroupId " + marketGroupId, e);
+				log.fatal("Failed to query market group info for marketGroupId " + marketGroupId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
 		try {
 			MarketGroupTable.upsert(getDb(), TypeUtil.convert(group));
 		} catch (SQLException e) {
-			log.fatal("Failed to upsert market group info for marketGroupId " + marketGroupId, e);
+			log.fatal("Failed to upsert market group info for marketGroupId " + marketGroupId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 	}
 

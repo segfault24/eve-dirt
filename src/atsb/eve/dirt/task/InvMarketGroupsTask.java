@@ -34,7 +34,8 @@ public class InvMarketGroupsTask extends DirtTask {
 		try {
 			dbGroups = MarketGroupTable.selectAllIds(getDb());
 		} catch (SQLException e) {
-			log.fatal("Failed to get existing marketGroupIds from database", e);
+			log.fatal("Failed to get existing marketGroupIds from database: " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -43,7 +44,8 @@ public class InvMarketGroupsTask extends DirtTask {
 			groups = mapiw.getMarketGroupIds();
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to retrieve market group ids", e);
+				log.fatal("Failed to retrieve market group ids: " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}

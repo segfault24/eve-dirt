@@ -50,7 +50,8 @@ public class ContractItemsTask extends DirtTask {
 				return;
 			}
 		} catch (SQLException e) {
-			log.fatal("Failed to get auth details for key=" + keyId);
+			log.fatal("Failed to get auth details for key=" + keyId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -60,7 +61,8 @@ public class ContractItemsTask extends DirtTask {
 			items = capiw.getCharacterContractItems(auth.getCharId(), contractId,
 					OAuthUtil.getAuthToken(getDb(), auth));
 		} catch (ApiException e) {
-			log.error("Failed to retrieve items for contract " + contractId);
+			log.error("Failed to retrieve items for contract " + contractId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		log.debug("Retrieved " + items.size() + " items for contract " + contractId);
@@ -80,7 +82,8 @@ public class ContractItemsTask extends DirtTask {
 			getDb().setAutoCommit(true);
 			log.debug("Inserted " + l.size() + " items for contract " + contractId);
 		} catch (SQLException e) {
-			log.error("Unexpected failure while processing items for contract " + contractId, e);
+			log.error("Unexpected failure while processing items for contract " + contractId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 	}
 

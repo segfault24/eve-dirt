@@ -39,7 +39,8 @@ public class SolarSystemTask extends DirtTask {
 			system = uapiw.getUniverseSolarSystem(solarSystemId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query solar system info for solarSystemId " + solarSystemId, e);
+				log.fatal("Failed to query solar system info for solarSystemId " + solarSystemId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
@@ -50,7 +51,8 @@ public class SolarSystemTask extends DirtTask {
 			s.setRegionId(regionId);
 			MapTables.upsert(getDb(), s);
 		} catch (SQLException e) {
-			log.fatal("Failed to upsert solar system info for solarSystemId " + solarSystemId, e);
+			log.fatal("Failed to upsert solar system info for solarSystemId " + solarSystemId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 

@@ -28,13 +28,15 @@ public class OrderReaperTask extends DirtTask {
 			int count = MarketOrderTable.deleteOldOrders(getDb(), olderThan);
 			log.debug("Deleted " + count + " old market orders");
 		} catch (SQLException e) {
-			log.fatal("Failed to delete old market orders", e);
+			log.fatal("Failed to delete old market orders: " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 		try {
 			int count = CharOrderTable.deleteOldOrders(getDb(), olderThan);
 			log.debug("Deleted " + count + " old character orders");
 		} catch (SQLException e) {
-			log.fatal("Failed to delete old character orders", e);
+			log.fatal("Failed to delete old character orders: " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 	}
 

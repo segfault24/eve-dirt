@@ -140,7 +140,7 @@ public class MERLoader {
 					}
 				} catch (CSVException e) {
 					log.warn("Failure while reading line: " + e.getLocalizedMessage());
-					e.printStackTrace();
+					log.debug(e);
 				}
 
 				// add to the batch

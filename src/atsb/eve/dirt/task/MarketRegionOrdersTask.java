@@ -75,7 +75,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 				if (e.getCode() == 304) {
 					break;
 				} else {
-					log.error("Failed to retrieve page " + page + " of orders for region " + region, e);
+					log.error("Failed to retrieve page " + page + " of orders for region " + region + ": " + e.getLocalizedMessage());
+					log.debug(e);
 					break;
 				}
 			}
@@ -100,7 +101,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 				getDb().setAutoCommit(true);
 				log.debug("Inserted " + orders.size() + " orders for region " + region + " page " + page);
 			} catch (SQLException e) {
-				log.error("Unexpected failure while processing page " + page + " for region " + region, e);
+				log.error("Unexpected failure while processing page " + page + " for region " + region + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		} while (orders.size() > 0);
 
@@ -113,7 +115,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 		try {
 			structs = StructAuthTable.getStructIdByRegion(getDb(), region);
 		} catch (SQLException e) {
-			log.fatal("Failed to search for authed structures for region " + region, e);
+			log.fatal("Failed to search for authed structures for region " + region + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		if (structs.isEmpty()) {
@@ -134,7 +137,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 		try {
 			keys = StructAuthTable.getAuthKeyByStruct(getDb(), structId);
 		} catch (SQLException e) {
-			log.error("Failed to get auth key id for structure " + structId, e);
+			log.error("Failed to get auth key id for structure " + structId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		if (keys == null || keys.isEmpty()) {
@@ -148,7 +152,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 		try {
 			auth = ApiAuthTable.getUserByKeyId(getDb(), keyId);
 		} catch (SQLException e) {
-			log.error("Failed to get auth details for key " + keyId, e);
+			log.error("Failed to get auth details for key " + keyId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		if (auth == null) {
@@ -173,7 +178,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 					forbidden(structId, keyId);
 					break;
 				} else {
-					log.error("Failed to retrieve page " + page + " of orders for structure " + structId, e);
+					log.error("Failed to retrieve page " + page + " of orders for structure " + structId + ": " + e.getLocalizedMessage());
+					log.debug(e);
 					break;
 				}
 			}
@@ -198,7 +204,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 				getDb().setAutoCommit(true);
 				log.debug("Inserted " + orders.size() + " orders for structure " + structId + " page " + page);
 			} catch (SQLException e) {
-				log.error("Unexpected failure while processing page " + page + " for structure " + structId, e);
+				log.error("Unexpected failure while processing page " + page + " for structure " + structId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		} while (orders.size() > 0);
 
@@ -225,8 +232,9 @@ public class MarketRegionOrdersTask extends DirtTask {
 			try {
 				log.warn("Reached retry limit for forbidden, removing structAuth for struct " + structId + " and key " + keyId);
 				StructAuthTable.deleteStructAuth(getDb(), structId, keyId);
-			} catch (SQLException e1) {
-				log.error("Failed to remove structAuth for structure " + structId + " with key " + keyId, e1);
+			} catch (SQLException e) {
+				log.error("Failed to remove structAuth for structure " + structId + " with key " + keyId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		}
 		Utils.putKV(getDb(), "forbidden-" + structId, "" + count);
@@ -241,7 +249,8 @@ public class MarketRegionOrdersTask extends DirtTask {
 			getDb().setAutoCommit(true);
 			log.debug("Deleted " + count + " old market orders for region " + region);
 		} catch (SQLException e) {
-			log.fatal("Failed to delete old market orders for region " + region, e);
+			log.fatal("Failed to delete old market orders for region " + region + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 	}

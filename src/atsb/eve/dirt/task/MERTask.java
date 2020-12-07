@@ -148,7 +148,8 @@ public class MERTask extends DirtTask {
 
 				return f;
 			} catch (IOException e) {
-				log.warn("Failed to download file from " + url, e);
+				log.warn("Failed to download file from " + url + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		}
 		return null;
@@ -173,7 +174,8 @@ public class MERTask extends DirtTask {
 			}
 			zis.close();
 		} catch (IOException e) {
-			log.warn("Failed to extract archive", e);
+			log.warn("Failed to extract archive: " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 		return files;
 	}

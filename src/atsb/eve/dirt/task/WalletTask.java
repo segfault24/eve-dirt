@@ -53,7 +53,8 @@ public class WalletTask extends DirtTask {
 				return;
 			}
 		} catch (SQLException e) {
-			log.fatal("Failed to get auth details for char=" + charId);
+			log.fatal("Failed to get auth details for char=" + charId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -72,7 +73,8 @@ public class WalletTask extends DirtTask {
 				ats = wapiw.getWalletTransactions(charId, beforeTrans, OAuthUtil.getAuthToken(getDb(), oau));
 				log.debug("Retrieved " + ats.size() + " wallet transactions");
 			} catch (ApiException e) {
-				log.fatal("Failed to query wallet transactions", e);
+				log.fatal("Failed to query wallet transactions: " + e.getLocalizedMessage());
+				log.debug(e);
 				break;
 			}
 			if (ats.isEmpty()) {
@@ -98,7 +100,8 @@ public class WalletTask extends DirtTask {
 				ajs = wapiw.getWalletJournal(charId, page, OAuthUtil.getAuthToken(getDb(), oau));
 				log.debug("Retrieved " + ajs.size() + " wallet journal entries");
 			} catch (ApiException e) {
-				log.error("Failed to retrieve page " + page + " of wallet journal for character " + charId, e);
+				log.error("Failed to retrieve page " + page + " of wallet journal for character " + charId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 				break;
 			}
 			if (ajs.isEmpty()) {

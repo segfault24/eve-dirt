@@ -36,7 +36,8 @@ public class ConstellationTask extends DirtTask {
 			constellation = uapiw.getUniverseConstellation(constellationId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query constellation info for constellationId " + constellationId, e);
+				log.fatal("Failed to query constellation info for constellationId " + constellationId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
@@ -46,7 +47,8 @@ public class ConstellationTask extends DirtTask {
 			c = TypeUtil.convert(constellation);
 			MapTables.upsert(getDb(), c);
 		} catch (SQLException e) {
-			log.fatal("Failed to upsert constellation info for constellationId " + constellationId, e);
+			log.fatal("Failed to upsert constellation info for constellationId " + constellationId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 

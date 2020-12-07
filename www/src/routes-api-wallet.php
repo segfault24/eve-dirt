@@ -96,13 +96,13 @@ $app->get('/api/wallet/contracts', function ($request, $response, $args) {
     }
 
     $db = Dirt\Database::getDb();
-    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, co.`dateCompleted`, ach.`name` AS acceptorName
+    $sql = 'SELECT co.`contractId`, ich.`name` AS issuerName, co.`type`, co.`status`, co.`dateIssued`, co.`dateCompleted`, ach.`name` AS acceptorName, co.`title`, co.`price`
             FROM contract AS co
             LEFT JOIN dentity AS ich ON co.issuerId=ich.id
             LEFT JOIN dentity AS ach ON co.acceptorId=ach.id
             WHERE co.`issuerId` IN (SELECT charId FROM dirtapiauth WHERE userId=:userid)
             OR co.`acceptorId` IN (SELECT charId FROM dirtapiauth WHERE userId=:userid)
-            ORDER BY co.dateIssued DESC';
+            ORDER BY co.dateIssued DESC LIMIT 1000';
 
     $stmt = $db->prepare($sql);
     $stmt->execute(array(

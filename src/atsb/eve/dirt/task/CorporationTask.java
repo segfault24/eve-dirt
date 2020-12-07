@@ -42,9 +42,11 @@ public class CorporationTask extends DirtTask {
 			c.setCorpId(corpId);
 			CorporationTable.upsert(getDb(), c);
 		} catch (ApiException e) {
-			log.error("Failed to retrieve info for corporation " + corpId, e);
+			log.error("Failed to retrieve info for corporation " + corpId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		} catch (SQLException e) {
-			log.error("Failed to insert info for corporation " + corpId, e);
+			log.error("Failed to insert info for corporation " + corpId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 		log.debug("Inserted information for corporation " + corpId);
 	}

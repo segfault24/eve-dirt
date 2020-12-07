@@ -35,14 +35,16 @@ public class InvTypeTask extends DirtTask {
 			type = uapiw.getUniverseType(typeId);
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query type info for typeId " + typeId, e);
+				log.fatal("Failed to query type info for typeId " + typeId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
 		try {
 			InvTypeTable.upsert(getDb(), TypeUtil.convert(type));
 		} catch (SQLException e) {
-			log.fatal("Failed to upsert type info for typeId " + typeId, e);
+			log.fatal("Failed to upsert type info for typeId " + typeId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 	}
 

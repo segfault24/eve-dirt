@@ -1,0 +1,32 @@
+##########################################
+# define the destination structure
+destination	1034877491366
+
+##########################################
+# define frieght routes
+
+# route	locationA	locationB	isk/m3	%collat(decimal)
+route	60003760	1034877491366	1200	0.01	# jita <> t5z
+#route	60008494	1034877491366	1200	0.01	# amarr <> t5z
+route	1024004680659	1034877491366	1200	0.01	# d-p <> t5z
+
+##########################################
+# item listing with quantity
+
+Capital Core Defense Field Extender I	3
+Capital Shield Extender II	2
+Drone Damage Amplifier II	3
+Drone Navigation Computer II	1
+Fighter Support Unit I	3
+Large 'Vehemence' Shockwave Charge	1
+Networked Sensor Array	1
+Omnidirectional Tracking Enhancer II	1
+500MN Quad LiF Restrained Microwarpdrive	1
+Cap Booster 3200	50
+Explosive Shield Amplifier II	1
+Heavy Capacitor Booster II 	1
+Hydrogen Isotopes	80000
+Kinetic Shield Amplifier II	1
+Mobile Depot	1
+Nanite Repair Paste	500
+

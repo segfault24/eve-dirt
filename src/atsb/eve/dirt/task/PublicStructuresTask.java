@@ -50,8 +50,9 @@ public class PublicStructuresTask extends DirtTask {
 				log.fatal("No auth details found for key=" + keyId);
 				return;
 			}
-		} catch (Exception e) {
-			log.fatal("Failed to get auth details for key=" + keyId, e);
+		} catch (SQLException e) {
+			log.fatal("Failed to get auth details for key=" + keyId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -60,7 +61,8 @@ public class PublicStructuresTask extends DirtTask {
 			structIds = uapiw.getUniverseStructures();
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to retrieve list of public structure ids", e);
+				log.fatal("Failed to retrieve list of public structure ids: " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
@@ -76,10 +78,12 @@ public class PublicStructuresTask extends DirtTask {
 				log.debug("Inserted structure information for structId=" + structId);
 			} catch (ApiException e) {
 				if (e.getCode() != 304) {
-					log.error("Failed to retrieve info for structure " + structId, e);
+					log.error("Failed to retrieve info for structure " + structId + ": " + e.getLocalizedMessage());
+					log.debug(e);
 				}
 			} catch (SQLException e) {
-				log.error("Failed to insert info for structure " + structId, e);
+				log.error("Failed to insert info for structure " + structId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 		}
 	}

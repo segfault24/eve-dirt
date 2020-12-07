@@ -52,7 +52,8 @@ public class CharacterOrdersTask extends DirtTask {
 				return;
 			}
 		} catch (SQLException e) {
-			log.fatal("Failed to get auth details for char=" + charId);
+			log.fatal("Failed to get auth details for char=" + charId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -63,7 +64,8 @@ public class CharacterOrdersTask extends DirtTask {
 			log.debug("Retrieved " + aos.size() + " character orders");
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query character orders", e);
+				log.fatal("Failed to query character orders: " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}
@@ -81,7 +83,8 @@ public class CharacterOrdersTask extends DirtTask {
 			getDb().setAutoCommit(true);
 			log.debug("Inserted " + os.size() + " orders for character " + charId);
 		} catch (SQLException e) {
-			log.error("Unexpected failure while processing orders for character " + charId, e);
+			log.error("Unexpected failure while processing orders for character " + charId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 
 		// delete old orders (where 'retrieved' is older than 'now')
@@ -89,7 +92,8 @@ public class CharacterOrdersTask extends DirtTask {
 			int count = CharOrderTable.deleteOldOrdersByChar(getDb(), charId, deleteBefore);
 			log.debug("Deleted " + count + " old market orders for character " + charId);
 		} catch (SQLException e) {
-			log.fatal("Failed to delete old market orders for character " + charId, e);
+			log.fatal("Failed to delete old market orders for character " + charId + ": " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 	}

@@ -57,7 +57,8 @@ public class UnknownIdsTask extends DirtTask {
 			knowns = getKnownIds(getDb());
 			unknowns = getUnknownIds(getDb());
 		} catch (SQLException e) {
-			log.fatal("Failed to scan database for char and corp ids", e);
+			log.fatal("Failed to scan database for char and corp ids: " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		log.debug("Found " + knowns.size() + " known char and corp ids");
@@ -83,7 +84,8 @@ public class UnknownIdsTask extends DirtTask {
 			try {
 				names = uapiw.postUniverseNames(sublist);
 			} catch (ApiException e) {
-				log.fatal("Failed to query ESI for ids: " + e.getResponseBody(), e);
+				log.fatal("Failed to query ESI for ids: " + e.getResponseBody() + ": " + e.getLocalizedMessage());
+				log.debug(e);
 				return;
 			}
 	

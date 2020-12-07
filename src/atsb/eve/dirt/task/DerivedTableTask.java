@@ -50,7 +50,8 @@ public class DerivedTableTask extends DirtTask {
 			getDb().commit();
 			getDb().setAutoCommit(true);
 		} catch (SQLException e) {
-			log.error("Failed to update derived table", e);
+			log.error("Failed to update derived table" + ": " + e.getLocalizedMessage());
+			log.debug(e);
 		} finally {
 			Utils.closeQuietly(i);
 			Utils.closeQuietly(t);

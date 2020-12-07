@@ -117,8 +117,10 @@ $(document).ready(function(){
 		columns: [
 			{title:'Type', responsivePriority: 2},
 			{title:'Issuer', responsivePriority: 1},
-			{title:'Status', responsivePriority: 3},
 			{title:'Acceptor', responsivePriority: 5},
+			{title:'Price', responsivePriority: 5},
+			{title:'Status', responsivePriority: 3},
+			{title:'Description', responsivePriority: 5},
 			{title:'Issued', responsivePriority: 4},
 			{title:'Completed', responsivePriority: 4}
 		],
@@ -288,8 +290,10 @@ $(document).ready(function(){
 				contractsTable.row.add([
 					'<a class="open-in-game-contract" data-contractid="' + result[i].contractId + '" href="#"><i class="fa fa-magnet fa-fw"></i></a> <a href="contract/' + result[i].contractId + '" target="_blank">' +prettyType(result[i].type) + '</a>',
 					result[i].issuerName,
-					prettyStatus(result[i].status),
 					result[i].acceptorName,
+					formatIsk(result[i].price),
+					prettyStatus(result[i].status),
+					result[i].title,
 					result[i].dateIssued,
 					result[i].dateCompleted
 				]);

@@ -28,7 +28,8 @@ public class MetaWalletTask extends DirtTask {
 		try {
 			charIds = ApiAuthTable.getAllCharacters(getDb());
 		} catch (SQLException e) {
-			log.fatal("Failed to retrieve character ids", e);
+			log.fatal("Failed to retrieve character ids: " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 		for (Integer charId : charIds) {

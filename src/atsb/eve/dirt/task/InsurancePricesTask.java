@@ -46,7 +46,8 @@ public class InsurancePricesTask extends DirtTask {
 			getDb().setAutoCommit(true);
 			log.debug("Inserted " + prices.size() + " insurance price records");
 		} catch (SQLException e) {
-			log.fatal("Unexpected failure while processing insurance prices", e);
+			log.fatal("Unexpected failure while processing insurance prices: " + e.getLocalizedMessage());
+			log.debug(e);
 		}
 	}
 
@@ -58,7 +59,8 @@ public class InsurancePricesTask extends DirtTask {
 		} catch (ApiException e) {
 			if (e.getCode() == 304) {
 			} else {
-				log.error("Failed to retrieve list of insurance prices", e);
+				log.error("Failed to retrieve list of insurance prices: " + e.getLocalizedMessage());
+				log.debug(e);;
 			}
 		}
 		List<InsurancePrice> mine = new ArrayList<InsurancePrice>();

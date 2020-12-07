@@ -31,7 +31,8 @@ public class MapDataTask extends DirtTask {
 			regions = uapiw.getUniverseRegions();
 		} catch (ApiException e) {
 			if (e.getCode() != 304) {
-				log.fatal("Failed to query for region ids", e);
+				log.fatal("Failed to query for region ids: " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 			return;
 		}

@@ -35,7 +35,8 @@ public class InvTypesTask extends DirtTask {
 		try {
 			dbTypes = InvTypeTable.selectAllIds(getDb());
 		} catch(SQLException e) {
-			log.fatal("Failed to get existing typeIds from database", e);
+			log.fatal("Failed to get existing typeIds from database: " + e.getLocalizedMessage());
+			log.debug(e);
 			return;
 		}
 
@@ -47,7 +48,8 @@ public class InvTypesTask extends DirtTask {
 				types = uapiw.getUniverseTypes(page);
 			} catch(ApiException e) {
 				if (e.getCode() != 304) {
-					log.fatal("Failed to retrieve page " + page + " of type ids", e);
+					log.fatal("Failed to retrieve page " + page + " of type ids: " + e.getLocalizedMessage());
+					log.debug(e);
 				}
 				return;
 			}

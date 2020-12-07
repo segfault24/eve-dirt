@@ -83,7 +83,8 @@ public class CharacterContractsTask extends DirtTask {
 				if (e.getCode() == 304) {
 					continue;
 				} else {
-					log.error("Failed to retrieve page " + page + " of contracts for character " + charId, e);
+					log.error("Failed to retrieve page " + page + " of contracts for character " + charId + ": " + e.getLocalizedMessage());
+					log.debug(e);
 					break;
 				}
 			}
@@ -112,7 +113,8 @@ public class CharacterContractsTask extends DirtTask {
 				ContractTable.upsertMany(getDb(), l);
 				log.debug("Inserted " + contracts.size() + " contracts for character " + charId + " page " + page);
 			} catch (SQLException e) {
-				log.error("Unexpected failure while processing page " + page + " for character " + charId, e);
+				log.error("Unexpected failure while processing page " + page + " for character " + charId + ": " + e.getLocalizedMessage());
+				log.debug(e);
 			}
 
 			// queue explicitly after contract insert because of foreign key constraint
@@ -153,7 +155,8 @@ public class CharacterContractsTask extends DirtTask {
 			try {
 				dbContract = ContractTable.selectById(getDb(), contract.getContractId());
 			} catch (SQLException e) {
-				log.error("Failed to query for contract information " + contract.getContractId(), e);
+				log.error("Failed to query for contract information " + contract.getContractId() + ": " + e.getLocalizedMessage());
+				log.debug(e);
 				return;
 			}
 			// skip when we already have a record of this contract and the status
@@ -194,7 +197,8 @@ public class CharacterContractsTask extends DirtTask {
 				try {
 					NotificationTable.insert(getDb(), n);
 				} catch (Exception e) {
-					log.error("Failed to insert notification for contract status change", e);
+					log.error("Failed to insert notification for contract status change" + ": " + e.getLocalizedMessage());
+					log.debug(e);
 				}
 			}
 		}
